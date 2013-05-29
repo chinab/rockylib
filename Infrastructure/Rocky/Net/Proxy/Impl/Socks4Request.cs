@@ -160,7 +160,7 @@ namespace Rocky.Net
         {
             if (this.RemoteIP == null)
             {
-                throw new ProxyAuthException(403, "Request remoteIP");
+                throw new ProxyAuthException(403, "Socks4/4a remoteIP required");
             }
 
             var bPack = new List<byte>();
