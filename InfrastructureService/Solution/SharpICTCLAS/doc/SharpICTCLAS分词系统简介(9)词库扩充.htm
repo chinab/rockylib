@@ -1,0 +1,167 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="zh-cn" />
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>SharpICTCLAS分词系统简介(9)词库扩充</title>
+<link href="css/style.css" rel="stylesheet" type="text/css" />
+<link href="css/customercss.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript">/*<![CDATA[*/
+if(typeof(HTMLElement)!="undefined" && !window.opera)
+{
+  HTMLElement.prototype.__defineGetter__("parentElement", function () 
+  {
+    if (this.parentNode == this.ownerDocument) return null;
+    return this.parentNode;
+  });
+}
+
+HTMLElement.prototype.innerHTML getter = function(){
+   return getInnerHTML(this);
+}
+/*]]>*/
+</script>
+<script language="javascript">
+function CopyCode(key)
+{
+  var divElements = document.getElementsByTagName("div");
+  var i;
+  occur = 0;  
+  for(i = 0; i < divElements.length; ++i)
+  {
+    if(key.parentElement.parentElement.parentElement == divElements[i].parentElement)
+    {
+      if(occur == 1)
+      {
+        if(navigator.appName.indexOf('Microsoft') != -1)
+          copyToClipboard(divElements[i].innerText);
+        else
+          copyToClipboard(Html2Txt(divElements[i].innerHTML));
+      }
+      occur++;
+    }
+  }
+}
+function Html2Txt(htmlText)
+{
+  str = htmlText.replace(/\r\n/g, " ");
+  str = str.replace(/\r/g, " "); 
+  str = str.replace(/\n/g, " "); 
+  str = str.replace(/\t/g, "");
+  str = str.replace(/<BR>/gi,"\r\n");
+  str = str.replace(/<[^>]+?>/g,"");
+  str = str.replace(/&nbsp;/g, " ");
+  str = str.replace(/&gt;/g, ">");
+  str = str.replace(/&lt;/g, "<");
+  str = str.replace(/&amp;/g, "&");
+  return str;
+}
+
+function copyToClipboard(txt)
+{
+ if(window.clipboardData) 
+  {
+    window.clipboardData.clearData();
+    window.clipboardData.setData("Text", txt);
+  }
+  else if(navigator.userAgent.indexOf("Opera") != -1) 
+  {
+    window.location = txt;
+  } 
+  else if (window.netscape) 
+  {
+    try 
+    {
+      netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
+    } 
+    catch (e) 
+    {
+      alert("您的firefox安全限制限制您进行剪贴板操作，请在地址栏中输入“about:config”将“signed.applets.codebase_principal_support”设置为“true”之后重试");
+      return false;
+    }
+    var clip = Components.classes['@mozilla.org/widget/clipboard;1'].createInstance(Components.interfaces.nsIClipboard);
+    if (!clip)
+      return;
+    var trans = Components.classes['@mozilla.org/widget/transferable;1'].createInstance(Components.interfaces.nsITransferable);
+    if (!trans)
+      return;
+    trans.addDataFlavor('text/unicode');
+    var str = new Object();
+    var len = new Object();
+    var str = Components.classes["@mozilla.org/supports-string;1"].createInstance(Components.interfaces.nsISupportsString);
+    var copytext = txt;
+    str.data = copytext;
+    trans.setTransferData("text/unicode",str,copytext.length*2);
+    var clipid = Components.interfaces.nsIClipboard;
+    if (!clip)
+      return false;
+    clip.setData(trans,null,clipid.kGlobalClipboard);
+  }
+} 
+</script>
+</head>
+
+<body>
+
+<p>　</p>
+<table width="95%" align="center">
+	<tr>
+		<td>
+		<h3>1、SharpICTCLAS中词库的扩充</h3>
+		<p>如果对SharpICTCLAS目前词库不满意的化，可以考虑扩充现有词库。扩充方法非常简单，代码如下：</p>
+		<div class="code">
+			<div class="title">
+				<div style="FLOAT: right">
+					<img class="copyCodeImage" src="images/copycode.gif" align="absMiddle" name="ccImage">
+					<a onclick="CopyCode(this)" href="javascript:">Copy Code</a></div>
+				<div style="CLEAR: none">
+					词库扩充</div>
+			</div>
+			<div class="content">
+				<span style="COLOR: #0000ff">static</span>
+				<span style="COLOR: #0000ff">void</span> Main(<span style="COLOR: #0000ff">string</span>[] 
+				args) <br>
+				{ <br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">string</span> DictPath = Path.Combine(Environment.CurrentDirectory,
+				<span style="COLOR: #ff00ff">&quot;Data&quot;</span>) +<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				Path.DirectorySeparatorChar; <br>
+&nbsp;&nbsp; Console.WriteLine(<span style="COLOR: #ff00ff">&quot;正在读入字典，请稍候...&quot;</span>);
+				<br>
+				<br>
+&nbsp;&nbsp; WordDictionary dict = <span style="COLOR: #0000ff">new</span> WordDictionary();
+				<br>
+&nbsp;&nbsp; dict.Load(DictPath + <span style="COLOR: #ff00ff">&quot;coreDict.dct&quot;</span>);
+				<br>
+				<br>
+&nbsp;&nbsp; Console.WriteLine(<span style="COLOR: #ff00ff">&quot;\r\n向字典库插入“设计模式”一词...&quot;</span>);
+				<br>
+&nbsp;&nbsp; dict.AddItem(<span style="COLOR: #ff00ff">&quot;设计模式&quot;</span>, Utility.GetPOSValue(<span style="COLOR: #ff00ff">&quot;n&quot;</span>), 
+				10); <br>
+				<br>
+&nbsp;&nbsp; Console.WriteLine(<span style="COLOR: #ff00ff">&quot;\r\n修改完成，将字典写入磁盘文件coreDictNew.dct，请稍候...&quot;</span>);
+				<br>
+&nbsp;&nbsp; dict.Save(DictPath + <span style="COLOR: #ff00ff">&quot;coreDictNew.dct&quot;</span>);
+				<br>
+				<br>
+&nbsp;&nbsp; Console.Write(<span style="COLOR: #ff00ff">&quot;按下回车键退出......&quot;</span>);
+				<br>
+&nbsp;&nbsp; Console.ReadLine(); <br>
+				}</div>
+		</div>
+		<p>通过AddItem方法可以轻松实现添加新词汇，添加时除了要指明词外，还需指明词性、词频。</p>
+		<h3>2、其它工具</h3>
+		<p>
+		SharpICTCLAS示例代码中还提供了一些用于对文件进行预处理的工具类PreProcessUtility，里面提供了将GB2312中繁体汉字转换为简体字的代码，以及将全角字母转换为半角字母的方法，除此之外，还提供了对HTML文件进行预处理，去除HTML标记的方法，用户可酌情使用。</p>
+		<p>　</p>
+		<ul>
+			<li><font color="#800080"><b>小结</b></font></li>
+		</ul>
+		<p>有关SharpICTCLAS的系列文章到此为止就全部结束。</p>
+		</td>
+	</tr>
+</table>
+
+</body>
+
+</html>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:ser="http://schemas.microsoft.com/2003/10/Serialization/" xmlns:tns="http://schemas.datacontract.org/2004/07/InfrastructureService.Model" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/InfrastructureService.Model" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="http://azure.open.net/SSOService.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+  <xs:import schemaLocation="http://azure.open.net/SSOService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/InfrastructureService.Model.User" />
+  <xs:complexType name="HeaderEntity">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="AppID" type="ser:guid" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="HeaderEntity" nillable="true" type="tns:HeaderEntity" />
+  <xs:complexType name="PagingParameter">
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:HeaderEntity">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="OnlyCount" type="xs:boolean" />
+          <xs:element minOccurs="0" name="PageIndex" type="xs:int" />
+          <xs:element minOccurs="0" name="PageSize" type="xs:int" />
+          <xs:element minOccurs="0" name="SkipStatus" type="xs:boolean" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="PagingParameter" nillable="true" type="tns:PagingParameter" />
+  <xs:complexType name="PagedResultOfUserEntityrq7qyffr">
+    <xs:annotation>
+      <xs:appinfo>
+        <GenericType Name="PagedResultOf{0}{#}" Namespace="http://schemas.datacontract.org/2004/07/InfrastructureService.Model" xmlns="http://schemas.microsoft.com/2003/10/Serialization/">
+          <GenericParameter Name="UserEntity" Namespace="http://schemas.datacontract.org/2004/07/InfrastructureService.Model.User" />
+        </GenericType>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:ExecResultOfUserEntityrq7qyffr">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="RecordCount" type="xs:int" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="PagedResultOfUserEntityrq7qyffr" nillable="true" type="tns:PagedResultOfUserEntityrq7qyffr" />
+  <xs:complexType name="ExecResultOfUserEntityrq7qyffr">
+    <xs:annotation>
+      <xs:appinfo>
+        <GenericType Name="ExecResultOf{0}{#}" Namespace="http://schemas.datacontract.org/2004/07/InfrastructureService.Model" xmlns="http://schemas.microsoft.com/2003/10/Serialization/">
+          <GenericParameter Name="UserEntity" Namespace="http://schemas.datacontract.org/2004/07/InfrastructureService.Model.User" />
+        </GenericType>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/InfrastructureService.Model.User" minOccurs="0" name="ResultSet" nillable="true" type="q1:ArrayOfUserEntity" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ExecResultOfUserEntityrq7qyffr" nillable="true" type="tns:ExecResultOfUserEntityrq7qyffr" />
+  <xs:complexType name="PagedResultOfQuerySignInLogsResult.TResultrq7qyffr">
+    <xs:annotation>
+      <xs:appinfo>
+        <GenericType Name="PagedResultOf{0}{#}" Namespace="http://schemas.datacontract.org/2004/07/InfrastructureService.Model" xmlns="http://schemas.microsoft.com/2003/10/Serialization/">
+          <GenericParameter Name="QuerySignInLogsResult.TResult" Namespace="http://schemas.datacontract.org/2004/07/InfrastructureService.Model.User" />
+        </GenericType>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexContent mixed="false">
+      <xs:extension base="tns:ExecResultOfQuerySignInLogsResult.TResultrq7qyffr">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="RecordCount" type="xs:int" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="PagedResultOfQuerySignInLogsResult.TResultrq7qyffr" nillable="true" type="tns:PagedResultOfQuerySignInLogsResult.TResultrq7qyffr" />
+  <xs:complexType name="ExecResultOfQuerySignInLogsResult.TResultrq7qyffr">
+    <xs:annotation>
+      <xs:appinfo>
+        <GenericType Name="ExecResultOf{0}{#}" Namespace="http://schemas.datacontract.org/2004/07/InfrastructureService.Model" xmlns="http://schemas.microsoft.com/2003/10/Serialization/">
+          <GenericParameter Name="QuerySignInLogsResult.TResult" Namespace="http://schemas.datacontract.org/2004/07/InfrastructureService.Model.User" />
+        </GenericType>
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/InfrastructureService.Model.User" minOccurs="0" name="ResultSet" nillable="true" type="q2:ArrayOfQuerySignInLogsResult.TResult" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ExecResultOfQuerySignInLogsResult.TResultrq7qyffr" nillable="true" type="tns:ExecResultOfQuerySignInLogsResult.TResultrq7qyffr" />
+</xs:schema>

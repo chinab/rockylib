@@ -1,0 +1,367 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="zh-cn" />
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>SharpICTCLAS分词系统简介(7)OptimumSegment</title>
+<link href="css/style.css" rel="stylesheet" type="text/css" />
+<link href="css/customercss.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript">/*<![CDATA[*/
+if(typeof(HTMLElement)!="undefined" && !window.opera)
+{
+  HTMLElement.prototype.__defineGetter__("parentElement", function () 
+  {
+    if (this.parentNode == this.ownerDocument) return null;
+    return this.parentNode;
+  });
+}
+
+HTMLElement.prototype.innerHTML getter = function(){
+   return getInnerHTML(this);
+}
+/*]]>*/
+</script>
+<script language="javascript">
+function CopyCode(key)
+{
+  var divElements = document.getElementsByTagName("div");
+  var i;
+  occur = 0;  
+  for(i = 0; i < divElements.length; ++i)
+  {
+    if(key.parentElement.parentElement.parentElement == divElements[i].parentElement)
+    {
+      if(occur == 1)
+      {
+        if(navigator.appName.indexOf('Microsoft') != -1)
+          copyToClipboard(divElements[i].innerText);
+        else
+          copyToClipboard(Html2Txt(divElements[i].innerHTML));
+      }
+      occur++;
+    }
+  }
+}
+function Html2Txt(htmlText)
+{
+  str = htmlText.replace(/\r\n/g, " ");
+  str = str.replace(/\r/g, " "); 
+  str = str.replace(/\n/g, " "); 
+  str = str.replace(/\t/g, "");
+  str = str.replace(/<BR>/gi,"\r\n");
+  str = str.replace(/<[^>]+?>/g,"");
+  str = str.replace(/&nbsp;/g, " ");
+  str = str.replace(/&gt;/g, ">");
+  str = str.replace(/&lt;/g, "<");
+  str = str.replace(/&amp;/g, "&");
+  return str;
+}
+
+function copyToClipboard(txt)
+{
+ if(window.clipboardData) 
+  {
+    window.clipboardData.clearData();
+    window.clipboardData.setData("Text", txt);
+  }
+  else if(navigator.userAgent.indexOf("Opera") != -1) 
+  {
+    window.location = txt;
+  } 
+  else if (window.netscape) 
+  {
+    try 
+    {
+      netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
+    } 
+    catch (e) 
+    {
+      alert("您的firefox安全限制限制您进行剪贴板操作，请在地址栏中输入“about:config”将“signed.applets.codebase_principal_support”设置为“true”之后重试");
+      return false;
+    }
+    var clip = Components.classes['@mozilla.org/widget/clipboard;1'].createInstance(Components.interfaces.nsIClipboard);
+    if (!clip)
+      return;
+    var trans = Components.classes['@mozilla.org/widget/transferable;1'].createInstance(Components.interfaces.nsITransferable);
+    if (!trans)
+      return;
+    trans.addDataFlavor('text/unicode');
+    var str = new Object();
+    var len = new Object();
+    var str = Components.classes["@mozilla.org/supports-string;1"].createInstance(Components.interfaces.nsISupportsString);
+    var copytext = txt;
+    str.data = copytext;
+    trans.setTransferData("text/unicode",str,copytext.length*2);
+    var clipid = Components.interfaces.nsIClipboard;
+    if (!clip)
+      return false;
+    clip.setData(trans,null,clipid.kGlobalClipboard);
+  }
+} 
+</script>
+</head>
+
+<body>
+
+<p>　</p>
+<table width="95%" align="center">
+	<tr>
+		<td>
+		<p>上一篇文章说到经过NShortPath计算后，我们得到了数个候选分词方案，那么这么多个候选分词方案是如何最终成为一个分词结果的呢？其实这个过程是靠OptimumSegment完成的。SharpICTCLAS与ICTCLAS的OptimumSegment过程基本一样没有太大的变化。</p>
+		<h3>1、OptimumSegment的运算过程</h3>
+		<p>经过NShortPath处理后的多个结果首先会经过日期合并策略的处理，这就是前文说的GenerateWord方法完成的功能。在GenerateWord方法中可以看到如下命令：</p>
+		<p><code>&nbsp;m_graphOptimum.SetElement(pCur.row, pCur.col, ......);</code></p>
+		<p>它的功能就是将所有得到的多个分词方案合并归入一个<code> m_graphOptimum </code>属性，如下面的NShortPath运算结果，经过归并后，在<code> 
+		m_graphOptimum </code>属性中将包含所有红色词。</p>
+		<div class="code">
+			<div class="title">
+				<div style="FLOAT: right">
+					<img class="copyCodeImage" src="images/copycode.gif" align="absMiddle" name="ccImage">
+					<a onclick="CopyCode(this)" href="javascript:">Copy Code</a></div>
+				<div style="CLEAR: none">
+					经过NShortPath处理后的初步分词结果</div>
+			</div>
+			<div class="content">
+				<span style="COLOR: #008000">//==== 原始句子： </span><br>
+				<br>
+				王晓平在1月份滦南大会上说的确实在理 <br>
+				<br>
+				<span style="COLOR: #008000">//==== NShortPath 初步切分的到的 N 个结果： 
+				</span><br>
+				<br>
+				始##始, 王, 晓, 平, 在, 1, 月份, 滦, 南, 大, 会上, 说, 的, 确实, 在, 理, 末##末,&nbsp;
+				<br>
+				始##始, 王, 晓, 平, 在, 1, 月份, 滦, 南, 大会, 上, 说, 的, 确实, 在, 理, 末##末,&nbsp;
+				<br>
+				始##始, 王, 晓, 平, 在, 1, 月份, 滦, 南, 大, 会上, 说, 的, 确实, 在理, 末##末,&nbsp;
+				<br>
+				始##始, 王, 晓, 平, 在, 1, 月份, 滦, 南, 大会, 上, 说, 的, 确实, 在理, 末##末,&nbsp;
+				<br>
+				始##始, 王, 晓, 平, 在, 1, 月, 份, 滦, 南, 大, 会上, 说, 的, 确实, 在, 理, 末##末,&nbsp;
+				<br>
+				<br>
+				<br>
+				<span style="COLOR: #008000">//==== 经过数字、日期合并等策略处理后的 N 个结果： 
+				</span><br>
+				<br>
+				<font color="#FF0000"><b>始##始, 王, 晓, 平, 在, 1月份, 滦, 南, 大, 会上, 说, 
+				的, 确实, 在, 理, 末##末,</b>&nbsp; </font><br>
+				始##始, 王, 晓, 平, 在, 1月份, 滦, 南, <b><font color="#FF0000">大会</font></b>, 
+				上, 说, 的, 确实, 在, 理, 末##末,&nbsp; <br>
+				始##始, 王, 晓, 平, 在, 1月份, 滦, 南, 大, 会上, 说, 的, 确实, <b>
+				<font color="#FF0000">在理</font></b>, 末##末,&nbsp; <br>
+				始##始, 王, 晓, 平, 在, 1月份, 滦, 南, 大会, 上, 说, 的, 确实, 在理, 末##末,&nbsp;
+				<br>
+				始##始, 王, 晓, 平, 在, <b><font color="#FF0000">1月</font></b>, <b>
+				<font color="#FF0000">份</font></b>, 滦, 南, 大, 会上, 说, 的, 确实, 在, 理, 
+				末##末,&nbsp; <br>
+			</div>
+		</div>
+		<p>紧接着对归并后的<code> m_graphOptimum </code>进行人名与地名的识别，找出所有可能的人名、地名方案，经过人名、地名识别后的<code> 
+		m_graphOptimum </code>如下：</p>
+		<div class="code">
+			<div class="title">
+				<div style="FLOAT: right">
+					<img class="copyCodeImage" src="images/copycode.gif" align="absMiddle" name="ccImage">
+					<a onclick="CopyCode(this)" href="javascript:">Copy Code</a></div>
+				<div style="CLEAR: none">
+					加入人名、地名识别</div>
+			</div>
+			<div class="content">
+				<span style="COLOR: #008000">//==== 加入对姓名、翻译人名以及地名的识别： </span>
+				<br>
+				<br>
+				row:&nbsp; 0,&nbsp; col:&nbsp; 1,&nbsp; eWeight: 329805.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1,&nbsp;&nbsp; sWord:始##始 
+				<br>
+				row:&nbsp; 1,&nbsp; col:&nbsp; 2,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 
+				218.00,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:王 <br>
+				row:&nbsp; 1,&nbsp; col:&nbsp; 4,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 
+				10.86,&nbsp;&nbsp; nPOS: -28274,&nbsp;&nbsp; sWord:未##人 <br>
+				row:&nbsp; 2,&nbsp; col:&nbsp; 3,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				9.00,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:晓 <br>
+				row:&nbsp; 2,&nbsp; col:&nbsp; 4,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 
+				13.27,&nbsp;&nbsp; nPOS: -28274,&nbsp;&nbsp; sWord:未##人 <br>
+				row:&nbsp; 3,&nbsp; col:&nbsp; 4,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 
+				271.00,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:平 <br>
+				row:&nbsp; 4,&nbsp; col:&nbsp; 5,&nbsp; eWeight:&nbsp; 78484.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:在 <br>
+				row:&nbsp; 5,&nbsp; col:&nbsp; 7,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				0.00,&nbsp;&nbsp; nPOS: -29696,&nbsp;&nbsp; sWord:未##时 <br>
+				row:&nbsp; 5,&nbsp; col:&nbsp; 8,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				0.00,&nbsp;&nbsp; nPOS: -29696,&nbsp;&nbsp; sWord:未##时 <br>
+				row:&nbsp; 7,&nbsp; col:&nbsp; 8,&nbsp; eWeight:&nbsp;&nbsp; 1234.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:份 <br>
+				row:&nbsp; 8,&nbsp; col:&nbsp; 9,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				1.00,&nbsp;&nbsp; nPOS:&nbsp; 27136,&nbsp;&nbsp; sWord:滦 <br>
+				row:&nbsp; 8,&nbsp; col: 10,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 
+				20.37,&nbsp;&nbsp; nPOS: -28275,&nbsp;&nbsp; sWord:未##地 <br>
+				row:&nbsp; 9,&nbsp; col: 10,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 813.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:南 <br>
+				row: 10,&nbsp; col: 11,&nbsp; eWeight:&nbsp; 14536.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:大 <br>
+				row: 10,&nbsp; col: 12,&nbsp; eWeight:&nbsp;&nbsp; 1333.00,&nbsp;&nbsp; 
+				nPOS:&nbsp; 28160,&nbsp;&nbsp; sWord:大会 <br>
+				row: 11,&nbsp; col: 13,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 469.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:会上 <br>
+				row: 12,&nbsp; col: 13,&nbsp; eWeight:&nbsp; 23706.00,&nbsp;&nbsp; 
+				nPOS: -27904,&nbsp;&nbsp; sWord:未##数 <br>
+				row: 13,&nbsp; col: 14,&nbsp; eWeight:&nbsp; 17649.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:说 <br>
+				row: 14,&nbsp; col: 15,&nbsp; eWeight: 358156.00,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				0,&nbsp;&nbsp; sWord:的 <br>
+				row: 15,&nbsp; col: 17,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 361.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:确实 <br>
+				row: 17,&nbsp; col: 18,&nbsp; eWeight:&nbsp; 78484.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:在 <br>
+				row: 17,&nbsp; col: 19,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				3.00,&nbsp;&nbsp; nPOS:&nbsp; 24832,&nbsp;&nbsp; sWord:在理 <br>
+				row: 18,&nbsp; col: 19,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 129.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:理 <br>
+				row: 19,&nbsp; col: 20,&nbsp; eWeight:2079997.00,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				4,&nbsp;&nbsp; sWord:末##末 <br>
+			</div>
+		</div>
+		<p>到此为止，<code> m_graphOptimum </code>包含了所有最终分词结果中可能包含的元素（人名、地名以及NShortPath筛选后所有可能组词方案），Segment类对这个<code> 
+		m_graphOptimum </code>再次使用NShortPath，并计算出最优结果作为最终的分词方案。</p>
+		<p>整个过程可从WordSegment类的Segment方法看出，SharpICTCLAS中该方法定义如下（经过简化）：</p>
+		<div class="code">
+			<div class="title">
+				<div style="FLOAT: right">
+					<img class="copyCodeImage" src="images/copycode.gif" align="absMiddle" name="ccImage">
+					<a onclick="CopyCode(this)" href="javascript:">Copy Code</a></div>
+				<div style="CLEAR: none">
+					分词主程序</div>
+			</div>
+			<div class="content">
+				<span style="COLOR: #0000ff">public</span> List&lt;WordResult[]&gt; Segment(<span style="COLOR: #0000ff">string</span> 
+				sentence, <span style="COLOR: #0000ff">int</span> nKind) <br>
+				{ <br>
+&nbsp;&nbsp; m_pNewSentence = Predefine.SENTENCE_BEGIN + sentence + Predefine.SENTENCE_END;
+				<br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//---初步分词 </span><br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">int</span> nResultCount = m_Seg.BiSegment(m_pNewSentence, 
+				m_dSmoothingPara, nKind); <br>
+				<br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//---人名、地名识别 </span><br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">for</span> (<span style="COLOR: #0000ff">int</span> 
+				i = 0; i &lt; nResultCount; i++) <br>
+&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; m_uPerson.Recognition(m_Seg.m_pWordSeg[i], m_Seg.m_graphOptimum, 
+				......); <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; m_uTransPerson.Recognition(m_Seg.m_pWordSeg[i], m_Seg.m_graphOptimum, 
+				......); <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; m_uPlace.Recognition(m_Seg.m_pWordSeg[i], m_Seg.m_graphOptimum, 
+				......); <br>
+&nbsp;&nbsp; } <br>
+				<br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//---最终优化 </span><br>
+&nbsp;&nbsp; m_Seg.BiOptimumSegment(1, m_dSmoothingPara); <br>
+				<br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//---词性标注 </span><br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">for</span> (<span style="COLOR: #0000ff">int</span> 
+				i = 0; i &lt; m_Seg.m_pWordSeg.Count; i++) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; m_POSTagger.POSTagging(m_Seg.m_pWordSeg[i], m_dictCore, 
+				m_dictCore); <br>
+				<br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">return</span> m_Seg.m_pWordSeg; <br>
+				}</div>
+		</div>
+		<h3>2、人名与地名的识别</h3>
+		<p>ICTCLAS中人名的识别采用的是模板匹配的方法，首先对初步分词得到的多的结果计算词性，然后根据词性串对人名信息进行匹配。整个运算过程如下：</p>
+		<p>首先定义了人名匹配模板：</p>
+		<div class="code">
+			<div class="title">
+				<div style="FLOAT: right">
+					<img class="copyCodeImage" src="images/copycode.gif" align="absMiddle" name="ccImage">
+					<a onclick="CopyCode(this)" href="javascript:">Copy Code</a></div>
+				<div style="CLEAR: none">
+					人名识别模板</div>
+			</div>
+			<div class="content">
+				<span style="COLOR: #0000ff">string</span>[] sPatterns = {
+				<span style="COLOR: #ff00ff">&quot;BBCD&quot;</span>,
+				<span style="COLOR: #ff00ff">&quot;BBC&quot;</span>,
+				<span style="COLOR: #ff00ff">&quot;BBE&quot;</span>,
+				<span style="COLOR: #ff00ff">&quot;BBZ&quot;</span>,
+				<span style="COLOR: #ff00ff">&quot;BCD&quot;</span>, <br>
+				<span style="COLOR: #ff00ff">&quot;BEE&quot;</span>,
+				<span style="COLOR: #ff00ff">&quot;BE&quot;</span>,
+				<span style="COLOR: #ff00ff">&quot;BG&quot;</span>,
+				<span style="COLOR: #ff00ff">&quot;BXD&quot;</span>,
+				<span style="COLOR: #ff00ff">&quot;BZ&quot;</span>,
+				<span style="COLOR: #ff00ff">&quot;CDCD&quot;</span>,
+				<span style="COLOR: #ff00ff">&quot;CD&quot;</span>,
+				<span style="COLOR: #ff00ff">&quot;EE&quot;</span>,
+				<span style="COLOR: #ff00ff">&quot;FB&quot;</span>,&nbsp; <br>
+				<span style="COLOR: #ff00ff">&quot;Y&quot;</span>,
+				<span style="COLOR: #ff00ff">&quot;XD&quot;</span>,
+				<span style="COLOR: #ff00ff">&quot;&quot;</span> }; <br>
+				<span style="COLOR: #008000">/*------------------------------------
+				<br>
+				The person recognition patterns set <br>
+				BBCD:姓+姓+名1+名2; <br>
+				BBE: 姓+姓+单名; <br>
+				BBZ: 姓+姓+双名成词; <br>
+				BCD: 姓+名1+名2; <br>
+				BE:&nbsp; 姓+单名; <br>
+				BEE: 姓+单名+单名;韩磊磊 <br>
+				BG:&nbsp; 姓+后缀 <br>
+				BXD: 姓+姓双名首字成词+双名末字 <br>
+				BZ:&nbsp; 姓+双名成词; <br>
+				B:&nbsp;&nbsp; 姓 <br>
+				CD:&nbsp; 名1+名2; <br>
+				EE:&nbsp; 单名+单名; <br>
+				FB:&nbsp; 前缀+姓 <br>
+				XD:&nbsp; 姓双名首字成词+双名末字 <br>
+				Y:&nbsp;&nbsp; 姓单名成词 <br>
+				------------------------------------*/</span></div>
+		</div>
+		<p>然后将初步分词得到的结果进行词性标注，清理掉其它不必要的信息后进行模板匹配得到人名：</p>
+		<div class="code">
+			<div class="title">
+				<div style="FLOAT: right">
+					<img class="copyCodeImage" src="images/copycode.gif" align="absMiddle" name="ccImage">
+					<a onclick="CopyCode(this)" href="javascript:">Copy Code</a></div>
+				<div style="CLEAR: none">
+					人名识别过程</div>
+			</div>
+			<div class="content">
+				<span style="COLOR: #008000">//==== 经过初步分词后的一个结果集 </span><br>
+				<br>
+				始##始, 王, 晓, 平, 在, 1月份, 滦, 南, 大, 会上, 说, 的, 确实, 在, 理, 末##末,&nbsp;
+				<br>
+				<br>
+				<span style="COLOR: #008000">//==== 经过计算得到的m_nBestTag </span>
+				<br>
+				<br>
+				始##始, 王, 晓, 平, 在, 1月份, 滦, 南, 大, 会上, 说, 的, 确实, 在, 理, 末##末,&nbsp;
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <font color="#FF0000">B&nbsp;&nbsp; C&nbsp;&nbsp; 
+				D</font>&nbsp;&nbsp; M&nbsp;&nbsp; A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				A&nbsp;&nbsp; A&nbsp;&nbsp; A&nbsp;&nbsp; A&nbsp;&nbsp;&nbsp;&nbsp; 
+				A&nbsp;&nbsp; A&nbsp;&nbsp; A&nbsp;&nbsp;&nbsp;&nbsp; A&nbsp;&nbsp; 
+				A <br>
+				<br>
+				<span style="COLOR: #008000">//==== 经过模板匹配后识别出来的人名 </span><br>
+				<br>
+				王晓平</div>
+		</div>
+		<p>地名的识别与此类似，就不再多说。有关人名、地名识别的进一步内容可以参考：<a href="http://qxred.yculblog.com/post.1204714.html">http://qxred.yculblog.com/post.1204714.html</a>；《ICTCLAS 
+		中科院分词系统 代码 注释 中文分词 词性标注》作者：风暴红QxRed 。</p>
+		<p>　</p>
+		<ul>
+			<li><font color="#800080"><b>小结</b></font></li>
+		</ul>
+		<p>经过NShortPath得到的多个初步分词结果被归并入<code> m_graphOptimum </code>，然后经过人名与地名识别过程将所有可能的人名、地名也放入其中，最后通过OptimumSegment方法最终得到分词结果。</p>
+		<p>　</p>
+		</td>
+	</tr>
+</table>
+
+</body>
+
+</html>

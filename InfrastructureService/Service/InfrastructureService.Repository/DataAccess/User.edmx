@@ -1,0 +1,358 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="2.0" xmlns:edmx="http://schemas.microsoft.com/ado/2008/10/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="InfrastructureService.UserModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
+        <EntityContainer Name="InfrastructureServiceUserModelStoreContainer">
+          <EntitySet Name="Account" EntityType="InfrastructureService.UserModel.Store.Account" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="EmailAuth" EntityType="InfrastructureService.UserModel.Store.EmailAuth" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="MobileAuth" EntityType="InfrastructureService.UserModel.Store.MobileAuth" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="OpenOAuth" EntityType="InfrastructureService.UserModel.Store.OpenOAuth" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="PersistentSession" EntityType="InfrastructureService.UserModel.Store.PersistentSession" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="SignInLog" EntityType="InfrastructureService.UserModel.Store.SignInLog" store:Type="Tables" Schema="dbo" />
+          <AssociationSet Name="FK_EmailAuth_Account" Association="InfrastructureService.UserModel.Store.FK_EmailAuth_Account">
+            <End Role="Account" EntitySet="Account" />
+            <End Role="EmailAuth" EntitySet="EmailAuth" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OpenOAuth_Account" Association="InfrastructureService.UserModel.Store.FK_OpenOAuth_Account">
+            <End Role="Account" EntitySet="Account" />
+            <End Role="OpenOAuth" EntitySet="OpenOAuth" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersistentSession_Account" Association="InfrastructureService.UserModel.Store.FK_PersistentSession_Account">
+            <End Role="Account" EntitySet="Account" />
+            <End Role="PersistentSession" EntitySet="PersistentSession" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Account">
+          <Key>
+            <PropertyRef Name="RowID" />
+          </Key>
+          <Property Name="RowID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="AppID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="UserName" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="Password" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="Email" Type="varchar" MaxLength="50" />
+          <Property Name="Mobile" Type="varchar" MaxLength="50" />
+          <Property Name="Flags" Type="int" Nullable="false" />
+          <Property Name="CreateDate" Type="smalldatetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EmailAuth">
+          <Key>
+            <PropertyRef Name="RowID" />
+          </Key>
+          <Property Name="RowID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="UserID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Email" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="AuthKey" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="Status" Type="int" Nullable="false" />
+          <Property Name="CreateDate" Type="smalldatetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="MobileAuth">
+          <Key>
+            <PropertyRef Name="RowID" />
+          </Key>
+          <Property Name="RowID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="UserName" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="Mobile" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="SmsCode" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="Status" Type="int" Nullable="false" />
+          <Property Name="CreateDate" Type="smalldatetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="OpenOAuth">
+          <Key>
+            <PropertyRef Name="UserID" />
+            <PropertyRef Name="OpenID" />
+          </Key>
+          <Property Name="UserID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="OpenID" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="Nickname" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="OAuthKind" Type="int" Nullable="false" />
+          <Property Name="CreateDate" Type="smalldatetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="PersistentSession">
+          <Key>
+            <PropertyRef Name="Token" />
+          </Key>
+          <Property Name="Token" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="UserID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="ExpiresDate" Type="smalldatetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="SignInLog">
+          <Key>
+            <PropertyRef Name="RowID" />
+          </Key>
+          <Property Name="RowID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="UserName" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="ClientIP" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="Platform" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="SignInDate" Type="smalldatetime" Nullable="false" />
+          <Property Name="IsSuccess" Type="bit" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_EmailAuth_Account">
+          <End Role="Account" Type="InfrastructureService.UserModel.Store.Account" Multiplicity="1" />
+          <End Role="EmailAuth" Type="InfrastructureService.UserModel.Store.EmailAuth" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Account">
+              <PropertyRef Name="RowID" />
+            </Principal>
+            <Dependent Role="EmailAuth">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OpenOAuth_Account">
+          <End Role="Account" Type="InfrastructureService.UserModel.Store.Account" Multiplicity="1" />
+          <End Role="OpenOAuth" Type="InfrastructureService.UserModel.Store.OpenOAuth" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Account">
+              <PropertyRef Name="RowID" />
+            </Principal>
+            <Dependent Role="OpenOAuth">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersistentSession_Account">
+          <End Role="Account" Type="InfrastructureService.UserModel.Store.Account" Multiplicity="1" />
+          <End Role="PersistentSession" Type="InfrastructureService.UserModel.Store.PersistentSession" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Account">
+              <PropertyRef Name="RowID" />
+            </Principal>
+            <Dependent Role="PersistentSession">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="InfrastructureService.UserModel" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
+        <EntityContainer Name="InfrastructureService_UserEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Accounts" EntityType="InfrastructureService.UserModel.Account" />
+          <EntitySet Name="EmailAuths" EntityType="InfrastructureService.UserModel.EmailAuth" />
+          <EntitySet Name="MobileAuths" EntityType="InfrastructureService.UserModel.MobileAuth" />
+          <EntitySet Name="OpenOAuths" EntityType="InfrastructureService.UserModel.OpenOAuth" />
+          <EntitySet Name="PersistentSessions" EntityType="InfrastructureService.UserModel.PersistentSession" />
+          <EntitySet Name="SignInLogs" EntityType="InfrastructureService.UserModel.SignInLog" />
+          <AssociationSet Name="FK_EmailAuth_Account" Association="InfrastructureService.UserModel.FK_EmailAuth_Account">
+            <End Role="Account" EntitySet="Accounts" />
+            <End Role="EmailAuth" EntitySet="EmailAuths" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OpenOAuth_Account" Association="InfrastructureService.UserModel.FK_OpenOAuth_Account">
+            <End Role="Account" EntitySet="Accounts" />
+            <End Role="OpenOAuth" EntitySet="OpenOAuths" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PersistentSession_Account" Association="InfrastructureService.UserModel.FK_PersistentSession_Account">
+            <End Role="Account" EntitySet="Accounts" />
+            <End Role="PersistentSession" EntitySet="PersistentSessions" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Account">
+          <Key>
+            <PropertyRef Name="RowID" />
+          </Key>
+          <Property Type="Guid" Name="RowID" Nullable="false" />
+          <Property Type="Guid" Name="AppID" Nullable="false" />
+          <Property Type="String" Name="UserName" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Password" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Email" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Mobile" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="Flags" Nullable="false" />
+          <Property Type="DateTime" Name="CreateDate" Nullable="false" Precision="0" />
+          <NavigationProperty Name="EmailAuths" Relationship="InfrastructureService.UserModel.FK_EmailAuth_Account" FromRole="Account" ToRole="EmailAuth" />
+          <NavigationProperty Name="OpenOAuths" Relationship="InfrastructureService.UserModel.FK_OpenOAuth_Account" FromRole="Account" ToRole="OpenOAuth" />
+          <NavigationProperty Name="PersistentSessions" Relationship="InfrastructureService.UserModel.FK_PersistentSession_Account" FromRole="Account" ToRole="PersistentSession" />
+        </EntityType>
+        <EntityType Name="EmailAuth">
+          <Key>
+            <PropertyRef Name="RowID" />
+          </Key>
+          <Property Type="Guid" Name="RowID" Nullable="false" />
+          <Property Type="Guid" Name="UserID" Nullable="false" />
+          <Property Type="String" Name="Email" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="AuthKey" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="Status" Nullable="false" />
+          <Property Type="DateTime" Name="CreateDate" Nullable="false" Precision="0" />
+          <NavigationProperty Name="Account" Relationship="InfrastructureService.UserModel.FK_EmailAuth_Account" FromRole="EmailAuth" ToRole="Account" />
+        </EntityType>
+        <EntityType Name="MobileAuth">
+          <Key>
+            <PropertyRef Name="RowID" />
+          </Key>
+          <Property Type="Guid" Name="RowID" Nullable="false" />
+          <Property Type="String" Name="UserName" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Mobile" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="SmsCode" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="Status" Nullable="false" />
+          <Property Type="DateTime" Name="CreateDate" Nullable="false" Precision="0" />
+        </EntityType>
+        <EntityType Name="OpenOAuth">
+          <Key>
+            <PropertyRef Name="UserID" />
+            <PropertyRef Name="OpenID" />
+          </Key>
+          <Property Type="Guid" Name="UserID" Nullable="false" />
+          <Property Type="String" Name="OpenID" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Nickname" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="OAuthKind" Nullable="false" />
+          <Property Type="DateTime" Name="CreateDate" Nullable="false" Precision="0" />
+          <NavigationProperty Name="Account" Relationship="InfrastructureService.UserModel.FK_OpenOAuth_Account" FromRole="OpenOAuth" ToRole="Account" />
+        </EntityType>
+        <EntityType Name="PersistentSession">
+          <Key>
+            <PropertyRef Name="Token" />
+          </Key>
+          <Property Type="Guid" Name="Token" Nullable="false" />
+          <Property Type="Guid" Name="UserID" Nullable="false" />
+          <Property Type="DateTime" Name="ExpiresDate" Nullable="false" Precision="0" />
+          <NavigationProperty Name="Account" Relationship="InfrastructureService.UserModel.FK_PersistentSession_Account" FromRole="PersistentSession" ToRole="Account" />
+        </EntityType>
+        <EntityType Name="SignInLog">
+          <Key>
+            <PropertyRef Name="RowID" />
+          </Key>
+          <Property Type="Guid" Name="RowID" Nullable="false" />
+          <Property Type="String" Name="UserName" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ClientIP" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Platform" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="SignInDate" Nullable="false" Precision="0" />
+          <Property Type="Boolean" Name="IsSuccess" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_EmailAuth_Account">
+          <End Type="InfrastructureService.UserModel.Account" Role="Account" Multiplicity="1" />
+          <End Type="InfrastructureService.UserModel.EmailAuth" Role="EmailAuth" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Account">
+              <PropertyRef Name="RowID" />
+            </Principal>
+            <Dependent Role="EmailAuth">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_OpenOAuth_Account">
+          <End Type="InfrastructureService.UserModel.Account" Role="Account" Multiplicity="1" />
+          <End Type="InfrastructureService.UserModel.OpenOAuth" Role="OpenOAuth" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Account">
+              <PropertyRef Name="RowID" />
+            </Principal>
+            <Dependent Role="OpenOAuth">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PersistentSession_Account">
+          <End Type="InfrastructureService.UserModel.Account" Role="Account" Multiplicity="1" />
+          <End Type="InfrastructureService.UserModel.PersistentSession" Role="PersistentSession" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Account">
+              <PropertyRef Name="RowID" />
+            </Principal>
+            <Dependent Role="PersistentSession">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2008/09/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="InfrastructureServiceUserModelStoreContainer" CdmEntityContainer="InfrastructureService_UserEntities">
+          <EntitySetMapping Name="Accounts">
+            <EntityTypeMapping TypeName="InfrastructureService.UserModel.Account">
+              <MappingFragment StoreEntitySet="Account">
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="Flags" ColumnName="Flags" />
+                <ScalarProperty Name="Mobile" ColumnName="Mobile" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="AppID" ColumnName="AppID" />
+                <ScalarProperty Name="RowID" ColumnName="RowID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EmailAuths">
+            <EntityTypeMapping TypeName="InfrastructureService.UserModel.EmailAuth">
+              <MappingFragment StoreEntitySet="EmailAuth">
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="AuthKey" ColumnName="AuthKey" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="RowID" ColumnName="RowID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MobileAuths">
+            <EntityTypeMapping TypeName="InfrastructureService.UserModel.MobileAuth">
+              <MappingFragment StoreEntitySet="MobileAuth">
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="SmsCode" ColumnName="SmsCode" />
+                <ScalarProperty Name="Mobile" ColumnName="Mobile" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="RowID" ColumnName="RowID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="OpenOAuths">
+            <EntityTypeMapping TypeName="InfrastructureService.UserModel.OpenOAuth">
+              <MappingFragment StoreEntitySet="OpenOAuth">
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="OAuthKind" ColumnName="OAuthKind" />
+                <ScalarProperty Name="Nickname" ColumnName="Nickname" />
+                <ScalarProperty Name="OpenID" ColumnName="OpenID" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PersistentSessions">
+            <EntityTypeMapping TypeName="InfrastructureService.UserModel.PersistentSession">
+              <MappingFragment StoreEntitySet="PersistentSession">
+                <ScalarProperty Name="ExpiresDate" ColumnName="ExpiresDate" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="Token" ColumnName="Token" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SignInLogs">
+            <EntityTypeMapping TypeName="InfrastructureService.UserModel.SignInLog">
+              <MappingFragment StoreEntitySet="SignInLog">
+                <ScalarProperty Name="IsSuccess" ColumnName="IsSuccess" />
+                <ScalarProperty Name="SignInDate" ColumnName="SignInDate" />
+                <ScalarProperty Name="Platform" ColumnName="Platform" />
+                <ScalarProperty Name="ClientIP" ColumnName="ClientIP" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="RowID" ColumnName="RowID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="True" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="无" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

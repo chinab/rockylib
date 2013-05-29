@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="5f02fd46-84e4-4a7f-a570-7320ec008a54" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://azure.open.net/StorageService.svc" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="StorageService.xsd" MetadataType="Schema" ID="0f476334-2dc4-479e-98a4-2b6b70a73445" SourceId="1" SourceUrl="http://azure.open.net/StorageService.svc?xsd=xsd6" />
+    <MetadataFile FileName="StorageService1.xsd" MetadataType="Schema" ID="a2f98442-72e5-42f4-9770-20f228bd9abd" SourceId="1" SourceUrl="http://azure.open.net/StorageService.svc?xsd=xsd1" />
+    <MetadataFile FileName="StorageService2.xsd" MetadataType="Schema" ID="da6c3d3a-408a-43e1-8bed-de95a33a1542" SourceId="1" SourceUrl="http://azure.open.net/StorageService.svc?xsd=xsd0" />
+    <MetadataFile FileName="StorageService3.xsd" MetadataType="Schema" ID="e9bc0fdb-2176-431e-b6e0-41292ac17133" SourceId="1" SourceUrl="http://azure.open.net/StorageService.svc?xsd=xsd3" />
+    <MetadataFile FileName="StorageService4.xsd" MetadataType="Schema" ID="3c654ff9-69e3-430c-9065-6d77ccd753fc" SourceId="1" SourceUrl="http://azure.open.net/StorageService.svc?xsd=xsd2" />
+    <MetadataFile FileName="StorageService.wsdl" MetadataType="Wsdl" ID="a2e89afe-b144-4f1f-8cd8-3a13be1b7904" SourceId="1" SourceUrl="http://azure.open.net/StorageService.svc?wsdl" />
+    <MetadataFile FileName="StorageService.disco" MetadataType="Disco" ID="239acfde-1ba9-4364-91fc-9ce2d626e13c" SourceId="1" SourceUrl="http://azure.open.net/StorageService.svc?disco" />
+    <MetadataFile FileName="StorageService5.xsd" MetadataType="Schema" ID="e0310ba3-ca99-40ac-8fc0-74cf6b1e3cda" SourceId="1" SourceUrl="http://azure.open.net/StorageService.svc?xsd=xsd5" />
+    <MetadataFile FileName="StorageService6.xsd" MetadataType="Schema" ID="a56f430c-947f-4199-9f62-03deab81f7df" SourceId="1" SourceUrl="http://azure.open.net/StorageService.svc?xsd=xsd4" />
+    <MetadataFile FileName="StorageService7.xsd" MetadataType="Schema" ID="debe9773-62e0-45d3-8ff8-45dca868a8d9" SourceId="1" SourceUrl="http://azure.open.net/StorageService.svc?xsd=xsd7" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

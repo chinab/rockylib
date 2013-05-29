@@ -1,0 +1,362 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0433CAC5-BAAA-4E73-8F68-A7CCB1F6C9BF}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Rocky</RootNamespace>
+    <AssemblyName>Rocky</AssemblyName>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <SignAssembly>false</SignAssembly>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+    <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>
+    </DocumentationFile>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
+    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
+    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
+    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
+    <CodeContractsRuntimeSkipQuantifiers>False</CodeContractsRuntimeSkipQuantifiers>
+    <CodeContractsRunCodeAnalysis>True</CodeContractsRunCodeAnalysis>
+    <CodeContractsNonNullObligations>True</CodeContractsNonNullObligations>
+    <CodeContractsBoundsObligations>True</CodeContractsBoundsObligations>
+    <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
+    <CodeContractsEnumObligations>False</CodeContractsEnumObligations>
+    <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
+    <CodeContractsMissingPublicRequiresAsWarnings>True</CodeContractsMissingPublicRequiresAsWarnings>
+    <CodeContractsInferRequires>True</CodeContractsInferRequires>
+    <CodeContractsInferEnsures>False</CodeContractsInferEnsures>
+    <CodeContractsInferObjectInvariants>False</CodeContractsInferObjectInvariants>
+    <CodeContractsSuggestAssumptions>False</CodeContractsSuggestAssumptions>
+    <CodeContractsSuggestRequires>True</CodeContractsSuggestRequires>
+    <CodeContractsSuggestEnsures>False</CodeContractsSuggestEnsures>
+    <CodeContractsSuggestObjectInvariants>False</CodeContractsSuggestObjectInvariants>
+    <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
+    <CodeContractsShowSquigglies>True</CodeContractsShowSquigglies>
+    <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
+    <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
+    <CodeContractsCustomRewriterAssembly />
+    <CodeContractsCustomRewriterClass />
+    <CodeContractsLibPaths />
+    <CodeContractsExtraRewriteOptions />
+    <CodeContractsExtraAnalysisOptions />
+    <CodeContractsSQLServerOption />
+    <CodeContractsBaseLineFile>
+    </CodeContractsBaseLineFile>
+    <CodeContractsCacheAnalysisResults>True</CodeContractsCacheAnalysisResults>
+    <CodeContractsFailBuildOnWarnings>False</CodeContractsFailBuildOnWarnings>
+    <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
+    <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
+    <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
+    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
+    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
+    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
+    <CodeContractsRuntimeSkipQuantifiers>False</CodeContractsRuntimeSkipQuantifiers>
+    <CodeContractsRunCodeAnalysis>True</CodeContractsRunCodeAnalysis>
+    <CodeContractsNonNullObligations>True</CodeContractsNonNullObligations>
+    <CodeContractsBoundsObligations>True</CodeContractsBoundsObligations>
+    <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
+    <CodeContractsEnumObligations>False</CodeContractsEnumObligations>
+    <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
+    <CodeContractsMissingPublicRequiresAsWarnings>True</CodeContractsMissingPublicRequiresAsWarnings>
+    <CodeContractsInferRequires>True</CodeContractsInferRequires>
+    <CodeContractsInferEnsures>False</CodeContractsInferEnsures>
+    <CodeContractsInferObjectInvariants>False</CodeContractsInferObjectInvariants>
+    <CodeContractsSuggestAssumptions>False</CodeContractsSuggestAssumptions>
+    <CodeContractsSuggestRequires>True</CodeContractsSuggestRequires>
+    <CodeContractsSuggestEnsures>False</CodeContractsSuggestEnsures>
+    <CodeContractsSuggestObjectInvariants>False</CodeContractsSuggestObjectInvariants>
+    <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
+    <CodeContractsShowSquigglies>True</CodeContractsShowSquigglies>
+    <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
+    <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
+    <CodeContractsCustomRewriterAssembly />
+    <CodeContractsCustomRewriterClass />
+    <CodeContractsLibPaths />
+    <CodeContractsExtraRewriteOptions />
+    <CodeContractsExtraAnalysisOptions />
+    <CodeContractsSQLServerOption />
+    <CodeContractsBaseLineFile />
+    <CodeContractsCacheAnalysisResults>True</CodeContractsCacheAnalysisResults>
+    <CodeContractsFailBuildOnWarnings>False</CodeContractsFailBuildOnWarnings>
+    <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
+    <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
+    <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>rocky.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.OracleClient" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Runtime.Remoting" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="log4net">
+      <HintPath>..\..\packages\log4net.2.0.0\lib\net40-full\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Configuration" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Caching\CacheChangeMonitor.cs" />
+    <Compile Include="Caching\DistributedCache.cs" />
+    <Compile Include="Caching\DistributedException.cs" />
+    <Compile Include="Caching\Entity\ServerNode.cs" />
+    <Compile Include="Common\Buffer\Extensions.cs" />
+    <Compile Include="Common\Buffer\Internal\BufferedMemoryStream.cs" />
+    <Compile Include="Common\Buffer\BufferSizeof.cs" />
+    <Compile Include="Common\Buffer\BufferSegment.cs" />
+    <Compile Include="Common\Security\SplitFileMode.cs" />
+    <Compile Include="Common\Serializer.cs" />
+    <Compile Include="Common\Utility\GDI\ThumbnailMode.cs" />
+    <Compile Include="DataStructure\BloomFilter\BitVector.cs" />
+    <Compile Include="DataStructure\BloomFilter\BloomFilter.cs" />
+    <Compile Include="Data\ChangeTracking\SqlRowChangedEventArgs.cs" />
+    <Compile Include="Data\ChangeTracking\SqlRowChangedTypes.cs" />
+    <Compile Include="Data\ChangeTracking\SqlRowChangeMonitor.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Data\Context\ExpressionVisitor.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data\Database\ConnectionStringBuilder.cs" />
+    <Compile Include="Data\Context\LinqToSqlExtensions.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data\Context\EntityContext.cs" />
+    <Compile Include="Data\Context\DbLogger.cs" />
+    <Compile Include="Data\Database\DbProviderName.cs" />
+    <Compile Include="Data\Database\IRequiresFactory.cs" />
+    <Compile Include="Data\Database\SQLConfig.cs" />
+    <Compile Include="Data\Meta\IMapping.cs" />
+    <Compile Include="Data\Meta\MetaColumn.cs" />
+    <Compile Include="Data\Meta\EntityUtility.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data\Meta\EntityConverter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data\Context\EntityStoredProc.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data\Meta\MappingException.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data\Meta\MetaTable.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data\Meta\PropertyConverter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Design\Disposable.cs" />
+    <Compile Include="Common\JobTimer.cs" />
+    <Compile Include="Net\FileTransfer\TransferEventArgs.cs" />
+    <Compile Include="Net\FileTransfer\Extensions.cs" />
+    <Compile Include="Net\FileTransfer\IChunkModel.cs" />
+    <Compile Include="Net\FileTransfer\FileTransfer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Net\FileTransfer\FileValidator.cs" />
+    <Compile Include="Net\FileTransfer\lmplement\ReceiveChunkModel.cs" />
+    <Compile Include="Net\FileTransfer\lmplement\SendChunkModel.cs" />
+    <Compile Include="Net\Grid\Entity\GridCommand.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Net\Grid\GridRuntime.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Net\Grid\IGridClient.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Net\HolePunching\HolePunchingModel.cs" />
+    <Compile Include="Net\HolePunching\HolePunchingClient.cs" />
+    <Compile Include="Net\HolePunching\HolePunchingServer.cs" />
+    <Compile Include="Net\HolePunching\HolePunchingCommand.cs" />
+    <Compile Include="Net\HTTP\Entity\TunnelDataQueue.cs" />
+    <Compile Include="Net\HTTP\Business\xUserManager.cs" />
+    <Compile Include="Net\HTTP\Extensions.cs" />
+    <Compile Include="Net\HTTP\TunnelStateMissingException.cs" />
+    <Compile Include="Net\HTTP\Entity\TunnelCommand.cs" />
+    <Compile Include="Common\IRawEntry.cs" />
+    <Compile Include="Net\HTTP\HttpTunnelClientExtend.cs" />
+    <Compile Include="Net\HTTP\TunnelExceptionHandler.cs" />
+    <Compile Include="Net\HTTP\xHttpHandler.cs" />
+    <Compile Include="Net\HTTP\HttpTunnelClient.cs" />
+    <Compile Include="Net\HTTP\xHttpHandlerExtend.cs" />
+    <Compile Include="Net\HTTP\xHttpServer.cs" />
+    <Compile Include="Net\HTTP\Business\xUserState.cs" />
+    <Compile Include="Net\Proxy\ISocksRFC.cs" />
+    <Compile Include="Net\Proxy\Monitor.cs" />
+    <Compile Include="Net\Proxy\MonitorChannel.cs" />
+    <Compile Include="Net\Proxy\ProxyAuthException.cs" />
+    <Compile Include="Net\Proxy\Impl\Socks4Request.cs" />
+    <Compile Include="Net\Proxy\Impl\Socks4Response.cs" />
+    <Compile Include="Net\Proxy\Impl\Socks5Request.cs" />
+    <Compile Include="Net\Proxy\Impl\Socks5Response.cs" />
+    <Compile Include="Net\Proxy\Entity\SocksProxyType.cs" />
+    <Compile Include="Net\Proxy\ProxyUtility.cs" />
+    <Compile Include="Net\Socket\Entity\DistributedEndPoint.cs" />
+    <Compile Include="Net\Socket\Extensions.cs" />
+    <Compile Include="Net\Socket\ISocketPool.cs" />
+    <Compile Include="Net\Socket\lmplement\SocketPool.cs" />
+    <Compile Include="Net\Socket\TransferProgress.cs" />
+    <Compile Include="Net\FileTransfer\TransferConfig.cs" />
+    <Compile Include="Net\HTTP\Entity\HttpRequestEntity.cs" />
+    <Compile Include="Net\Utility\PingClient.cs" />
+    <Compile Include="Net\Proxy\Entity\SocksProxy.cs" />
+    <Compile Include="Net\Socket\SocketHelper.cs" />
+    <Compile Include="Net\HTTP\HttpClient.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Common\Utility\TaskHelper.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DataStructure\NodeList.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DataStructure\BinaryTrees\BinarySearchTree.cs" />
+    <Compile Include="DataStructure\BinaryTrees\BinaryTreeNode.cs" />
+    <Compile Include="DataStructure\BinaryTrees\TraversalMethods.cs" />
+    <Compile Include="DataStructure\Node.cs" />
+    <Compile Include="Data\Database\DbScope.cs" />
+    <Compile Include="Data\Database\Database.cs" />
+    <Compile Include="Data\Database\DbFactory.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data\Database\DbUtility.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Data\Meta\IPropertyConvertible.cs" />
+    <Compile Include="Common\Extensions.cs" />
+    <Compile Include="Net\HTTP\Entity\HttpFile.cs" />
+    <Compile Include="Net\Utility\MailClient.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Common\IDisposeService.cs" />
+    <Compile Include="Common\Utility\GDI\GDIHelper.cs" />
+    <Compile Include="Caching\LRUCache.cs" />
+    <Compile Include="Caching\LockWrapper.cs" />
+    <Compile Include="Common\Utility\StringHelper.cs" />
+    <Compile Include="Design\TypeHelper.cs" />
+    <Compile Include="Common\Security\CryptoManaged.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Common\Runtime.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+    <EmbeddedResource Include="Resource\CassiniDev4-console.exe.config" />
+    <None Include="rocky.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resource\CassiniDev4-console.exe" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
+  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

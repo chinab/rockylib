@@ -1,0 +1,279 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="zh-cn" />
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>SharpICTCLAS分词系统简介(2)初步分词</title>
+<link href="css/style.css" rel="stylesheet" type="text/css" />
+<link href="css/customercss.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript">/*<![CDATA[*/
+if(typeof(HTMLElement)!="undefined" && !window.opera)
+{
+  HTMLElement.prototype.__defineGetter__("parentElement", function () 
+  {
+    if (this.parentNode == this.ownerDocument) return null;
+    return this.parentNode;
+  });
+}
+
+HTMLElement.prototype.innerHTML getter = function(){
+   return getInnerHTML(this);
+}
+/*]]>*/
+</script>
+<script language="javascript">
+function CopyCode(key)
+{
+  var divElements = document.getElementsByTagName("div");
+  var i;
+  occur = 0;  
+  for(i = 0; i < divElements.length; ++i)
+  {
+    if(key.parentElement.parentElement.parentElement == divElements[i].parentElement)
+    {
+      if(occur == 1)
+      {
+        if(navigator.appName.indexOf('Microsoft') != -1)
+          copyToClipboard(divElements[i].innerText);
+        else
+          copyToClipboard(Html2Txt(divElements[i].innerHTML));
+      }
+      occur++;
+    }
+  }
+}
+function Html2Txt(htmlText)
+{
+  str = htmlText.replace(/\r\n/g, " ");
+  str = str.replace(/\r/g, " "); 
+  str = str.replace(/\n/g, " "); 
+  str = str.replace(/\t/g, "");
+  str = str.replace(/<BR>/gi,"\r\n");
+  str = str.replace(/<[^>]+?>/g,"");
+  str = str.replace(/&nbsp;/g, " ");
+  str = str.replace(/&gt;/g, ">");
+  str = str.replace(/&lt;/g, "<");
+  str = str.replace(/&amp;/g, "&");
+  return str;
+}
+
+function copyToClipboard(txt)
+{
+ if(window.clipboardData) 
+  {
+    window.clipboardData.clearData();
+    window.clipboardData.setData("Text", txt);
+  }
+  else if(navigator.userAgent.indexOf("Opera") != -1) 
+  {
+    window.location = txt;
+  } 
+  else if (window.netscape) 
+  {
+    try 
+    {
+      netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
+    } 
+    catch (e) 
+    {
+      alert("您的firefox安全限制限制您进行剪贴板操作，请在地址栏中输入“about:config”将“signed.applets.codebase_principal_support”设置为“true”之后重试");
+      return false;
+    }
+    var clip = Components.classes['@mozilla.org/widget/clipboard;1'].createInstance(Components.interfaces.nsIClipboard);
+    if (!clip)
+      return;
+    var trans = Components.classes['@mozilla.org/widget/transferable;1'].createInstance(Components.interfaces.nsITransferable);
+    if (!trans)
+      return;
+    trans.addDataFlavor('text/unicode');
+    var str = new Object();
+    var len = new Object();
+    var str = Components.classes["@mozilla.org/supports-string;1"].createInstance(Components.interfaces.nsISupportsString);
+    var copytext = txt;
+    str.data = copytext;
+    trans.setTransferData("text/unicode",str,copytext.length*2);
+    var clipid = Components.interfaces.nsIClipboard;
+    if (!clip)
+      return false;
+    clip.setData(trans,null,clipid.kGlobalClipboard);
+  }
+} 
+</script>
+</head>
+
+<body>
+
+<p>　</p>
+<table width="95%" align="center">
+	<tr>
+		<td>
+		<p>ICTCLAS初步分词包括：1）原子切分；2）找出原子之间所有可能的组词方案；3）N-最短路径中文词语粗分三步。</p>
+		<p>例如：“他说的确实在理”这句话。</p>
+		<p>1）原子切分的目的是完成单个汉字的切分。经过原子切分后变成“<font color="#008000">始##始/他/说/的/确/实/在/理/末##末</font>”。</p>
+		<p>2）然后根据“词库字典”找出所有原子之间所有可能的组词方案。经过词库检索后，该句话变为“<font color="#008000">始##始/他/说</font>/<font color="#0000FF">的</font>/<font color="#0000FF">的确</font>/<font color="#FF0000">确</font>/<font color="#FF0000">确实</font>/<font color="#008080">实</font>/<font color="#008080">实在</font>/<font color="#FF00FF">在</font>/<font color="#FF00FF">在理</font><font color="#008000">/末##末</font>”。</p>
+		<p>3）N-最短路径中文词语粗分。下面的过程就比较复杂了，首先我们要找出这些词之间所有可能的两两组合的距离（这需要检索BigramDict.dct词典库）。对于上面的案例而言，得到的BiGraph结果如下：</p>
+		<div class="code">
+			<div class="title">
+				<div style="FLOAT: right">
+					<img class="copyCodeImage" src="images/copycode.gif" align="absMiddle" name="ccImage">
+					<a onclick="CopyCode(this)" href="javascript:">Copy Code</a></div>
+				<div style="CLEAR: none">
+					所有可能成句的词间两两组合距离</div>
+			</div>
+			<div class="content">
+				row:&nbsp; 0,&nbsp; col:&nbsp; 1,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<font color="#FF00FF">3.37</font>,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				1,&nbsp;&nbsp; sWord:<font color="#008000">始##始@他 </font><br>
+				row:&nbsp; 1,&nbsp; col:&nbsp; 2,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<font color="#FF00FF">2.25</font>,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				0,&nbsp;&nbsp; sWord:<font color="#008000">他@说</font> <br>
+				row:&nbsp; 2,&nbsp; col:&nbsp; 3,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<font color="#FF00FF">4.05</font>,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				0,&nbsp;&nbsp; sWord:<font color="#008000">说@的</font> <br>
+				row:&nbsp; 2,&nbsp; col:&nbsp; 4,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<font color="#FF00FF">7.11</font>,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				0,&nbsp;&nbsp; sWord:<font color="#008000">说@的确</font> <br>
+				row:&nbsp; 3,&nbsp; col:&nbsp; 5,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<font color="#FF00FF">4.10</font>,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				0,&nbsp;&nbsp; sWord:<font color="#008000">的@确</font> <br>
+				<b><span style="background-color: #FFFF00">row:&nbsp; 3,&nbsp; col:&nbsp; 
+				6,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<font color="#FF00FF">4.10</font>,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				0,&nbsp;&nbsp; sWord:<font color="#008000">的@确实</font> <br>
+				row:&nbsp; 4,&nbsp; col:&nbsp; 7,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;
+				<font color="#FF00FF">11.49</font>,&nbsp;&nbsp; nPOS:&nbsp; 25600,&nbsp;&nbsp; 
+				sWord:<font color="#008000">的确@实</font> </span></b><br>
+				row:&nbsp; 5,&nbsp; col:&nbsp; 7,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;
+				<font color="#FF00FF">11.63</font>,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				0,&nbsp;&nbsp; sWord:<font color="#008000">确@实</font> <br>
+				row:&nbsp; 4,&nbsp; col:&nbsp; 8,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;
+				<font color="#FF00FF">11.49</font>,&nbsp;&nbsp; nPOS:&nbsp; 25600,&nbsp;&nbsp; 
+				sWord:<font color="#008000">的确@实在</font> <br>
+				row:&nbsp; 5,&nbsp; col:&nbsp; 8,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;
+				<font color="#FF00FF">11.63</font>,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				0,&nbsp;&nbsp; sWord:<font color="#008000">确@实在</font> <br>
+				row:&nbsp; 6,&nbsp; col:&nbsp; 9,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<font color="#FF00FF">3.92</font>,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				0,&nbsp;&nbsp; sWord:<font color="#008000">确实@在</font> <br>
+				row:&nbsp; 7,&nbsp; col:&nbsp; 9,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;
+				<font color="#FF00FF">10.98</font>,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				0,&nbsp;&nbsp; sWord:<font color="#008000">实@在 </font><br>
+				row:&nbsp; 6,&nbsp; col: 10,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;
+				<font color="#FF00FF">10.97</font>,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				0,&nbsp;&nbsp; sWord:<font color="#008000">确实@在理</font> <br>
+				row:&nbsp; 7,&nbsp; col: 10,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;
+				<font color="#FF00FF">10.98</font>,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				0,&nbsp;&nbsp; sWord:<font color="#008000">实@在理</font> <br>
+				row:&nbsp; 8,&nbsp; col: 11,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;
+				<font color="#FF00FF">11.17</font>,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				0,&nbsp;&nbsp; sWord:<font color="#008000">实在@理</font> <br>
+				row:&nbsp; 9,&nbsp; col: 11,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<font color="#FF00FF">5.62</font>,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				0,&nbsp;&nbsp; sWord:<font color="#008000">在@理 </font><br>
+				row: 10,&nbsp; col: 12,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;
+				<font color="#FF00FF">14.30</font>,&nbsp;&nbsp; nPOS:&nbsp; 24832,&nbsp;&nbsp; 
+				sWord:<font color="#008000">在理@末##末</font> <br>
+				row: 11,&nbsp; col: 12,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;
+				<font color="#FF00FF">11.95</font>,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				0,&nbsp;&nbsp; sWord:<font color="#008000">理@末##末</font></div>
+		</div>
+		<p>可以从上表中可以看出“的@确实”的距离为4.10，而“的确@实”间的距离为11.49，这说明“的@确实”的组合可能性要大一些。不过这只是一面之词，究竟如何组词需要放到整句话的环境下通盘考虑，达到整体最优。这就是N最短路径需要完成的工作。</p>
+		<p>在求最短路径前我们需要将上表换一个角度观察，其实上表可以等价的表述成如下图所示的“有向图”：</p>
+		<p><img border="0" src="images/0308001.gif" width="572" height="154"></p>
+		<p>上表中词与词的组合（例如“的@确实”）在该图中对应一条边（由节点“的”到节点“确实”），其路径长度就是上表中的eWeight值。这样一来，求最优分词方案就成了求整体最短路径。</p>
+		<p>由于是初次切分，为了提高后续优化质量，这里求的是N最短路径，即路径长度由小到大排序后的前N种长度的所有路径。对于上面案例，我们假设N=2，那么求解得到的路径有2条（注意也可能比两条多，关于这点我 
+		将在后续专门介绍NShortPath时再说）：</p>
+		<p>路径（1）：</p>
+		<p>0, 1, 2, 3, 6, 9, 11, 12, 13</p>
+		<p><font color="#008000">始##始 / 他 / 说 / 的 / 确实 / 在 / 理 / 末##末</font></p>
+		<p>路径（2）：</p>
+		<p>0, 1, 2, 3, 6, 10, 12, 13</p>
+		<p><font color="#008000">始##始 / 他 / 说 / 的 / 确实 / 在理 / 末##末</font></p>
+		<hr width="60%" align="left" color="#990099">
+		<p>如果要想真正搞清楚上述过程，必须对下面的数据结构以及它的几种不同的表述方式有个透彻的了解。</p>
+		<ul>
+			<li><b><font color="#800080">DynamicArray</font></b></li>
+		</ul>
+		<p>DynamicArray是什么？其实它的本质是一个经过排序的链表。为了表达的更明白些，我们不妨看下面这张图：</p>
+		<p><img border="0" src="images/0220001.gif"></p>
+		<p>（图一）</p>
+		<p>上面这张图是一个按照index值进行了排序的链表，当插入新结点时必须确保index值的有序性。DynamicArray类完成的功能基本上与上面这个链表差不多，只是排序规则不是index，而是row和col两个数据，如下图：</p>
+		<p><img border="0" src="images/0220002.gif"></p>
+		<p>（图二）</p>
+		<p>大家可以看到，这个有序链表的排序规则是先按row排序，row相同的按照col排序。当然排序规则是可以改变的，如果先按col排，再按row排，则上面的链表必须表述成：</p>
+		<p><img border="0" src="images/0220003.gif"></p>
+		<p>（图三）</p>
+		<p>原有ICTCLAS实现时，在一个类里面综合考虑了row先排序和col先排序的两种情况，这在SharpICTCLAS中做了很大调整，将DynamicArray类作为父类提供一些基础操作，同时设计了RowFirstDynamicArray和ColumnFirstDynamicArray类作为子类提供专门的方法，这使得代码变得清晰多了（有关DynamicArray的实现我在下一篇文章中再做介绍）。</p>
+		<p>在本文最前面给出的案例中，根据“词库字典”找出所有原子字间的组词方案，其结果为“<font color="#008000">始##始/他/说</font>/<font color="#0000FF">的</font>/<font color="#0000FF">的确</font>/<font color="#FF0000">确</font>/<font color="#FF0000">确实</font>/<font color="#008080">实</font>/<font color="#008080">实在</font>/<font color="#FF00FF">在</font>/<font color="#FF00FF">在理</font><font color="#008000">/末##末</font>”，而内容就是靠一个RowFirstDynamicArray存储的，如下：</p>
+		<div class="code">
+			<div class="title">
+				<div style="FLOAT: right">
+					<img class="copyCodeImage" src="images/copycode.gif" align="absMiddle" name="ccImage">
+					<a onclick="CopyCode(this)" href="javascript:">Copy Code</a></div>
+				<div style="CLEAR: none">
+					程序</div>
+			</div>
+			<div class="content">
+				row:&nbsp; 0,&nbsp; col:&nbsp; 1,&nbsp; eWeight: 329805.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1,&nbsp;&nbsp; sWord:始##始 
+				<br>
+				row:&nbsp; 1,&nbsp; col:&nbsp; 2,&nbsp; eWeight:&nbsp; 19823.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:他 <br>
+				row:&nbsp; 2,&nbsp; col:&nbsp; 3,&nbsp; eWeight:&nbsp; 17649.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:说 <br>
+				row:&nbsp; 3,&nbsp; col:&nbsp; 4,&nbsp; eWeight: 358156.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:的 <br>
+				row:&nbsp; 3,&nbsp; col:&nbsp; 5,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 
+				210.00,&nbsp;&nbsp; nPOS:&nbsp; 25600,&nbsp;&nbsp; sWord:的确 <br>
+				row:&nbsp; 4,&nbsp; col:&nbsp; 5,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 
+				181.00,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:确 <br>
+				row:&nbsp; 4,&nbsp; col:&nbsp; 6,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 
+				361.00,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:确实 <br>
+				row:&nbsp; 5,&nbsp; col:&nbsp; 6,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 
+				357.00,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:实 <br>
+				row:&nbsp; 5,&nbsp; col:&nbsp; 7,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 
+				295.00,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:实在 <br>
+				row:&nbsp; 6,&nbsp; col:&nbsp; 7,&nbsp; eWeight:&nbsp; 78484.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:在 <br>
+				row:&nbsp; 6,&nbsp; col:&nbsp; 8,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				3.00,&nbsp;&nbsp; nPOS:&nbsp; 24832,&nbsp;&nbsp; sWord:在理 <br>
+				row:&nbsp; 7,&nbsp; col:&nbsp; 8,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 
+				129.00,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:理 <br>
+				row:&nbsp; 8,&nbsp; col:&nbsp; 9,&nbsp; eWeight:2079997.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4,&nbsp;&nbsp; sWord:末##末</div>
+		</div>
+		<ul>
+			<li><b><font color="#800080">DynamicArray的二维图表表示</font></b></li>
+		</ul>
+		<p>如果根据RowFirstDynamicArray中row和col的坐标信息将DynamicArray放到一个二维表格中的话，我们就得到了DynamicArray的二维图表表示。如下图所示：</p>
+		<p><img border="0" src="images/0220005.gif" width="460" height="229"></p>
+		<p>（图四）</p>
+		<p>在这张图中，行和列有一个非常有意思的关系：<b><font color="#0000FF">col为 n 的列中所有词可以与row为 n 
+		的所有行中的词进行组合</font></b>。例如“的确”这个词，它的col = 5，需要和它计算平滑值的有两个，分别是row = 5的两个词：“实”和“实在”。</p>
+		<p>如果将所有行与列之间词与词之间的关系找到，我们就可以得到另外一个ColumnFirstDynamicArray，如本文第一张表中内容所示。将该ColumnFirstDynamicArray的内容放到另外一个二维表中就得到如下图所示内容：</p>
+		<p><img border="0" src="images/0220006.gif"></p>
+		<p>（图五）</p>
+		<ul>
+			<li><b><font color="#800080">ColumnFirstDynamicArray的有向图表示</font></b></li>
+		</ul>
+		<p>上面这张表可以和一张有向图所对应，就如前文所说，词与词的组合（例如“的@确实”）在该图中对应一条边（由节点“的”到节点“确实”），其路径长度就是上表中的eWeight值，如下图所示：</p>
+		<p><img border="0" src="images/0308001.gif" width="572" height="154"></p>
+		<p>剩下的事情就是针对该图求解N最短路径了，这将在后续文章中介绍。</p>
+		<ul>
+			<li><font color="#800080"><b>小结</b></font></li>
+		</ul>
+		<p>ICTCLAS的初步分词是一个比较复杂的过程，涉及的数据结构、数据表示以及相关算法都颇有难度。在SharpICTCLAS中，对原有C++代码做了比较多的更改，重新设计了DynamicArray类与NShortPath方法，在牺牲有限性能的同时力争大幅度简化代码的复杂度，提高可读性。</p>
+		<p>有关SharpICTCLAS中DynamicArray类的实现以及在代码可读性与性能之间的权衡将在下一篇文章中加以介绍。</p>
+		<p>　</p>
+		</td>
+	</tr>
+</table>
+
+</body>
+
+</html>

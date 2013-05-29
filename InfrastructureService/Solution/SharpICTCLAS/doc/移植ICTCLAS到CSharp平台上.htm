@@ -1,0 +1,360 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="zh-cn" />
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>实现ICTCLAS到C#平台的移植</title>
+<link href="css/style.css" rel="stylesheet" type="text/css" />
+<link href="css/customercss.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript">/*<![CDATA[*/
+if(typeof(HTMLElement)!="undefined" && !window.opera)
+{
+  HTMLElement.prototype.__defineGetter__("parentElement", function () 
+  {
+    if (this.parentNode == this.ownerDocument) return null;
+    return this.parentNode;
+  });
+}
+
+HTMLElement.prototype.innerHTML getter = function(){
+   return getInnerHTML(this);
+}
+/*]]>*/
+</script>
+<script language="javascript">
+function CopyCode(key)
+{
+  var divElements = document.getElementsByTagName("div");
+  var i;
+  occur = 0;  
+  for(i = 0; i < divElements.length; ++i)
+  {
+    if(key.parentElement.parentElement.parentElement == divElements[i].parentElement)
+    {
+      if(occur == 1)
+      {
+        if(navigator.appName.indexOf('Microsoft') != -1)
+          copyToClipboard(divElements[i].innerText);
+        else
+          copyToClipboard(Html2Txt(divElements[i].innerHTML));
+      }
+      occur++;
+    }
+  }
+}
+function Html2Txt(htmlText)
+{
+  str = htmlText.replace(/\r\n/g, " ");
+  str = str.replace(/\r/g, " "); 
+  str = str.replace(/\n/g, " "); 
+  str = str.replace(/\t/g, "");
+  str = str.replace(/<BR>/gi,"\r\n");
+  str = str.replace(/<[^>]+?>/g,"");
+  str = str.replace(/&nbsp;/g, " ");
+  str = str.replace(/&gt;/g, ">");
+  str = str.replace(/&lt;/g, "<");
+  str = str.replace(/&amp;/g, "&");
+  return str;
+}
+
+function copyToClipboard(txt)
+{
+ if(window.clipboardData) 
+  {
+    window.clipboardData.clearData();
+    window.clipboardData.setData("Text", txt);
+  }
+  else if(navigator.userAgent.indexOf("Opera") != -1) 
+  {
+    window.location = txt;
+  } 
+  else if (window.netscape) 
+  {
+    try 
+    {
+      netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
+    } 
+    catch (e) 
+    {
+      alert("您的firefox安全限制限制您进行剪贴板操作，请在地址栏中输入“about:config”将“signed.applets.codebase_principal_support”设置为“true”之后重试");
+      return false;
+    }
+    var clip = Components.classes['@mozilla.org/widget/clipboard;1'].createInstance(Components.interfaces.nsIClipboard);
+    if (!clip)
+      return;
+    var trans = Components.classes['@mozilla.org/widget/transferable;1'].createInstance(Components.interfaces.nsITransferable);
+    if (!trans)
+      return;
+    trans.addDataFlavor('text/unicode');
+    var str = new Object();
+    var len = new Object();
+    var str = Components.classes["@mozilla.org/supports-string;1"].createInstance(Components.interfaces.nsISupportsString);
+    var copytext = txt;
+    str.data = copytext;
+    trans.setTransferData("text/unicode",str,copytext.length*2);
+    var clipid = Components.interfaces.nsIClipboard;
+    if (!clip)
+      return false;
+    clip.setData(trans,null,clipid.kGlobalClipboard);
+  }
+} 
+</script>
+</head>
+
+<body>
+
+<p>　</p>
+<table width="95%" align="center">
+	<tr>
+		<td>
+		<p>在研究了一段时间中科院计算所张华平、刘群所开发的ICTCLAS分词系统（Free版）代码后，阅读了大量的相关资料，我开始着手将C++的ICTCLAS分词系统移植到.net平台下，并取得了较好的实验结果。这种移植并不容易，在研究了ICTCLAS分词理论的同时还要阅读C++代码实现，其中遇到了很多困惑、迷茫，也不得不重写了一小部分代码，我将在随后的文章中介绍具体实现。</p>
+		<p>目前除了最后的词性标注部分还没有完全完工外，其它部分已经接近尾声（包括初始切分、N最短路径、人名、地名的识别以及最终优化等），我们先来看看程序对以下句子的分词结果：</p>
+		<div class="code">
+			<div class="title">
+				<div style="FLOAT: right">
+					<img class="copyCodeImage" src="images/copycode.gif" align="absMiddle" name="ccImage">
+					<a onclick="CopyCode(this)" href="javascript:">Copy Code</a></div>
+				<div style="CLEAR: none">
+					SharpICTCLAS程序分词结果</div>
+			</div>
+			<div class="content">
+				==== 原始句子： <br>
+				<br>
+				王晓平在滦南大会上说的确实在理 <br>
+				<br>
+				==== 粗切分后的结果(N个结果)： <br>
+				<br>
+				<span style="COLOR: #008000">始##始, 王, 晓, 平, 在, 滦, 南, 大, 会上, 说, 的, 
+				确实, 在, 理, 末##末, </span><br>
+				<br>
+				<span style="COLOR: #008000">始##始, 王, 晓, 平, 在, 滦, 南, 大会, 上, 说, 的, 
+				确实, 在, 理, 末##末, </span><br>
+				<br>
+				<span style="COLOR: #008000">始##始, 王, 晓, 平, 在, 滦, 南, 大, 会上, 说, 的, 
+				确实, 在理, 末##末, </span><br>
+				<br>
+				<span style="COLOR: #008000">始##始, 王, 晓, 平, 在, 滦, 南, 大会, 上, 说, 的, 
+				确实, 在理, 末##末, </span><br>
+				<br>
+				<span style="COLOR: #008000">始##始, 王, 晓, 平, 在, 滦, 南, 大, 会, 上, 说, 
+				的, 确实, 在, 理, 末##末, </span><br>
+				<br>
+				==== 加入对姓名、翻译人名以及地名的识别： <br>
+				<br>
+				row:&nbsp; 0,&nbsp; col:&nbsp; 1,&nbsp; eWeight: 329805.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1,&nbsp;&nbsp; sWord:始##始 
+				<br>
+				row:&nbsp; 1,&nbsp; col:&nbsp; 2,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 
+				218.00,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:王 <br>
+				row:&nbsp; 1,&nbsp; col:&nbsp; 4,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 
+				10.86,&nbsp;&nbsp; nPOS: -28274,&nbsp;&nbsp; sWord:未##人 <br>
+				row:&nbsp; 2,&nbsp; col:&nbsp; 3,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				9.00,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:晓 <br>
+				row:&nbsp; 2,&nbsp; col:&nbsp; 4,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 
+				13.27,&nbsp;&nbsp; nPOS: -28274,&nbsp;&nbsp; sWord:未##人 <br>
+				row:&nbsp; 3,&nbsp; col:&nbsp; 4,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 
+				271.00,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:平 <br>
+				row:&nbsp; 4,&nbsp; col:&nbsp; 5,&nbsp; eWeight:&nbsp; 78484.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:在 <br>
+				row:&nbsp; 5,&nbsp; col:&nbsp; 6,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				1.00,&nbsp;&nbsp; nPOS:&nbsp; 27136,&nbsp;&nbsp; sWord:滦 <br>
+				row:&nbsp; 5,&nbsp; col:&nbsp; 7,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 
+				20.37,&nbsp;&nbsp; nPOS: -28275,&nbsp;&nbsp; sWord:未##地 <br>
+				row:&nbsp; 6,&nbsp; col:&nbsp; 7,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 
+				813.00,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:南 <br>
+				row:&nbsp; 7,&nbsp; col:&nbsp; 8,&nbsp; eWeight:&nbsp; 14536.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:大 <br>
+				row:&nbsp; 7,&nbsp; col:&nbsp; 9,&nbsp; eWeight:&nbsp;&nbsp; 1333.00,&nbsp;&nbsp; 
+				nPOS:&nbsp; 28160,&nbsp;&nbsp; sWord:大会 <br>
+				row:&nbsp; 8,&nbsp; col:&nbsp; 9,&nbsp; eWeight:&nbsp;&nbsp; 6136.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:会 <br>
+				row:&nbsp; 8,&nbsp; col: 10,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 469.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:会上 <br>
+				row:&nbsp; 9,&nbsp; col: 10,&nbsp; eWeight:&nbsp; 23706.00,&nbsp;&nbsp; 
+				nPOS: -27904,&nbsp;&nbsp; sWord:上 <br>
+				row: 10,&nbsp; col: 11,&nbsp; eWeight:&nbsp; 17649.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:说 <br>
+				row: 11,&nbsp; col: 12,&nbsp; eWeight: 358156.00,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				0,&nbsp;&nbsp; sWord:的 <br>
+				row: 12,&nbsp; col: 14,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 361.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:确实 <br>
+				row: 14,&nbsp; col: 15,&nbsp; eWeight:&nbsp; 78484.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:在 <br>
+				row: 14,&nbsp; col: 16,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				3.00,&nbsp;&nbsp; nPOS:&nbsp; 24832,&nbsp;&nbsp; sWord:在理 <br>
+				row: 15,&nbsp; col: 16,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 129.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:理 <br>
+				row: 16,&nbsp; col: 17,&nbsp; eWeight:2079997.00,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				4,&nbsp;&nbsp; sWord:末##末 <br>
+				<br>
+				==== 最终识别结果： <br>
+				<br>
+				<span style="COLOR: #008000">始##始, 王晓平, 在, 滦南, 大会, 上, 说, 的, 确实, 
+				在, 理, 末##末, </span><br>
+				<br>
+				--------------------------------------------------- <br>
+				<br>
+				==== 原始句子： <br>
+				<br>
+				馆内陈列周恩来和邓颖超生前使用过的物品 <br>
+				<br>
+				==== 粗切分后的结果(N个结果)： <br>
+				<br>
+				<span style="COLOR: #008000">始##始, 馆内, 陈列, 周恩来, 和, 邓, 颖, 超, 生前, 
+				使用, 过, 的, 物品, 末##末, </span><br>
+				<br>
+				<span style="COLOR: #008000">始##始, 馆内, 陈列, 周恩来, 和, 邓, 颖, 超生, 前, 
+				使用, 过, 的, 物品, 末##末, </span><br>
+				<br>
+				<span style="COLOR: #008000">始##始, 馆内, 陈列, 周恩来, 和, 邓, 颖, 超, 生前, 
+				使用, 过, 的, 物, 品, 末##末, </span><br>
+				<br>
+				<span style="COLOR: #008000">始##始, 馆内, 陈列, 周恩来, 和, 邓, 颖, 超生, 前, 
+				使, 用, 过, 的, 物品, 末##末, </span><br>
+				<br>
+				<span style="COLOR: #008000">始##始, 馆内, 陈列, 周恩来, 和, 邓, 颖, 超, 生, 前, 
+				使用, 过, 的, 物品, 末##末, </span><br>
+				<br>
+				==== 加入对姓名、翻译人名以及地名的识别： <br>
+				<br>
+				row:&nbsp; 0,&nbsp; col:&nbsp; 1,&nbsp; eWeight: 329805.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1,&nbsp;&nbsp; sWord:始##始 
+				<br>
+				row:&nbsp; 1,&nbsp; col:&nbsp; 3,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 
+				24.00,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:馆内 <br>
+				row:&nbsp; 3,&nbsp; col:&nbsp; 5,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 
+				70.00,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:陈列 <br>
+				row:&nbsp; 5,&nbsp; col:&nbsp; 8,&nbsp; eWeight:&nbsp;&nbsp; 1990.00,&nbsp;&nbsp; 
+				nPOS:&nbsp; 28274,&nbsp;&nbsp; sWord:周恩来 <br>
+				row:&nbsp; 8,&nbsp; col:&nbsp; 9,&nbsp; eWeight:&nbsp; 72562.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:和 <br>
+				row:&nbsp; 9,&nbsp; col: 10,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 
+				90.00,&nbsp;&nbsp; nPOS:&nbsp; 28274,&nbsp;&nbsp; sWord:邓 <br>
+				row:&nbsp; 9,&nbsp; col: 12,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 
+				15.93,&nbsp;&nbsp; nPOS: -28274,&nbsp;&nbsp; sWord:未##人 <br>
+				row: 10,&nbsp; col: 11,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				2.00,&nbsp;&nbsp; nPOS:&nbsp; 28274,&nbsp;&nbsp; sWord:颖 <br>
+				row: 11,&nbsp; col: 12,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 200.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:超 <br>
+				row: 11,&nbsp; col: 13,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				4.00,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:超生 <br>
+				row: 12,&nbsp; col: 13,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 532.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:生 <br>
+				row: 12,&nbsp; col: 14,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 175.00,&nbsp;&nbsp; 
+				nPOS:&nbsp; 29696,&nbsp;&nbsp; sWord:生前 <br>
+				row: 13,&nbsp; col: 14,&nbsp; eWeight:&nbsp;&nbsp; 5107.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:前 <br>
+				row: 14,&nbsp; col: 15,&nbsp; eWeight:&nbsp;&nbsp; 8224.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:使 <br>
+				row: 14,&nbsp; col: 16,&nbsp; eWeight:&nbsp;&nbsp; 1876.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:使用 <br>
+				row: 15,&nbsp; col: 16,&nbsp; eWeight:&nbsp;&nbsp; 5300.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:用 <br>
+				row: 16,&nbsp; col: 17,&nbsp; eWeight:&nbsp;&nbsp; 5090.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:过 <br>
+				row: 17,&nbsp; col: 18,&nbsp; eWeight: 358156.00,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				0,&nbsp;&nbsp; sWord:的 <br>
+				row: 18,&nbsp; col: 19,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 200.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:物 <br>
+				row: 18,&nbsp; col: 20,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 189.00,&nbsp;&nbsp; 
+				nPOS:&nbsp; 28160,&nbsp;&nbsp; sWord:物品 <br>
+				row: 19,&nbsp; col: 20,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 75.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:品 <br>
+				row: 20,&nbsp; col: 21,&nbsp; eWeight:2079997.00,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				4,&nbsp;&nbsp; sWord:末##末 </span><br>
+				<br>
+				==== 最终识别结果： <br>
+				<br>
+				<span style="COLOR: #008000">始##始, 馆内, 陈列, 周恩来, 和, 邓颖超, 生前, 使用, 
+				过, 的, 物品, 末##末, </span></div>
+		</div>
+		<p>从上面结果可以看出，切分效果还是令人满意的（当然这完全是由原有ICTCLAS的良好设计理论所决定）。</p>
+		<p>在移植的过程中，比较突出的问题包括：</p>
+		<h3>1、C#支持Unicode，而原有设计是基于单字节表示</h3>
+		<p>在原有设计中使用了大量的字符数组，而且一个汉字在字符数组中占两个字符位置。为了取出一个字符，必须考虑是半角字符还是全角汉字。所以随处可见类似代码：</p>
+		<div class="code">
+			<div class="title">
+				<div style="FLOAT: right">
+					<img class="copyCodeImage" src="images/copycode.gif" align="absMiddle" name="ccImage">
+					<a onclick="CopyCode(this)" href="javascript:">Copy Code</a></div>
+				<div style="CLEAR: none">
+					C++代码实现取一个字符</div>
+			</div>
+			<div class="content">
+				char tchar[3];<br>
+				tchar[2] = 0;<br>
+				<br>
+				tchar[0] = sWord[k]; <br>
+				tchar[1] = 0; <br>
+				<span style="COLOR: #0000ff">if</span> (sWord[k] &lt; 0) <br>
+				{ <br>
+&nbsp; tchar[1] = sWord[k + 1]; <br>
+&nbsp; k += 1; <br>
+				} <br>
+				k += 1;</div>
+		</div>
+		<p>为了判断是否是汉字，使用了“if (sWord[k] &lt; 0) ”等手段异常繁琐。</p>
+		<p>而C#本身对Unicode有很好的支持，所以只需要string.ToCharArray()方法就可以将一个一个字符拆分开来。单需要注意的是，在C#中一个汉字的长度是1，而C++实现中一个汉字的长度是2，这要求在移植过程中要仔细对待。</p>
+		<h3>2、使用正则表达式简化了部分设计</h3>
+		<p>原有设计中为了判断一个字符串是否是数字需要很长的代码（例如Utility类中的IsAllNum方法），代码行数将近7～80行，而改用正则表达式后，一行代码就解决问题了。 
+		移植后的代码使用了很多正则表达式简化类似代码。</p>
+		<h3>3、字符串比较问题</h3>
+		<p>由于原有设计中，对汉字大小的比较是基于CCID的（尤其是对词典库进行检索时），一个汉字的CCID计算方式如下：</p>
+		<div class="code">
+			<div class="title">
+				<div style="FLOAT: right">
+					<img class="copyCodeImage" src="images/copycode.gif" align="absMiddle" name="ccImage">
+					<a onclick="CopyCode(this)" href="javascript:">Copy Code</a></div>
+				<div style="CLEAR: none">
+					CCID计算方法（C#）</div>
+			</div>
+			<div class="content">
+				<span style="COLOR: #008000">//====================================================================
+				</span><br>
+				<span style="COLOR: #008000">// 根据汉字返回对应的CC_ID </span><br>
+				<span style="COLOR: #008000">//====================================================================
+				</span><br>
+				<span style="COLOR: #0000ff">public</span>
+				<span style="COLOR: #0000ff">static</span>
+				<span style="COLOR: #0000ff">int</span> CC_ID(<span style="COLOR: #0000ff">char</span> 
+				c) <br>
+				{ <br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">byte</span>[] b = Encoding.GetEncoding(<span style="COLOR: #ff00ff">&quot;gb2312&quot;</span>).GetBytes(c.ToString());
+				<br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">if</span> (b.Length != 2) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">return</span> -1;
+				<br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">else</span> <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">return</span> (Convert.ToInt32(b[0]) 
+				- 176) * 94 + (Convert.ToInt32(b[1]) - 161); <br>
+				}<br>
+			</div>
+		</div>
+		<p>而C#的字符串比较没有一个适合CCID方式的字符串比较，例如在原有设计中，“声”、“生”、“现”的大小关系是：“声” &lt; “生” &lt; “现”，而C#中string.Compare方法不管设置为StringComparison.Ordinal、StringComparison.CurrentCulture还是StringComparison.InvariantCulture都无法达到这个结果，因此不得已设计了自己的字符串比较函数。</p>
+		<h3>4、重写了部分代码</h3>
+		<p>由于原有ICTCLAS系统代码的繁琐和不易理解（可以参考《<a href="http://www.cnblogs.com/zhenyulu/articles/653254.html">天书般的ICTCLAS分词系统代码（一）</a>》、《<a href="http://www.cnblogs.com/zhenyulu/articles/657017.html">天书般的ICTCLAS分词系统代码（二）</a>》） 
+		，我重新了部分代码，主要包括：</p>
+		<p>1）重写了DynamicArray代码。新代码使用了三个类实现了原有代码，将不同功能分离开，使得代码简单易读。</p>
+		<p>2）重写了NShortPath代码。到现在我也没有完全弄明白原作者在实现NShortPath时的思路，干脆自己写吧。重写后的新代码比原有代码简化了不少，而且比较容易理解（至少我是这么认为的）。</p>
+		<p>3）Segment类中重写了GenerateWord方法，使用了链表而不是数组记录结果，并采用了管道式的处理流程，这简化了后续的合并逻辑。</p>
+		<p>4）对原有代码中部分属性、变量、字段的命名进行了调整，让其更具有实际意义。例如原有代码中nHandle和nPOS据我理解应当是一会事，所以新程序中全部使用nPOS这个命名。</p>
+		<h3>5、保留了相当一部分原有代码</h3>
+		<p>对于某些逻辑结构异常复杂的情况，在新代码中保留了原有的设计内容。</p>
+		<p>例如Segment类中对日期、年份、时间等的合并策略，其if条件嵌套有5层之多，为了保留原有逻辑，在移植过程中仅做了微小的调整。</p>
+		<p>另外CSpan、Unknown等类中的代码几乎没有做任何调整（其中包含了大量的计算逻辑），保留了原汁原味的内容。</p>
+		<p>　</p>
+		<p><font color="#0000FF">我会在后续的文章中，分多次内容介绍SharpICTCLAS的实现手段以及对原有ICTCLAS代码改造的地方。</font></p>
+		</td>
+	</tr>
+</table>
+
+</body>
+
+</html>

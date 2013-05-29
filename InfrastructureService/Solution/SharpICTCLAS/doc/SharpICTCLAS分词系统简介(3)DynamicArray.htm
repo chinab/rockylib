@@ -1,0 +1,572 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="zh-cn" />
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>SharpICTCLAS分词系统简介(3)DynamicArray</title>
+<link href="css/style.css" rel="stylesheet" type="text/css" />
+<link href="css/customercss.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript">/*<![CDATA[*/
+if(typeof(HTMLElement)!="undefined" && !window.opera)
+{
+  HTMLElement.prototype.__defineGetter__("parentElement", function () 
+  {
+    if (this.parentNode == this.ownerDocument) return null;
+    return this.parentNode;
+  });
+}
+
+HTMLElement.prototype.innerHTML getter = function(){
+   return getInnerHTML(this);
+}
+/*]]>*/
+</script>
+<script language="javascript">
+function CopyCode(key)
+{
+  var divElements = document.getElementsByTagName("div");
+  var i;
+  occur = 0;  
+  for(i = 0; i < divElements.length; ++i)
+  {
+    if(key.parentElement.parentElement.parentElement == divElements[i].parentElement)
+    {
+      if(occur == 1)
+      {
+        if(navigator.appName.indexOf('Microsoft') != -1)
+          copyToClipboard(divElements[i].innerText);
+        else
+          copyToClipboard(Html2Txt(divElements[i].innerHTML));
+      }
+      occur++;
+    }
+  }
+}
+function Html2Txt(htmlText)
+{
+  str = htmlText.replace(/\r\n/g, " ");
+  str = str.replace(/\r/g, " "); 
+  str = str.replace(/\n/g, " "); 
+  str = str.replace(/\t/g, "");
+  str = str.replace(/<BR>/gi,"\r\n");
+  str = str.replace(/<[^>]+?>/g,"");
+  str = str.replace(/&nbsp;/g, " ");
+  str = str.replace(/&gt;/g, ">");
+  str = str.replace(/&lt;/g, "<");
+  str = str.replace(/&amp;/g, "&");
+  return str;
+}
+
+function copyToClipboard(txt)
+{
+ if(window.clipboardData) 
+  {
+    window.clipboardData.clearData();
+    window.clipboardData.setData("Text", txt);
+  }
+  else if(navigator.userAgent.indexOf("Opera") != -1) 
+  {
+    window.location = txt;
+  } 
+  else if (window.netscape) 
+  {
+    try 
+    {
+      netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
+    } 
+    catch (e) 
+    {
+      alert("您的firefox安全限制限制您进行剪贴板操作，请在地址栏中输入“about:config”将“signed.applets.codebase_principal_support”设置为“true”之后重试");
+      return false;
+    }
+    var clip = Components.classes['@mozilla.org/widget/clipboard;1'].createInstance(Components.interfaces.nsIClipboard);
+    if (!clip)
+      return;
+    var trans = Components.classes['@mozilla.org/widget/transferable;1'].createInstance(Components.interfaces.nsITransferable);
+    if (!trans)
+      return;
+    trans.addDataFlavor('text/unicode');
+    var str = new Object();
+    var len = new Object();
+    var str = Components.classes["@mozilla.org/supports-string;1"].createInstance(Components.interfaces.nsISupportsString);
+    var copytext = txt;
+    str.data = copytext;
+    trans.setTransferData("text/unicode",str,copytext.length*2);
+    var clipid = Components.interfaces.nsIClipboard;
+    if (!clip)
+      return false;
+    clip.setData(trans,null,clipid.kGlobalClipboard);
+  }
+} 
+</script>
+</head>
+
+<body>
+
+<p>　</p>
+<table width="95%" align="center">
+	<tr>
+		<td>
+		<p>从前文可以看出，ICTCLAS中DynamicArray类在初步分词过程中起到了至关重要的所用，而ICTCLAS中DynamicArray类的实现比较复杂，可以说是包罗万象，在一个GetElement方法就综合考虑了1）row优先排序的链表；2）col优先排序的链表；3）当nRow为-1时的行为；4）当nCol为-1时的行为；5）当nRow与nCol都不为-1时的行为 
+		（可以参考本人的《天书般的ICTCLAS分词系统代码(一)》一文）。</p>
+		<p>为了简化编程接口，并将纠缠不清的代码逻辑剥离开来，我重新设计了DynamicArray类，利用三个类实现原有一个类的功能。具体改造包括：1） 
+		将DynamicArray类做成一个抽象父类，实现一些公共功能；2）设计了RowFirstDynamicArray类与ColumnFirstDynaimcArray类作为DynamicArray的子类，分别实现row优先排序和col优先排序的DynamicArray。2） 
+		在牺牲有限性能的同时力争大幅度简化代码的复杂度，提高可读性。</p>
+		<p>具体实现如下：</p>
+		<h3>1、DynamicArray链表结点的定义</h3>
+		<p>为了使得DynamicArray更具有通用性，使用了范型方式定义了链表的结点，代码如下：</p>
+		<div class="code">
+			<div class="title">
+				<div style="FLOAT: right">
+					<img class="copyCodeImage" src="images/copycode.gif" align="absMiddle" name="ccImage">
+					<a onclick="CopyCode(this)" href="javascript:">Copy Code</a></div>
+				<div style="CLEAR: none">
+					DynamicArray链表结点的定义</div>
+			</div>
+			<div class="content">
+				<span style="COLOR: #0000ff">public</span>
+				<span style="COLOR: #0000ff">class</span> ChainItem&lt;T&gt; <br>
+				{ <br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">public</span>
+				<span style="COLOR: #0000ff">int</span> row; <br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">public</span>
+				<span style="COLOR: #0000ff">int</span> col; <br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">public</span> T Content; <br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">public</span> ChainItem&lt;T&gt; next; <br>
+				}</div>
+		</div>
+		<h3>2、DynamicArray类</h3>
+		<p>DynamicArray类是一个抽象类，主要为RowFirstDynamicArray类与ColumnFirstDynaimcArray类提供公共的基础功能，例如查找行、列值为nRow, 
+		nCol的结点等。同时，该类将插入一新结点的方法设计成抽象方法，需要具体类根据row优先排序还是col优先排序自行决定具体实现。DynamicArray类的代码实现如下（应当说非常简单）：</p>
+		<div class="code">
+			<div class="title">
+				<div style="FLOAT: right">
+					<img class="copyCodeImage" src="images/copycode.gif" align="absMiddle" name="ccImage">
+					<a onclick="CopyCode(this)" href="javascript:">Copy Code</a></div>
+				<div style="CLEAR: none">
+					DynamicArray.cs 程序</div>
+			</div>
+			<div class="content">
+				<span style="COLOR: #0000ff">public</span>
+				<span style="COLOR: #0000ff">abstract</span>
+				<span style="COLOR: #0000ff">class</span> DynamicArray&lt;T&gt; <br>
+				{ <br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">protected</span> ChainItem&lt;T&gt; pHead;&nbsp;
+				<span style="COLOR: #008000">//The head pointer of array chain
+				</span><br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">public</span>
+				<span style="COLOR: #0000ff">int</span> ColumnCount, RowCount;&nbsp;
+				<span style="COLOR: #008000">//The row and col of the array
+				</span><br>
+				<br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">public</span> DynamicArray() <br>
+&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pHead = <span style="COLOR: #0000ff">null</span>;
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; RowCount = 0; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ColumnCount = 0; <br>
+&nbsp;&nbsp; } <br>
+				<br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">public</span>
+				<span style="COLOR: #0000ff">int</span> ItemCount <br>
+&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">get</span> <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ChainItem&lt;T&gt; pCur = pHead; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">int</span> 
+				nCount = 0; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">while</span> 
+				(pCur != <span style="COLOR: #0000ff">null</span>) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nCount++; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pCur = pCur.next;
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">return</span> 
+				nCount; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } <br>
+&nbsp;&nbsp; } <br>
+				<br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//====================================================================
+				</span><br>
+&nbsp;&nbsp; <span style="COLOR: #008000">// 查找行、列值为nRow, nCol的结点 </span><br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//====================================================================
+				</span><br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">public</span> ChainItem&lt;T&gt; GetElement(<span style="COLOR: #0000ff">int</span> 
+				nRow, <span style="COLOR: #0000ff">int</span> nCol) <br>
+&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ChainItem&lt;T&gt; pCur = pHead; <br>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">while</span> (pCur !=
+				<span style="COLOR: #0000ff">null</span> &amp;&amp; !(pCur.col == nCol &amp;&amp; 
+				pCur.row == nRow)) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pCur = pCur.next; <br>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">return</span> pCur;
+				<br>
+&nbsp;&nbsp; } <br>
+				<br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//====================================================================
+				</span><br>
+&nbsp;&nbsp; <span style="COLOR: #008000">// 设置或插入一个新的结点 </span><br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//====================================================================
+				</span><br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">public</span>
+				<span style="COLOR: #0000ff">abstract</span>
+				<span style="COLOR: #0000ff">void</span> SetElement(<span style="COLOR: #0000ff">int</span> 
+				nRow, <span style="COLOR: #0000ff">int</span> nCol, T content);
+				<br>
+				<br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//====================================================================
+				</span><br>
+&nbsp;&nbsp; <span style="COLOR: #008000">// Return the head element of ArrayChain
+				</span><br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//====================================================================
+				</span><br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">public</span> ChainItem&lt;T&gt; GetHead()
+				<br>
+&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">return</span> pHead;
+				<br>
+&nbsp;&nbsp; } <br>
+				<br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//====================================================================
+				</span><br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//Get the tail Element buffer and return 
+				the count of elements </span><br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//====================================================================
+				</span><br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">public</span>
+				<span style="COLOR: #0000ff">int</span> GetTail(<span style="COLOR: #0000ff">out</span> 
+				ChainItem&lt;T&gt; pTailRet) <br>
+&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ChainItem&lt;T&gt; pCur = pHead, pPrev =
+				<span style="COLOR: #0000ff">null</span>; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">int</span> nCount = 
+				0; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">while</span> (pCur !=
+				<span style="COLOR: #0000ff">null</span>) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nCount++; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pPrev = pCur; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pCur = pCur.next; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pTailRet = pPrev; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">return</span> nCount;
+				<br>
+&nbsp;&nbsp; } <br>
+				<br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//====================================================================
+				</span><br>
+&nbsp;&nbsp; <span style="COLOR: #008000">// Set Empty </span><br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//====================================================================
+				</span><br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">public</span>
+				<span style="COLOR: #0000ff">void</span> SetEmpty() <br>
+&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pHead = <span style="COLOR: #0000ff">null</span>;
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ColumnCount = 0; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; RowCount = 0; <br>
+&nbsp;&nbsp; } <br>
+				<br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">public</span>
+				<span style="COLOR: #0000ff">override</span>
+				<span style="COLOR: #0000ff">string</span> ToString() <br>
+&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; StringBuilder sb = <span style="COLOR: #0000ff">new</span> 
+				StringBuilder(); <br>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ChainItem&lt;T&gt; pCur = pHead; <br>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">while</span> (pCur !=
+				<span style="COLOR: #0000ff">null</span>) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sb.Append(<span style="COLOR: #0000ff">string</span>.Format(<span style="COLOR: #ff00ff">&quot;row:{0,3},&nbsp; 
+				col:{1,3},&nbsp; &quot;</span>, pCur.row, pCur.col)); <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sb.Append(pCur.Content.ToString());
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sb.Append(<span style="COLOR: #ff00ff">&quot;\r\n&quot;</span>);
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pCur = pCur.next; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } <br>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">return</span> sb.ToString();
+				<br>
+&nbsp;&nbsp; } <br>
+				}</div>
+		</div>
+		<h3>3、RowFirstDynamicArray类的实现</h3>
+		<p>RowFirstDynamicArray类主要实现了row优先排序的DynamicArray，里面包含了两个方法：GetFirstElementOfRow（获取row为nRow的第一个元素）和SetElement方法。其中GetFirstElementOfRow有两个重载版本。</p>
+		<p>这等价于将原有ICTCLAS中GetElement方法拆分成了三个方法，如果算上重载版本的话共五个方法，它们分别是：1）获取行、列值为nRow, 
+		nCol的结点，此方法由DynamicArray类实现；2）对于Row优先排序的链表而言，单独提供了GetFirstElementOfRow方法。3）对于Column优先排序的链表而言，单独提供了GetFirstElementOfColumn方法。</p>
+		<p>RowFirstDynamicArray类的实现如下：</p>
+		<div class="code">
+			<div class="title">
+				<div style="FLOAT: right">
+					<img class="copyCodeImage" src="images/copycode.gif" align="absMiddle" name="ccImage">
+					<a onclick="CopyCode(this)" href="javascript:">Copy Code</a></div>
+				<div style="CLEAR: none">
+					RowFirstDynamicArray.cs 程序</div>
+			</div>
+			<div class="content">
+				<span style="COLOR: #0000ff">public</span>
+				<span style="COLOR: #0000ff">class</span> RowFirstDynamicArray&lt;T&gt; 
+				: DynamicArray&lt;T&gt; <br>
+				{ <br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//====================================================================
+				</span><br>
+&nbsp;&nbsp; <span style="COLOR: #008000">// 查找行为 nRow 的第一个结点 </span><br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//====================================================================
+				</span><br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">public</span> ChainItem&lt;T&gt; GetFirstElementOfRow(<span style="COLOR: #0000ff">int</span> 
+				nRow) <br>
+&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ChainItem&lt;T&gt; pCur = pHead; <br>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">while</span> (pCur !=
+				<span style="COLOR: #0000ff">null</span> &amp;&amp; pCur.row != nRow)
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pCur = pCur.next; <br>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">return</span> pCur;
+				<br>
+&nbsp;&nbsp; } <br>
+				<br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//====================================================================
+				</span><br>
+&nbsp;&nbsp; <span style="COLOR: #008000">// 从 startFrom 处向后查找行为 nRow 的第一个结点 
+				</span><br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//====================================================================
+				</span><br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">public</span> ChainItem&lt;T&gt; GetFirstElementOfRow(<span style="COLOR: #0000ff">int</span> 
+				nRow, ChainItem&lt;T&gt; startFrom) <br>
+&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ChainItem&lt;T&gt; pCur = startFrom; <br>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">while</span> (pCur !=
+				<span style="COLOR: #0000ff">null</span> &amp;&amp; pCur.row != nRow)
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pCur = pCur.next; <br>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">return</span> pCur;
+				<br>
+&nbsp;&nbsp; } <br>
+				<br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//====================================================================
+				</span><br>
+&nbsp;&nbsp; <span style="COLOR: #008000">// 设置或插入一个新的结点 </span><br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//====================================================================
+				</span><br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">public</span>
+				<span style="COLOR: #0000ff">override</span>
+				<span style="COLOR: #0000ff">void</span> SetElement(<span style="COLOR: #0000ff">int</span> 
+				nRow, <span style="COLOR: #0000ff">int</span> nCol, T content)
+				<br>
+&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ChainItem&lt;T&gt; pCur = pHead, pPre =
+				<span style="COLOR: #0000ff">null</span>, pNew;&nbsp;
+				<span style="COLOR: #008000">//The pointer of array chain </span>
+				<br>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">if</span> (nRow &gt; RowCount)<span style="COLOR: #008000">//Set 
+				the array row </span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; RowCount = nRow; <br>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">if</span> (nCol &gt; ColumnCount)<span style="COLOR: #008000">//Set 
+				the array col </span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ColumnCount = nCol; <br>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">while</span> (pCur !=
+				<span style="COLOR: #0000ff">null</span> &amp;&amp; (pCur.row &lt; nRow || 
+				(pCur.row == nRow &amp;&amp; pCur.col &lt; nCol))) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pPre = pCur; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pCur = pCur.next; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } <br>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">if</span> (pCur !=
+				<span style="COLOR: #0000ff">null</span> &amp;&amp; pCur.row == nRow &amp;&amp; 
+				pCur.col == nCol)<span style="COLOR: #008000">//Find the same position
+				</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pCur.Content = content;<span style="COLOR: #008000">//Set 
+				the value </span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">else</span> <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pNew =
+				<span style="COLOR: #0000ff">new</span> ChainItem&lt;T&gt;();<span style="COLOR: #008000">//malloc 
+				a new node </span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pNew.col = nCol; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pNew.row = nRow; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pNew.Content = content; <br>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pNew.next = pCur; <br>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">if</span> 
+				(pPre == <span style="COLOR: #0000ff">null</span>)<span style="COLOR: #008000">//link 
+				pNew after the pPre </span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pHead = pNew;
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">else</span>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pPre.next = pNew;
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } <br>
+&nbsp;&nbsp; } <br>
+				}</div>
+		</div>
+		<p>有关ColumnFirstDynamicArray类的实现大同小异，这里就不再提供代码了。我们此时可以对比一下原有ICTCLAS中GetElement的实现：</p>
+		<div class="code">
+			<div class="title">
+				<div style="FLOAT: right">
+					<img class="copyCodeImage" src="images/copycode.gif" align="absMiddle" name="ccImage0">
+					<a onclick="CopyCode(this)" href="javascript:">Copy Code</a></div>
+				<div style="CLEAR: none">
+					DynamicArray.cpp</div>
+			</div>
+			<div class="content">
+				ELEMENT_TYPE CDynamicArray::GetElement(<span style="COLOR: #0000ff">int</span> 
+				nRow, <span style="COLOR: #0000ff">int</span> nCol, PARRAY_CHAIN 
+				pStart, <br>
+&nbsp; PARRAY_CHAIN *pRet) <br>
+				{ <br>
+&nbsp; PARRAY_CHAIN pCur = pStart; <br>
+&nbsp; <span style="COLOR: #0000ff">if</span> (pStart == 0) <br>
+&nbsp;&nbsp;&nbsp; pCur = m_pHead; <br>
+&nbsp; <span style="COLOR: #0000ff">if</span> (pRet != 0) <br>
+&nbsp;&nbsp;&nbsp; *pRet = NULL; <br>
+&nbsp; <span style="COLOR: #0000ff">if</span> (nRow &gt; (<span style="COLOR: #0000ff">int</span>)m_nRow 
+				|| nCol &gt; (<span style="COLOR: #0000ff">int</span>)m_nCol) <br>
+&nbsp; <span style="COLOR: #008000">//Judge if the row and col is overflow
+				</span><br>
+&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">return</span> INFINITE_VALUE;
+				<br>
+&nbsp; <span style="COLOR: #0000ff">if</span> (<b>m_bRowFirst</b>) <br>
+&nbsp; { <br>
+&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">while</span> (<b>pCur != NULL &amp;&amp; 
+				(nRow !=&nbsp; - 1 &amp;&amp; (<span style="COLOR: #0000ff">int</span>)pCur-&gt;row 
+				&lt; nRow || (nCol !=&nbsp;&nbsp; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - 1 &amp;&amp; (<span style="COLOR: #0000ff">int</span>)pCur-&gt;row 
+				== nRow &amp;&amp; (<span style="COLOR: #0000ff">int</span>)pCur-&gt;col &lt; 
+				nCol))</b>) <br>
+&nbsp;&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">if</span> (pRet != 0)
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *pRet = pCur; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pCur = pCur-&gt;next; <br>
+&nbsp;&nbsp;&nbsp; } <br>
+&nbsp; } <br>
+&nbsp; <span style="COLOR: #0000ff">else</span> <br>
+&nbsp; { <br>
+&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">while</span> (<b>pCur != NULL &amp;&amp; 
+				(nCol !=&nbsp; - 1 &amp;&amp; (<span style="COLOR: #0000ff">int</span>)pCur-&gt;col 
+				&lt; nCol || ((<span style="COLOR: #0000ff">int</span>)pCur <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -&gt;col == nCol &amp;&amp; nRow !=&nbsp; - 1 &amp;&amp; (<span style="COLOR: #0000ff">int</span>)pCur-&gt;row 
+				&lt; nRow))</b>) <br>
+&nbsp;&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">if</span> (pRet != 0)
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *pRet = pCur; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pCur = pCur-&gt;next; <br>
+&nbsp;&nbsp;&nbsp; } <br>
+&nbsp; } <br>
+&nbsp; <span style="COLOR: #0000ff">if</span> (<b>pCur != NULL &amp;&amp; ((<span style="COLOR: #0000ff">int</span>)pCur-&gt;row 
+				== nRow || nRow ==&nbsp; - 1) &amp;&amp; ((<span style="COLOR: #0000ff">int</span>)pCur
+				<br>
+&nbsp;&nbsp;&nbsp; -&gt;col == nCol || nCol ==&nbsp; - 1)</b>) <br>
+&nbsp; <span style="COLOR: #008000">//Find the same position </span><br>
+&nbsp; { <br>
+&nbsp;&nbsp;&nbsp; <span style="COLOR: #008000">//Find it and return the value
+				</span><br>
+&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">if</span> (pRet != 0) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *pRet = pCur; <br>
+&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">return</span> pCur-&gt;<span style="COLOR: #0000ff">value</span>;
+				<br>
+&nbsp; } <br>
+&nbsp; <span style="COLOR: #0000ff">return</span> INFINITE_VALUE; <br>
+				}</div>
+		</div>
+		<p>可以看出，将原有GetElement方法拆分成3个方法后，代码得到大大简化，而且逻辑更为清晰了。</p>
+		<h3>3、性能与代码可读性的权衡</h3>
+		<p>DynamicArray类为了确保代码的清晰可读，在某些地方做了些调整，让我们对比一下SharpICTCLAS与ICTCLAS中在这方面的不同考虑。下面的代码演示了GetFirstElementOfRow方法在两者之间的不同之处（我特意对ICTCLAS代码做了逻辑上的简化）：</p>
+		<div class="code">
+			<div class="title">
+				<div style="FLOAT: right">
+					<img class="copyCodeImage" src="images/copycode.gif" align="absMiddle" name="ccImage">
+					<a onclick="CopyCode(this)" href="javascript:">Copy Code</a></div>
+				<div style="CLEAR: none">
+					程序</div>
+			</div>
+			<div class="content">
+				<span style="COLOR: #008000">//====================================================================
+				</span><br>
+				<span style="COLOR: #008000">// SharpICTCLAS 中的查找行为 nRow 的第一个结点 
+				</span><br>
+				<span style="COLOR: #008000">//====================================================================
+				</span><br>
+				<span style="COLOR: #0000ff">public</span> ChainItem&lt;T&gt; GetFirstElementOfRow(<span style="COLOR: #0000ff">int</span> 
+				nRow) <br>
+				{ <br>
+&nbsp;&nbsp; ChainItem&lt;T&gt; pCur = pHead; <br>
+				<br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">while</span> (pCur !=
+				<span style="COLOR: #0000ff">null</span> &amp;&amp; pCur.row != nRow)
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pCur = pCur.next; <br>
+				<br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">return</span> pCur; <br>
+				} <br>
+				<br>
+				<span style="COLOR: #008000">//====================================================================
+				</span><br>
+				<span style="COLOR: #008000">// ICTCLAS 中的查找行为 nRow 的第一个结点 
+				</span><br>
+				<span style="COLOR: #008000">//====================================================================
+				</span><br>
+				... GetElement(<span style="COLOR: #0000ff">int</span> nRow,
+				<span style="COLOR: #0000ff">int</span> nCol, PARRAY_CHAIN pStart, 
+				PARRAY_CHAIN *pRet)&nbsp; <br>
+				{&nbsp; <br>
+&nbsp; PARRAY_CHAIN pCur = pStart;&nbsp; <br>
+				<br>
+&nbsp; <span style="COLOR: #0000ff">while</span> (pCur != NULL &amp;&amp; (pCur-&gt;row &lt; nRow 
+				|| (pCur-&gt;row == nRow &amp;&amp; pCur-&gt;col &lt; nCol)))&nbsp; <br>
+&nbsp; {&nbsp; <br>
+&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">if</span> (pRet != 0)&nbsp; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *pRet = pCur;&nbsp; <br>
+&nbsp;&nbsp;&nbsp; pCur = pCur-&gt;next;&nbsp; <br>
+&nbsp; }&nbsp; <br>
+				<br>
+&nbsp; <span style="COLOR: #0000ff">if</span> (pCur != NULL &amp;&amp; pCur-&gt;row == nRow 
+				&amp;&amp; pCur-&gt;col == nCol)&nbsp; <br>
+&nbsp; {&nbsp; <br>
+&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">if</span> (pRet != 0)&nbsp; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *pRet = pCur;&nbsp; <br>
+&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">return</span> pCur-&gt;<span style="COLOR: #0000ff">value</span>;&nbsp;
+				<br>
+&nbsp; }&nbsp; <br>
+&nbsp; <span style="COLOR: #008000">//...... </span><br>
+				}</div>
+		</div>
+		<p>从上面代码中可以看出，原有ICTCLAS代码充分考虑到DynamicArray是一个排序链表，因此仅仅在pCur-&gt;row &lt; nRow与pCur-&gt;col 
+		&lt; nCol范围内检索，如果找到了“pCur-&gt;row == nRow &amp;&amp; pCur-&gt;col == nCol”，那么再去做该做的事情。</p>
+		<p>而SharpICTCLAS中，判断条件仅为“pCur != null &amp;&amp; pCur.row != nRow”，这意味着如果你要找的nRow不再该链表中，则会来个“完全遍历”，搜索范围似乎太大了。</p>
+		<p>不过出于以下几点考虑我还是采用了这种表示方式：</p>
+		<p>1）汉语中的一句话不会太长，这意味着链表长度不会很长，即使来个“完全遍历”也不会牺牲多少时间。</p>
+		<p>2）毕竟要找的nRow不在该链表中的可能性不大，出现“完全遍历”的机会也不多。</p>
+		<p>3）原有ICTCLAS虽然在搜索范围内下了翻功夫，但为了确保pRet变量得到赋值，循环体内部多次执行了“if (pRet != 0)”的判断，这从性能角度上说得不偿失。</p>
+		<p>4）原有ICTCLAS为了缩小搜索范围确增加了条件判断次数“pCur != NULL &amp;&amp; (pCur-&gt;row &lt; nRow || (pCur-&gt;row 
+		== nRow &amp;&amp; pCur-&gt;col &lt; nCol))”，而由此带来的性能损失不得不考虑一下。</p>
+		<p>正因为以上几点考虑，所以在SharpICTCLAS中采用了这种简单而且并不见得低效的方式取代原有的GetElement方法。</p>
+		<ul>
+			<li><font color="#800080"><b>小结</b></font></li>
+		</ul>
+		<p>SharpICTCLAS重新设计了DynamicArray类，力争简化原有设计中复杂的代码逻辑，应当说效果比较明显。即便有性能损失，那也是微不足道的，权衡利弊，我选择了走简单的代码这条路。</p>
+		<p>　</p>
+		</td>
+	</tr>
+</table>
+
+</body>
+
+</html>

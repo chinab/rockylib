@@ -1,0 +1,470 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="zh-cn" />
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>SharpICTCLAS分词系统简介(4)NShortPath-1</title>
+<link href="css/style.css" rel="stylesheet" type="text/css" />
+<link href="css/customercss.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript">/*<![CDATA[*/
+if(typeof(HTMLElement)!="undefined" && !window.opera)
+{
+  HTMLElement.prototype.__defineGetter__("parentElement", function () 
+  {
+    if (this.parentNode == this.ownerDocument) return null;
+    return this.parentNode;
+  });
+}
+
+HTMLElement.prototype.innerHTML getter = function(){
+   return getInnerHTML(this);
+}
+/*]]>*/
+</script>
+<script language="javascript">
+function CopyCode(key)
+{
+  var divElements = document.getElementsByTagName("div");
+  var i;
+  occur = 0;  
+  for(i = 0; i < divElements.length; ++i)
+  {
+    if(key.parentElement.parentElement.parentElement == divElements[i].parentElement)
+    {
+      if(occur == 1)
+      {
+        if(navigator.appName.indexOf('Microsoft') != -1)
+          copyToClipboard(divElements[i].innerText);
+        else
+          copyToClipboard(Html2Txt(divElements[i].innerHTML));
+      }
+      occur++;
+    }
+  }
+}
+function Html2Txt(htmlText)
+{
+  str = htmlText.replace(/\r\n/g, " ");
+  str = str.replace(/\r/g, " "); 
+  str = str.replace(/\n/g, " "); 
+  str = str.replace(/\t/g, "");
+  str = str.replace(/<BR>/gi,"\r\n");
+  str = str.replace(/<[^>]+?>/g,"");
+  str = str.replace(/&nbsp;/g, " ");
+  str = str.replace(/&gt;/g, ">");
+  str = str.replace(/&lt;/g, "<");
+  str = str.replace(/&amp;/g, "&");
+  return str;
+}
+
+function copyToClipboard(txt)
+{
+ if(window.clipboardData) 
+  {
+    window.clipboardData.clearData();
+    window.clipboardData.setData("Text", txt);
+  }
+  else if(navigator.userAgent.indexOf("Opera") != -1) 
+  {
+    window.location = txt;
+  } 
+  else if (window.netscape) 
+  {
+    try 
+    {
+      netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
+    } 
+    catch (e) 
+    {
+      alert("您的firefox安全限制限制您进行剪贴板操作，请在地址栏中输入“about:config”将“signed.applets.codebase_principal_support”设置为“true”之后重试");
+      return false;
+    }
+    var clip = Components.classes['@mozilla.org/widget/clipboard;1'].createInstance(Components.interfaces.nsIClipboard);
+    if (!clip)
+      return;
+    var trans = Components.classes['@mozilla.org/widget/transferable;1'].createInstance(Components.interfaces.nsITransferable);
+    if (!trans)
+      return;
+    trans.addDataFlavor('text/unicode');
+    var str = new Object();
+    var len = new Object();
+    var str = Components.classes["@mozilla.org/supports-string;1"].createInstance(Components.interfaces.nsISupportsString);
+    var copytext = txt;
+    str.data = copytext;
+    trans.setTransferData("text/unicode",str,copytext.length*2);
+    var clipid = Components.interfaces.nsIClipboard;
+    if (!clip)
+      return false;
+    clip.setData(trans,null,clipid.kGlobalClipboard);
+  }
+} 
+</script>
+</head>
+
+<body>
+
+<p>　</p>
+<table width="95%" align="center">
+	<tr>
+		<td>
+		<p>N-最短路径中文词语粗分是分词过程中非常重要的一步，而原有ICTCLAS中该部分代码也是我认为最难读懂的部分，到现在还有一些方法没有弄明白，因此我几乎重写了NShortPath类。要想说明N-最短路径代码是如何工作的并不容易，所以分成两步分，本部分先说说SharpICTCLAS中1-最短路径是如何实现的，在下一篇文章中再引申到N-最短路径。</p>
+		<h3>1、数据表示</h3>
+		<p>这里我们求最短路的例子使用如下的有向图，每条边的权重已经在图中标注出来了。</p>
+		<p><img border="0" src="images/0308002.gif" width="383" height="107"></p>
+		<p>（图一）</p>
+		<p>根据上篇文章内容，该图该可以等价于如下的二维表格表示：</p>
+		<p><img border="0" src="images/0308003.gif" width="372" height="255"></p>
+		<p>（图二）</p>
+		<p>而对应于该表格的是一个ColumnFirstDynamicArray，共有10个结点，每个结点的取值如下表所示：</p>
+		<div class="code">
+			<div class="title">
+				<div style="FLOAT: right">
+					<img class="copyCodeImage" src="images/copycode.gif" align="absMiddle" name="ccImage">
+					<a onclick="CopyCode(this)" href="javascript:">Copy Code</a></div>
+				<div style="CLEAR: none">
+					该示例对应的ColumnFirstDynamicArray</div>
+			</div>
+			<div class="content">
+				row:0,&nbsp; col:1,&nbsp; eWeight:1,&nbsp; nPOS:0,&nbsp; sWord: 
+				始@A <br>
+				row:1,&nbsp; col:2,&nbsp; eWeight:1,&nbsp; nPOS:0,&nbsp; sWord: 
+				A@B <br>
+				row:1,&nbsp; col:3,&nbsp; eWeight:2,&nbsp; nPOS:0,&nbsp; sWord: 
+				A@C <br>
+				row:2,&nbsp; col:3,&nbsp; eWeight:1,&nbsp; nPOS:0,&nbsp; sWord: 
+				B@C <br>
+				row:2,&nbsp; col:4,&nbsp; eWeight:1,&nbsp; nPOS:0,&nbsp; sWord: 
+				B@D <br>
+				row:3,&nbsp; col:4,&nbsp; eWeight:1,&nbsp; nPOS:0,&nbsp; sWord: 
+				C@D <br>
+				row:4,&nbsp; col:5,&nbsp; eWeight:1,&nbsp; nPOS:0,&nbsp; sWord: 
+				D@E <br>
+				row:3,&nbsp; col:6,&nbsp; eWeight:2,&nbsp; nPOS:0,&nbsp; sWord: 
+				C@末 <br>
+				row:4,&nbsp; col:6,&nbsp; eWeight:3,&nbsp; nPOS:0,&nbsp; sWord: 
+				D@末 <br>
+				row:5,&nbsp; col:6,&nbsp; eWeight:1,&nbsp; nPOS:0,&nbsp; sWord: 
+				E@末</div>
+		</div>
+		<h3>2、计算出每个结点上可达最短路的PreNode</h3>
+		<p>在求解N-最短路径之前，先看看如何求最短PreNode。如下图所示：</p>
+		<p><img border="0" src="images/0308004.gif" width="456" height="195"></p>
+		<p>（图三）</p>
+		<p>首先计算出到达每个结点的最短路径，并将该结点的父结点压入该结点所对应的队列。例如3号“C”结点，到达该结点的最短路径长度为3，它的Parent结点可以是1号“A”结点，也可以是2号“B”结点，因此在队列中存储了两个PreNode结点。</p>
+		<p>而在实际计算时，如何知道到达3号“C”结点的路径有几条呢？其实我们首先计算所有到达3号“C”结点的路径长度，并按照路径长度从小到大的顺序排列（所有这些都是靠CQueue这个类完成的），然后从队列中依次向后取值，取出所有最短路径对应的PreNode。</p>
+		<p>计算到当前结点（nCurNode）可能的边，并根据总路径长度由小到大压入队列的代码如下（经过简化）：</p>
+		<div class="code">
+			<div class="title">
+				<div style="FLOAT: right">
+					<img class="copyCodeImage" src="images/copycode.gif" align="absMiddle" name="ccImage">
+					<a onclick="CopyCode(this)" href="javascript:">Copy Code</a></div>
+				<div style="CLEAR: none">
+					EnQueueCurNodeEdges方法</div>
+			</div>
+			<div class="content">
+				<span style="COLOR: #008000">//====================================================================
+				</span><br>
+				<span style="COLOR: #008000">// 将所有到当前结点（nCurNode）可能的边根据eWeight排序并压入队列 
+				</span><br>
+				<span style="COLOR: #008000">//====================================================================
+				</span><br>
+				<span style="COLOR: #0000ff">private</span>
+				<span style="COLOR: #0000ff">void</span> EnQueueCurNodeEdges(<span style="COLOR: #0000ff">ref</span> 
+				CQueue queWork, <span style="COLOR: #0000ff">int</span> nCurNode)
+				<br>
+				{ <br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">int</span> nPreNode; <br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">double</span> eWeight; <br>
+&nbsp;&nbsp; ChainItem&lt;ChainContent&gt; pEdgeList; <br>
+				<br>
+&nbsp;&nbsp; queWork.Clear(); <br>
+&nbsp;&nbsp; pEdgeList = m_apCost.GetFirstElementOfCol(nCurNode); <br>
+				<br>
+&nbsp;&nbsp; <span style="COLOR: #008000">// 获取所有到当前结点的边 </span><br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">while</span> (pEdgeList !=
+				<span style="COLOR: #0000ff">null</span> &amp;&amp; pEdgeList.col == nCurNode)
+				<br>
+&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nPreNode = pEdgeList.row;&nbsp;
+				<span style="COLOR: #008000">// </span><font color="#FF0000">很特别的命令，利用了row与col的关系</font><span style="COLOR: #008000">
+				</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; eWeight = pEdgeList.Content.eWeight; <br>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #008000">// 第一个结点，没有PreNode，直接加入队列 
+				</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">if</span> (nPreNode 
+				== 0) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; queWork.EnQueue(<span style="COLOR: #0000ff">new</span> 
+				QueueElement(nPreNode, eWeight)); <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">break</span>;
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } <br>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; queWork.EnQueue(<span style="COLOR: #0000ff">new</span> 
+				QueueElement(nPreNode, eWeight + m_pWeight[nPreNode - 1])); <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pEdgeList = pEdgeList.next; <br>
+&nbsp;&nbsp; } <br>
+				} <br>
+			</div>
+		</div>
+		<p>这段代码中有一行很特别的命令，就是用红颜色注释的那句“nPreNode = pEdgeList.row;”，让我琢磨了半天终于弄明白原有ICTCLAS用意的一句话。这需要参考本文图二，为了方便起见，我将它挪到了这里：</p>
+		<p><img border="0" src="images/0308003.gif" width="372" height="255"></p>
+		<p>注意<b><font color="#0000FF"> 3 </font></b>号“C”结点在该表中处于第<font color="#0000FF"><b> 
+		3 </b></font>列，所有可以到达该结点的<b><font color="#0000FF">边</font></b>就是该列中的元素（目前有两个元素“A@C”与“B@C”）。而与 
+		<b><font color="#0000FF">3</font></b> 号“C”结点构成这两条边的PreNode结点恰恰是这两个元素的“<b><font color="#FF0000">行号</font></b>”，分别是 
+		<b><font color="#FF0000">1 </font></b>号“A”结点与 <b><font color="#FF0000">2</font></b> 
+		号“B”结点。正是因为这种特殊的对应关系，为我们检索所有可达边提供了便捷的方法。阅读上面那段代码务必把握好这种关系。</p>
+		<h3>3、求解最短路径</h3>
+		<p>求出每个结点上最短路径的PreNode后就需要据此推导出完整的最短路径。原ICTCLAS代码中是靠GetPaths方法实现的，只是到现在我也没有读懂这个方法的代码究竟想干什么 
+		，只知道它用了若干个while，若干个if，若干个嵌套...（将ICTCLAS中的GetPaths放上来，如果谁读懂了，回头给我讲讲 ，感觉应该和我的算法差不多）。</p>
+		<div class="code">
+			<div class="title">
+				<div style="FLOAT: right">
+					<img class="copyCodeImage" src="images/copycode.gif" align="absMiddle" name="ccImage">
+					<a onclick="CopyCode(this)" href="javascript:">Copy Code</a></div>
+				<div style="CLEAR: none">
+					NShortPath.cpp程序中的GetPaths方法</div>
+			</div>
+			<div class="content">
+				<span style="COLOR: #0000ff">void</span> CNShortPath::GetPaths(unsigned
+				<span style="COLOR: #0000ff">int</span> nNode, unsigned
+				<span style="COLOR: #0000ff">int</span> nIndex,
+				<span style="COLOR: #0000ff">int</span> <br>
+&nbsp; **nResult, <span style="COLOR: #0000ff">bool</span> bBest) <br>
+				{ <br>
+&nbsp; CQueue queResult; <br>
+&nbsp; unsigned <span style="COLOR: #0000ff">int</span> nCurNode, nCurIndex, nParentNode, 
+				nParentIndex, nResultIndex = 0; <br>
+				<br>
+&nbsp; <span style="COLOR: #0000ff">if</span> (m_nResultCount &gt;= MAX_SEGMENT_NUM)
+				<br>
+&nbsp; <span style="COLOR: #008000">//Only need 10 result </span><br>
+&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">return</span> ; <br>
+&nbsp; nResult[m_nResultCount][nResultIndex] =&nbsp; - 1;
+				<span style="COLOR: #008000">//Init the result&nbsp; </span><br>
+&nbsp; queResult.Push(nNode, nIndex); <br>
+&nbsp; nCurNode = nNode; <br>
+&nbsp; nCurIndex = nIndex; <br>
+&nbsp; <span style="COLOR: #0000ff">bool</span> bFirstGet; <br>
+&nbsp; <span style="COLOR: #0000ff">while</span> (!queResult.IsEmpty()) <br>
+&nbsp; { <br>
+&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">while</span> (nCurNode &gt; 0) <br>
+&nbsp;&nbsp;&nbsp; <span style="COLOR: #008000">// </span><br>
+&nbsp;&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #008000">//Get its parent and 
+				store them in nParentNode,nParentIndex </span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">if</span> (m_pParent[nCurNode 
+				- 1][nCurIndex].Pop(&amp;nParentNode, &amp;nParentIndex, 0, <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">false</span>,
+				<span style="COLOR: #0000ff">true</span>) !=&nbsp; - 1) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nCurNode = nParentNode; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nCurIndex = nParentIndex; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">if</span> (nCurNode 
+				&gt; 0) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; queResult.Push(nCurNode, nCurIndex);
+				<br>
+&nbsp;&nbsp;&nbsp; } <br>
+&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">if</span> (nCurNode == 0) <br>
+&nbsp;&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #008000">//Get a path and output
+				</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nResult[m_nResultCount][nResultIndex++] = nCurNode;
+				<span style="COLOR: #008000">//Get the first node </span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; bFirstGet = <span style="COLOR: #0000ff">true</span>;
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nParentNode = nCurNode; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">while</span> (queResult.Pop(&amp;nCurNode, 
+				&amp;nCurIndex, 0, <span style="COLOR: #0000ff">false</span>, bFirstGet) 
+				!=&nbsp; - 1) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nResult[m_nResultCount][nResultIndex++] 
+				= nCurNode; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; bFirstGet =
+				<span style="COLOR: #0000ff">false</span>; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nParentNode = nCurNode; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nResult[m_nResultCount][nResultIndex] =&nbsp; - 1;
+				<span style="COLOR: #008000">//Set the end </span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; m_nResultCount += 1; <span style="COLOR: #008000">
+				//The number of result add by 1 </span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">if</span> (m_nResultCount 
+				&gt;= MAX_SEGMENT_NUM) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #008000">//Only need 10 result
+				</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">return</span> 
+				; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nResultIndex = 0; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nResult[m_nResultCount][nResultIndex] =&nbsp; - 1;
+				<span style="COLOR: #008000">//Init the result&nbsp; </span><br>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">if</span> (bBest)
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #008000">//Return the best result, 
+				ignore others </span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">return</span> 
+				; <br>
+&nbsp;&nbsp;&nbsp; } <br>
+&nbsp;&nbsp;&nbsp; queResult.Pop(&amp;nCurNode, &amp;nCurIndex, 0,
+				<span style="COLOR: #0000ff">false</span>,
+				<span style="COLOR: #0000ff">true</span>);
+				<span style="COLOR: #008000">//Read the top node </span><br>
+&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">while</span> (queResult.IsEmpty() 
+				== <span style="COLOR: #0000ff">false</span> &amp;&amp; (m_pParent[nCurNode 
+				- <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1][nCurIndex].IsSingle() || m_pParent[nCurNode - 
+				1][nCurIndex].IsEmpty <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (<span style="COLOR: #0000ff">true</span>))) <br>
+&nbsp;&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; queResult.Pop(&amp;nCurNode, &amp;nCurIndex, 0);
+				<span style="COLOR: #008000">//Get rid of it </span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; queResult.Pop(&amp;nCurNode, &amp;nCurIndex, 0,
+				<span style="COLOR: #0000ff">false</span>,
+				<span style="COLOR: #0000ff">true</span>);
+				<span style="COLOR: #008000">//Read the top node </span><br>
+&nbsp;&nbsp;&nbsp; } <br>
+&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">if</span> (queResult.IsEmpty() ==
+				<span style="COLOR: #0000ff">false</span> &amp;&amp; m_pParent[nCurNode 
+				- <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1][nCurIndex].IsEmpty(<span style="COLOR: #0000ff">true</span>) 
+				== <span style="COLOR: #0000ff">false</span>) <br>
+&nbsp;&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; m_pParent[nCurNode - 1][nCurIndex].Pop(&amp;nParentNode, 
+				&amp;nParentIndex, 0, <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">false</span>,
+				<span style="COLOR: #0000ff">false</span>); <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nCurNode = nParentNode; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nCurIndex = nParentIndex; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">if</span> (nCurNode 
+				&gt; 0) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; queResult.Push(nCurNode, nCurIndex);
+				<br>
+&nbsp;&nbsp;&nbsp; } <br>
+&nbsp; } <br>
+				}</div>
+		</div>
+		<p>我重写了求解最短路径的方法，其算法表述如下：</p>
+		<p><img border="0" src="images/0308005.gif" width="516" height="199"></p>
+		<p>（图四）</p>
+		<p>1）首先将最后一个元素压入堆栈（本例中是6号结点），什么时候这个元素弹出堆栈，什么时候整个任务结束。</p>
+		<p>2）对于每个结点的PreNode队列，维护了一个当前指针，初始状态都指向PreNode队列中第一个元素。</p>
+		<p>3）从右向左依次取出PreNode队列中的当前元素并压入堆栈，并将队列指针重新指向队列中第一个元素。如图四：6号元素PreNode是3，3号元素PreNode是1，1号元素PreNode是0。</p>
+		<p>4）当第一个元素压入堆栈后，输出堆栈内容即为一条队列。本例中0, 1, 3, 6便是一条最短路径。</p>
+		<p>5）将堆栈中的内容依次弹出，每弹出一个元素，就将当时压栈时对应的PreNode队列指针下移一格。如果到了末尾无法下移，则继续执行第5步，如果仍然可以移动，则执行第3步。</p>
+		<p>对于本例，先将“0”弹出堆栈，该元素对应的是1号“A”结点的PreNode队列，该队列的当前指针已经无法下移，因此继续弹出堆栈中的“1” 
+		；该元素对应3号“C”结点，因此将3号“C”结点对应的PreNode队列指针下移。由于可以移动，因此将队列中的2压入队列，2号“B”结点的PreNode是1，因此再压入1，依次类推，直到0被压入，此时又得到了一条最短路径，那就是0，1，2，3，6。如下图：</p>
+		<p><img border="0" src="images/0308006.gif" width="512" height="196"></p>
+		<p>（图五）</p>
+		<p>再往下，0、1、2都被弹出堆栈，3被弹出堆栈后，由于它对应的6号元素PreNode队列记录指针仍然可以下移，因此将5压入堆栈并依次将其PreNode入栈，直到0被入栈。此时输出第3条最短路径：0, 
+		1, 2, 4, 5, 6。入下图：</p>
+		<p><img border="0" src="images/0308007.gif" width="512" height="195"></p>
+		<p>（图六）</p>
+		<p>输出完成后，紧接着又是出栈，此时已经没有任何堆栈元素对应的PreNode队列指针可以下移，于是堆栈中的最后一个元素6也被弹出堆栈，此时输出工作完全结束。我们得到了3条最短路径，分别是：</p>
+		<ul>
+			<li><font color="#0000FF">0, 1, 3, 6,</font></li>
+			<li><font color="#0000FF">0, 1, 2, 3, 6,</font></li>
+			<li><font color="#0000FF">0, 1, 2, 4, 5, 6,</font></li>
+		</ul>
+		<p>让我们看看在SharpICTCLAS中，该算法是如何实现的：</p>
+		<div class="code">
+			<div class="title">
+				<div style="FLOAT: right">
+					<img class="copyCodeImage" src="images/copycode.gif" align="absMiddle" name="ccImage">
+					<a onclick="CopyCode(this)" href="javascript:">Copy Code</a></div>
+				<div style="CLEAR: none">
+					SharpICTCLAS中的GetPaths方法</div>
+			</div>
+			<div class="content">
+				<span style="COLOR: #008000">//====================================================================
+				</span><br>
+				<span style="COLOR: #008000">// 注：index ＝ 0 : 最短的路径； index = 1 ： 
+				次短的路径 </span><br>
+				<span style="COLOR: #008000">//&nbsp;&nbsp;&nbsp;&nbsp; 依此类推。index 
+				&lt;= this.m_nValueKind </span><br>
+				<span style="COLOR: #008000">//====================================================================
+				</span><br>
+				<span style="COLOR: #0000ff">public</span> List&lt;<span style="COLOR: #0000ff">int</span>[]&gt; 
+				GetPaths(<span style="COLOR: #0000ff">int</span> index) <br>
+				{ <br>
+&nbsp;&nbsp; Stack&lt;PathNode&gt; stack = <span style="COLOR: #0000ff">new</span> Stack&lt;PathNode&gt;();
+				<br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">int</span> curNode = m_nNode - 1, curIndex 
+				= index; <br>
+&nbsp;&nbsp; QueueElement element; <br>
+&nbsp;&nbsp; PathNode node; <br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">int</span>[] aPath; <br>
+&nbsp;&nbsp; List&lt;<span style="COLOR: #0000ff">int</span>[]&gt; result =
+				<span style="COLOR: #0000ff">new</span> List&lt;<span style="COLOR: #0000ff">int</span>[]&gt;();
+				<br>
+				<br>
+&nbsp;&nbsp; element = m_pParent[curNode - 1][curIndex].GetFirst(); <br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">while</span> (element !=
+				<span style="COLOR: #0000ff">null</span>) <br>
+&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #008000">// ---------- 通过压栈得到路径 
+				----------- </span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; stack.Push(<span style="COLOR: #0000ff">new</span> 
+				PathNode(curNode, curIndex)); <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; stack.Push(<span style="COLOR: #0000ff">new</span> 
+				PathNode(element.nParent, element.nIndex)); <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; curNode = element.nParent; <br>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">while</span> (curNode 
+				!= 0) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; element = m_pParent[element.nParent 
+				- 1][element.nIndex].GetFirst(); <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; stack.Push(<span style="COLOR: #0000ff">new</span> 
+				PathNode(element.nParent, element.nIndex)); <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; curNode = element.nParent; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } <br>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #008000">// -------------- 输出路径 
+				-------------- </span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PathNode[] nArray = stack.ToArray();&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; aPath = <span style="COLOR: #0000ff">new</span>
+				<span style="COLOR: #0000ff">int</span>[nArray.Length]; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">for</span>(<span style="COLOR: #0000ff">int</span> 
+				i=0; i&lt;aPath.Length; i++) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; aPath[i] = nArray[i].nParent;
+				<br>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; result.Add(aPath); <br>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #008000">// -------------- 出栈以检查是否还有其它路径 
+				-------------- </span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">do</span> <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; node = stack.Pop(); <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; curNode = node.nParent; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; curIndex = node.nIndex; <br>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } <span style="COLOR: #0000ff">while</span> (curNode 
+				&lt; 1 || (stack.Count != 0 &amp;&amp; !m_pParent[curNode - 1][curIndex].CanGetNext));
+				<br>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; element = m_pParent[curNode - 1][curIndex].GetNext();
+				<br>
+&nbsp;&nbsp; } <br>
+				<br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">return</span> result; <br>
+				}</div>
+		</div>
+		<p>注意，上面的代码是N-最短路径的，比起1-最短路径来说增加了点复杂度，但总体架构不变。这段代码将原有ICTCLAS的70多行求解路径代码缩短到了40多行。</p>
+		<ul>
+			<li><font color="#800080"><b>小结</b></font></li>
+		</ul>
+		<p>1）N-最短路径的求解比较复杂，本文先从求解1-最短路径着手，说明SharpICTCLAS是如何计算的，在下篇文章中将推广到N-最短路径。</p>
+		<p>2）1-最短路径并不意味着只有一条最短路径，而是路径最短的若干条路径。就如本文案例所示，1-最短路径算法最终求得了3条路径，它们的长度都是5，因此都是最短路径。</p>
+		<p>　</p>
+		</td>
+	</tr>
+</table>
+
+</body>
+
+</html>

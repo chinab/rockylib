@@ -1,0 +1,178 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{B0E28DC0-8937-4274-9A6B-B3F8506276D3}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>InfrastructureService.Model</RootNamespace>
+    <AssemblyName>InfrastructureService.Model</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.Common">
+      <HintPath>..\..\..\packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35\Microsoft.Practices.EnterpriseLibrary.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.Validation">
+      <HintPath>..\..\..\packages\EnterpriseLibrary.Validation.5.0.505.0\lib\NET35\Microsoft.Practices.EnterpriseLibrary.Validation.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.ServiceLocation">
+      <HintPath>..\..\..\packages\CommonServiceLocator.1.0\lib\NET35\Microsoft.Practices.ServiceLocation.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity">
+      <HintPath>..\..\..\packages\Unity.2.1.505.2\lib\NET35\Microsoft.Practices.Unity.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.Configuration">
+      <HintPath>..\..\..\packages\Unity.2.1.505.2\lib\NET35\Microsoft.Practices.Unity.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.Interception">
+      <HintPath>..\..\..\packages\Unity.Interception.2.1.505.2\lib\NET35\Microsoft.Practices.Unity.Interception.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.Interception.Configuration">
+      <HintPath>..\..\..\packages\Unity.Interception.2.1.505.2\lib\NET35\Microsoft.Practices.Unity.Interception.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Site\Entity\ComponentInfoEntity.cs" />
+    <Compile Include="Site\Entity\ControlInfoEntity.cs" />
+    <Compile Include="Site\Entity\RoleEntity.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Site\Entity\ServiceInfoEntity.cs" />
+    <Compile Include="Site\Enum\PermissionFlags.cs" />
+    <Compile Include="Site\Parameter\CreateRoleParameter.cs" />
+    <Compile Include="Site\Parameter\QueryComponentInfosParameter.cs" />
+    <Compile Include="Site\Parameter\QueryControlInfosParameter.cs" />
+    <Compile Include="Site\Result\QueryRoleResult.cs" />
+    <Compile Include="Site\Result\TermControlResult.cs" />
+    <Compile Include="Basic\Entity\StorageConfig.cs" />
+    <Compile Include="Basic\Enum\AutoCompleteComponent.cs" />
+    <Compile Include="Basic\Parameter\QueryAutoCompleteParameter.cs" />
+    <Compile Include="Basic\Parameter\GetFileUrlParameter.cs" />
+    <Compile Include="Basic\Parameter\QueryFileParameter.cs" />
+    <Compile Include="Basic\Parameter\QueryHotKeywords.cs" />
+    <Compile Include="Basic\Parameter\SaveFileParameter.cs" />
+    <Compile Include="Basic\Parameter\SegmentWordParameter.cs" />
+    <Compile Include="Basic\Result\QueryAutoCompleteResult.cs" />
+    <Compile Include="Basic\Result\QueryFilePathResult.cs" />
+    <Compile Include="Basic\Result\QueryFileResult.cs" />
+    <Compile Include="Basic\Result\QueryHotKeywordsResult.cs" />
+    <Compile Include="Basic\Result\SegmentWordResult.cs" />
+    <Compile Include="Common\Entity\HeaderEntity.cs" />
+    <Compile Include="Common\Enum\StatusKind.cs" />
+    <Compile Include="Common\Parameter\PagingParameter.cs" />
+    <Compile Include="Common\Parameter\SetStatusParameter.cs" />
+    <Compile Include="Common\Result\PagedResult.cs" />
+    <Compile Include="Message\Enum\MessageStatusKind.cs" />
+    <Compile Include="Message\Parameter\SendEmailParameter.cs" />
+    <Compile Include="Message\Parameter\SendSMSParameter.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Site\Entity\AdminEntity.cs" />
+    <Compile Include="Site\Entity\FeedbackEntity.cs" />
+    <Compile Include="Site\Entity\FriendLinkEntity.cs" />
+    <Compile Include="Site\Entity\SiteADEntity.cs" />
+    <Compile Include="Site\Enum\FeedbackKind.cs" />
+    <Compile Include="Site\Enum\NewsFlags.cs" />
+    <Compile Include="Site\Enum\RenderKind.cs" />
+    <Compile Include="Site\Parameter\ChangePasswordParameter.cs" />
+    <Compile Include="Site\Parameter\SignInParameter.cs" />
+    <Compile Include="Site\Parameter\News\DeleteCategoriesParameter.cs" />
+    <Compile Include="Site\Parameter\News\QueryCategoriesParameter.cs" />
+    <Compile Include="Site\Parameter\News\QueryNewsDetailParameter.cs" />
+    <Compile Include="Site\Parameter\News\QueryNewsParameter.cs" />
+    <Compile Include="Site\Parameter\News\QueryTagsParameter.cs" />
+    <Compile Include="Site\Parameter\News\SaveCategoryParameter.cs" />
+    <Compile Include="Site\Parameter\News\SaveNewsParameter.cs" />
+    <Compile Include="Site\Parameter\News\SetNewsStatusParameter.cs" />
+    <Compile Include="Site\Parameter\QueryAdminsParameter.cs" />
+    <Compile Include="Site\Parameter\QueryFeedbacksParameter.cs" />
+    <Compile Include="Site\Parameter\QueryFriendLinksParameter.cs" />
+    <Compile Include="Site\Parameter\QuerySiteADsParameter.cs" />
+    <Compile Include="Site\Result\News\QueryCategoriesResult.cs" />
+    <Compile Include="Site\Result\News\QueryNewsDetailResult.cs" />
+    <Compile Include="Site\Result\News\QueryNewsResult.cs" />
+    <Compile Include="Site\Result\QueryAdminsResult.cs" />
+    <Compile Include="Site\Result\QueryFeedbacksResult.cs" />
+    <Compile Include="Site\Result\QueryFriendLinksResult.cs" />
+    <Compile Include="Site\Result\QuerySiteADsResult.cs" />
+    <Compile Include="Site\Result\SignInResult.cs" />
+    <Compile Include="User\Entity\SSOIdentity.cs" />
+    <Compile Include="User\Entity\SSONotify.cs" />
+    <Compile Include="User\Entity\UserEntity.cs" />
+    <Compile Include="User\Enum\ActivationStatus.cs" />
+    <Compile Include="User\Enum\AuthEmailKind.cs" />
+    <Compile Include="User\Enum\AuthMobileKind.cs" />
+    <Compile Include="User\Enum\OAuthKind.cs" />
+    <Compile Include="User\Enum\SignUpErrorCode.cs" />
+    <Compile Include="User\Enum\UserFlags.cs" />
+    <Compile Include="User\Parameter\ChangePasswordParameter.cs" />
+    <Compile Include="User\Parameter\GetIdentityParameter.cs" />
+    <Compile Include="User\Parameter\IsUserNameExistsParameter.cs" />
+    <Compile Include="User\Parameter\OAuthParameter.cs" />
+    <Compile Include="User\Parameter\QuerySignInLogsParameter.cs" />
+    <Compile Include="User\Parameter\QueryUsersParameter.cs" />
+    <Compile Include="User\Parameter\SendAuthEmailParameter.cs" />
+    <Compile Include="User\Parameter\SendAuthMobileParameter.cs" />
+    <Compile Include="User\Parameter\SendFindPwdCodeParameter.cs" />
+    <Compile Include="User\Parameter\SignInParameter.cs" />
+    <Compile Include="User\Parameter\SignUpParameter.cs" />
+    <Compile Include="User\Parameter\VerifyMobileParameter.cs" />
+    <Compile Include="User\Result\GetServerConfigResult.cs" />
+    <Compile Include="User\Result\QuerySignInLogsResult.cs" />
+    <Compile Include="User\Result\QueryUsersResult.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Message\Entity\" />
+    <Folder Include="Message\Result\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Infrastructure\Rocky\Rocky.csproj">
+      <Project>{0433cac5-baaa-4e73-8f68-a7ccb1f6c9bf}</Project>
+      <Name>Rocky</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

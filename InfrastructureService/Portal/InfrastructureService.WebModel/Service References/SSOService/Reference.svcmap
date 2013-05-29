@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="16858174-edfe-4d19-ac31-c24222e260e9" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>false</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://azure.open.net/SSOService.svc" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="SSOService.wsdl" MetadataType="Wsdl" ID="282d0161-893a-4032-ba8d-0fc770ca768d" SourceId="1" SourceUrl="http://azure.open.net/SSOService.svc?wsdl" />
+    <MetadataFile FileName="SSOService.xsd" MetadataType="Schema" ID="b6c4947d-fce8-4875-9271-917fa0512198" SourceId="1" SourceUrl="http://azure.open.net/SSOService.svc?xsd=xsd2" />
+    <MetadataFile FileName="SSOService1.xsd" MetadataType="Schema" ID="c3a0d706-0ada-47f6-8898-cfc63a720cb5" SourceId="1" SourceUrl="http://azure.open.net/SSOService.svc?xsd=xsd3" />
+    <MetadataFile FileName="SSOService2.xsd" MetadataType="Schema" ID="d0408d60-8f80-49b7-843b-db0abd40f25e" SourceId="1" SourceUrl="http://azure.open.net/SSOService.svc?xsd=xsd0" />
+    <MetadataFile FileName="SSOService3.xsd" MetadataType="Schema" ID="df9c5bdf-0047-43ce-bd95-6dd251dcbf3f" SourceId="1" SourceUrl="http://azure.open.net/SSOService.svc?xsd=xsd1" />
+    <MetadataFile FileName="SSOService.disco" MetadataType="Disco" ID="04f09098-f6b3-46ca-87d8-058f43f970ee" SourceId="1" SourceUrl="http://azure.open.net/SSOService.svc?disco" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="2.0" xmlns:edmx="http://schemas.microsoft.com/ado/2008/10/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="0a5c81599cb147e5add76cb3b9a11804" Name="关系图1">
+        <EntityTypeShape EntityType="InfrastructureServiceModel.ActionLog" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="InfrastructureServiceModel.AppInfo" Width="1.5" PointX="0.75" PointY="24.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="InfrastructureServiceModel.ComponentInfo" Width="1.5" PointX="5.25" PointY="34.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="InfrastructureServiceModel.ControlInfo" Width="1.5" PointX="7.5" PointY="32.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="InfrastructureServiceModel.EmailConfig" Width="1.5" PointX="3" PointY="8.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="InfrastructureServiceModel.EmailMessage" Width="1.5" PointX="3" PointY="12.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="InfrastructureServiceModel.Feedback" Width="1.5" PointX="3" PointY="16.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="InfrastructureServiceModel.FileStorage" Width="1.5" PointX="2.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="InfrastructureServiceModel.FriendLink" Width="1.5" PointX="3" PointY="20" IsExpanded="true" />
+        <EntityTypeShape EntityType="InfrastructureServiceModel.News" Width="1.5" PointX="5.25" PointY="26.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="InfrastructureServiceModel.NewsCategory" Width="1.5" PointX="3" PointY="28.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="InfrastructureServiceModel.RoleControlMap" Width="1.5" PointX="9.75" PointY="33" IsExpanded="true" />
+        <EntityTypeShape EntityType="InfrastructureServiceModel.RoleInfo" Width="1.5" PointX="0.75" PointY="21.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="InfrastructureServiceModel.SearchKeyword" Width="1.5" PointX="7.5" PointY="36.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="InfrastructureServiceModel.ServiceInfo" Width="1.5" PointX="3" PointY="34.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="InfrastructureServiceModel.SiteAD" Width="1.5" PointX="3" PointY="39.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="InfrastructureServiceModel.SMSConfig" Width="1.5" PointX="3" PointY="43.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="InfrastructureServiceModel.SMSMessage" Width="1.5" PointX="3" PointY="46.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="InfrastructureServiceModel.UserControlMap" Width="1.5" PointX="9.75" PointY="29.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="InfrastructureServiceModel.UserInfo" Width="1.5" PointX="3" PointY="24" IsExpanded="true" />
+        <AssociationConnector Association="InfrastructureServiceModel.FK_EmailMessage_AppInfo" ManuallyRouted="false" />
+        <AssociationConnector Association="InfrastructureServiceModel.FK_FeedbackInfo_AppInfo" ManuallyRouted="false" />
+        <AssociationConnector Association="InfrastructureServiceModel.FK_FriendLinkInfo_AppInfo" ManuallyRouted="false" />
+        <AssociationConnector Association="InfrastructureServiceModel.FK_News_AppInfo" ManuallyRouted="false" />
+        <AssociationConnector Association="InfrastructureServiceModel.FK_NewsCategory_AppInfo" ManuallyRouted="false" />
+        <AssociationConnector Association="InfrastructureServiceModel.FK_ServiceInfo_AppInfo" ManuallyRouted="false" />
+        <AssociationConnector Association="InfrastructureServiceModel.FK_SiteADInfo_AppInfo" ManuallyRouted="false" />
+        <AssociationConnector Association="InfrastructureServiceModel.FK_SMSMessage_AppInfo" ManuallyRouted="false" />
+        <AssociationConnector Association="InfrastructureServiceModel.FK_UserInfo_AppInfo" ManuallyRouted="false" />
+        <AssociationConnector Association="InfrastructureServiceModel.FK_ComponentInfo_ServiceInfo" ManuallyRouted="false" />
+        <AssociationConnector Association="InfrastructureServiceModel.FK_ControlInfo_ComponentInfo" ManuallyRouted="false" />
+        <AssociationConnector Association="InfrastructureServiceModel.FK_SearchKeyword_ComponentInfo1" ManuallyRouted="false" />
+        <AssociationConnector Association="InfrastructureServiceModel.FK_RoleControlMap_ControlInfo" ManuallyRouted="false" />
+        <AssociationConnector Association="InfrastructureServiceModel.FK_UserControlMap_ControlInfo" ManuallyRouted="false" />
+        <AssociationConnector Association="InfrastructureServiceModel.FK_News_NewsCategory" ManuallyRouted="false" />
+        <AssociationConnector Association="InfrastructureServiceModel.FK_RoleControlMap_RoleInfo" ManuallyRouted="false" />
+        <AssociationConnector Association="InfrastructureServiceModel.FK_UserControlMap_UserInfo" ManuallyRouted="false" />
+        <AssociationConnector Association="InfrastructureServiceModel.AppEmailConfigMap" ManuallyRouted="false" />
+        <AssociationConnector Association="InfrastructureServiceModel.AppSMSConfigMap" ManuallyRouted="false" />
+        <AssociationConnector Association="InfrastructureServiceModel.UserRoleMap" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

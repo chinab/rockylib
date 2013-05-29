@@ -1,0 +1,848 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="zh-cn" />
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>SharpICTCLAS分词系统简介(8)其它</title>
+<link href="css/style.css" rel="stylesheet" type="text/css" />
+<link href="css/customercss.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript">/*<![CDATA[*/
+if(typeof(HTMLElement)!="undefined" && !window.opera)
+{
+  HTMLElement.prototype.__defineGetter__("parentElement", function () 
+  {
+    if (this.parentNode == this.ownerDocument) return null;
+    return this.parentNode;
+  });
+}
+
+HTMLElement.prototype.innerHTML getter = function(){
+   return getInnerHTML(this);
+}
+/*]]>*/
+</script>
+<script language="javascript">
+function CopyCode(key)
+{
+  var divElements = document.getElementsByTagName("div");
+  var i;
+  occur = 0;  
+  for(i = 0; i < divElements.length; ++i)
+  {
+    if(key.parentElement.parentElement.parentElement == divElements[i].parentElement)
+    {
+      if(occur == 1)
+      {
+        if(navigator.appName.indexOf('Microsoft') != -1)
+          copyToClipboard(divElements[i].innerText);
+        else
+          copyToClipboard(Html2Txt(divElements[i].innerHTML));
+      }
+      occur++;
+    }
+  }
+}
+function Html2Txt(htmlText)
+{
+  str = htmlText.replace(/\r\n/g, " ");
+  str = str.replace(/\r/g, " "); 
+  str = str.replace(/\n/g, " "); 
+  str = str.replace(/\t/g, "");
+  str = str.replace(/<BR>/gi,"\r\n");
+  str = str.replace(/<[^>]+?>/g,"");
+  str = str.replace(/&nbsp;/g, " ");
+  str = str.replace(/&gt;/g, ">");
+  str = str.replace(/&lt;/g, "<");
+  str = str.replace(/&amp;/g, "&");
+  return str;
+}
+
+function copyToClipboard(txt)
+{
+ if(window.clipboardData) 
+  {
+    window.clipboardData.clearData();
+    window.clipboardData.setData("Text", txt);
+  }
+  else if(navigator.userAgent.indexOf("Opera") != -1) 
+  {
+    window.location = txt;
+  } 
+  else if (window.netscape) 
+  {
+    try 
+    {
+      netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
+    } 
+    catch (e) 
+    {
+      alert("您的firefox安全限制限制您进行剪贴板操作，请在地址栏中输入“about:config”将“signed.applets.codebase_principal_support”设置为“true”之后重试");
+      return false;
+    }
+    var clip = Components.classes['@mozilla.org/widget/clipboard;1'].createInstance(Components.interfaces.nsIClipboard);
+    if (!clip)
+      return;
+    var trans = Components.classes['@mozilla.org/widget/transferable;1'].createInstance(Components.interfaces.nsITransferable);
+    if (!trans)
+      return;
+    trans.addDataFlavor('text/unicode');
+    var str = new Object();
+    var len = new Object();
+    var str = Components.classes["@mozilla.org/supports-string;1"].createInstance(Components.interfaces.nsISupportsString);
+    var copytext = txt;
+    str.data = copytext;
+    trans.setTransferData("text/unicode",str,copytext.length*2);
+    var clipid = Components.interfaces.nsIClipboard;
+    if (!clip)
+      return false;
+    clip.setData(trans,null,clipid.kGlobalClipboard);
+  }
+} 
+</script>
+</head>
+
+<body>
+
+<p>　</p>
+<table width="95%" align="center">
+	<tr>
+		<td>
+		<p>前文对SharpICTCLAS中的一些主要内容做了介绍，本文介绍一下SharpICTCLAS中一些其它考虑，包括事件机制以及如何使用SharpICTCLAS。</p>
+		<h3>1、SharpICTCLAS中的事件</h3>
+		<p>分词过程比较复杂，所以很可能有人希望能够追踪分词的过程，设置代码断点比较麻烦，因此SharpICTCLAS中提供了事件机制，可以在分词的不同阶段触发相关事件，使用者可以订阅这些事件并输出中间结果供查错使用。</p>
+		<p>事件的阶段被定义在SegmentStage枚举当中，代码如下：</p>
+		<div class="code">
+			<div class="title">
+				<div style="FLOAT: right">
+					<img class="copyCodeImage" src="images/copycode.gif" align="absMiddle" name="ccImage">
+					<a onclick="CopyCode(this)" href="javascript:">Copy Code</a></div>
+				<div style="CLEAR: none">
+					SegmentStage程序</div>
+			</div>
+			<div class="content">
+				<span style="COLOR: #0000ff">public</span>
+				<span style="COLOR: #0000ff">enum</span> SegmentStage <br>
+				{ <br>
+&nbsp;&nbsp; BeginSegment,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<span style="COLOR: #008000">//开始分词 </span><br>
+&nbsp;&nbsp; AtomSegment,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<span style="COLOR: #008000">//原子切分 </span><br>
+&nbsp;&nbsp; GenSegGraph,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<span style="COLOR: #008000">//生成SegGraph </span><br>
+&nbsp;&nbsp; GenBiSegGraph,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<span style="COLOR: #008000">//生成BiSegGraph </span><br>
+&nbsp;&nbsp; NShortPath,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<span style="COLOR: #008000">//N最短路径计算 </span><br>
+&nbsp;&nbsp; BeforeOptimize,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<span style="COLOR: #008000">//对N最短路径进一步整理得到的结果 </span><br>
+&nbsp;&nbsp; OptimumSegment,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<span style="COLOR: #008000">//初始OptimumSegmentGraph </span><br>
+&nbsp;&nbsp; PersonAndPlaceRecognition, <span style="COLOR: #008000">//人名与地名识别后的OptimumSegmentGraph
+				</span><br>
+&nbsp;&nbsp; BiOptimumSegment,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<span style="COLOR: #008000">//生成BiOptimumSegmentGraph </span>
+				<br>
+&nbsp;&nbsp; FinishSegment&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<span style="COLOR: #008000">//完成分词，输出结果 </span><br>
+				}</div>
+		</div>
+		<p>分别对应分词过程中的10个阶段。</p>
+		<p>SharpICTCLAS中还定义了一个EventArgs，里面包含了两个元素，分别用来记录该事件元素所处的分词阶段以及该阶段的相关中间结果信息。中间结果信息使用的是string类型数据，日后可以考虑采用更复杂的表示形式输出中间结果。该事件元素定义如下：</p>
+		<div class="code">
+			<div class="title">
+				<div style="FLOAT: right">
+					<img class="copyCodeImage" src="images/copycode.gif" align="absMiddle" name="ccImage">
+					<a onclick="CopyCode(this)" href="javascript:">Copy Code</a></div>
+				<div style="CLEAR: none">
+					SegmentEventArgs的定义</div>
+			</div>
+			<div class="content">
+				<span style="COLOR: #0000ff">public</span>
+				<span style="COLOR: #0000ff">class</span> SegmentEventArgs : EventArgs
+				<br>
+				{ <br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">public</span> SegmentStage Stage; <br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">public</span>
+				<span style="COLOR: #0000ff">string</span> Info =
+				<span style="COLOR: #ff00ff">&quot;&quot;</span>; <br>
+				<br>
+&nbsp;&nbsp; ...... <br>
+				}</div>
+		</div>
+		<p>剩下的工作就是定义委派并发布事件了。由于分词过程主要集中在两个类中：WordSegment类与Segment类，而用户通常只需要与WordSegment类打交道，因此WordSegment类中转发了Segment类产生的事件。</p>
+		<p>委派的定义以及事件的定义如下（部分）：</p>
+		<div class="code">
+			<div class="title">
+				<div style="FLOAT: right">
+					<img class="copyCodeImage" src="images/copycode.gif" align="absMiddle" name="ccImage">
+					<a onclick="CopyCode(this)" href="javascript:">Copy Code</a></div>
+				<div style="CLEAR: none">
+					程序</div>
+			</div>
+			<div class="content">
+				<span style="COLOR: #008000">//---定义委派 </span><br>
+				<span style="COLOR: #0000ff">public</span>
+				<span style="COLOR: #0000ff">delegate</span>
+				<span style="COLOR: #0000ff">void</span> SegmentEventHandler(<span style="COLOR: #0000ff">object</span> 
+				sender, SegmentEventArgs e); <br>
+				<br>
+				<span style="COLOR: #008000">//---定义事件 </span><br>
+				<span style="COLOR: #0000ff">public</span>
+				<span style="COLOR: #0000ff">event</span> SegmentEventHandler OnSegmentEvent;
+				<br>
+				<br>
+				<span style="COLOR: #008000">//---发布事件的方法 </span><br>
+				<span style="COLOR: #0000ff">private</span>
+				<span style="COLOR: #0000ff">void</span> SendEvents(SegmentEventArgs 
+				e) <br>
+				{ <br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">if</span> (OnSegmentEvent !=
+				<span style="COLOR: #0000ff">null</span>) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OnSegmentEvent(<span style="COLOR: #0000ff">this</span>, 
+				e); <br>
+				} <br>
+				<br>
+				<span style="COLOR: #008000">//---开始分词 </span><br>
+				<span style="COLOR: #0000ff">private</span>
+				<span style="COLOR: #0000ff">void</span> OnBeginSegment(<span style="COLOR: #0000ff">string</span> 
+				sentence) <br>
+				{ <br>
+&nbsp;&nbsp; SendEvents(<span style="COLOR: #0000ff">new</span> SegmentEventArgs(SegmentStage.BeginSegment, 
+				sentence)); <br>
+				} <br>
+				<br>
+				...... <br>
+				<br>
+				<span style="COLOR: #008000">//---结束分词 </span><br>
+				<span style="COLOR: #0000ff">private</span>
+				<span style="COLOR: #0000ff">void</span> OnFinishSegment(List&lt;WordResult[]&gt; 
+				m_pWordSeg) <br>
+				{ <br>
+&nbsp;&nbsp; StringBuilder sb = <span style="COLOR: #0000ff">new</span> StringBuilder();
+				<br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">for</span> (<span style="COLOR: #0000ff">int</span> 
+				k = 0; k &lt; m_pWordSeg.Count; k++) <br>
+&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">for</span> (<span style="COLOR: #0000ff">int</span> 
+				j = 0; j &lt; m_pWordSeg[k].Length; j++) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sb.Append(<span style="COLOR: #0000ff">string</span>.Format(<span style="COLOR: #ff00ff">&quot;{0} 
+				/{1} &quot;</span>, m_pWordSeg[k][j].sWord,&nbsp; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				Utility.GetPOSString(m_pWordSeg[k][j].nPOS))); <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sb.Append(<span style="COLOR: #ff00ff">&quot;\r\n&quot;</span>);
+				<br>
+&nbsp;&nbsp; } <br>
+				<br>
+&nbsp;&nbsp; SendEvents(<span style="COLOR: #0000ff">new</span> SegmentEventArgs(SegmentStage.FinishSegment, 
+				sb.ToString())); <br>
+				}</div>
+		</div>
+		<p>有了这些事件，用户可以根据需要订阅不同的事件来获取分词的中间结果，极大方便了程序调试工作。</p>
+		<h3>2、SharpICTCLAS的使用</h3>
+		<p>下面是一个使用SharpICTCLAS的示例代码：</p>
+		<div class="code">
+			<div class="title">
+				<div style="FLOAT: right">
+					<img class="copyCodeImage" src="images/copycode.gif" align="absMiddle" name="ccImage">
+					<a onclick="CopyCode(this)" href="javascript:">Copy Code</a></div>
+				<div style="CLEAR: none">
+					WordSegmentSample.cs</div>
+			</div>
+			<div class="content">
+				<span style="COLOR: #0000ff">using</span> System; <br>
+				<span style="COLOR: #0000ff">using</span> System.Collections.Generic;
+				<br>
+				<span style="COLOR: #0000ff">using</span> System.Text; <br>
+				<b><span style="COLOR: #0000ff">using</span> SharpICTCLAS; </b>
+				<br>
+				<br>
+				<span style="COLOR: #0000ff">public</span>
+				<span style="COLOR: #0000ff">class</span> WordSegmentSample <br>
+				{ <br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">private</span>
+				<span style="COLOR: #0000ff">int</span> nKind = 1;&nbsp;
+				<span style="COLOR: #008000">//在NShortPath方法中用来决定初步切分时分成几种结果 
+				</span><br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">private</span> WordSegment wordSegment;
+				<br>
+				<br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//=======================================================
+				</span><br>
+&nbsp;&nbsp; <span style="COLOR: #008000">// 构造函数，在没有指明nKind的情况下，nKind 取 1
+				</span><br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//=======================================================
+				</span><br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">public</span> WordSegmentSample(<span style="COLOR: #0000ff">string</span> 
+				dictPath) : <span style="COLOR: #0000ff">this</span>(dictPath, 1) 
+				{ } <br>
+				<br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//=======================================================
+				</span><br>
+&nbsp;&nbsp; <span style="COLOR: #008000">// 构造函数 </span><br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//=======================================================
+				</span><br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">public</span> WordSegmentSample(<span style="COLOR: #0000ff">string</span> 
+				dictPath, <span style="COLOR: #0000ff">int</span> nKind) <br>
+&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">this</span>.nKind = 
+				nKind; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b><span style="COLOR: #0000ff">this</span>.wordSegment 
+				= <span style="COLOR: #0000ff">new</span> WordSegment(); </b>
+				<br>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #008000">//---------- 订阅分词过程中的事件 
+				---------- </span><br>
+				<b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; wordSegment.OnSegmentEvent +=
+				<span style="COLOR: #0000ff">new</span> SegmentEventHandler(<span style="COLOR: #0000ff">this</span>.OnSegmentEventHandler);
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; wordSegment.InitWordSegment(dictPath); </b><br>
+&nbsp;&nbsp; } <br>
+				<br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//=======================================================
+				</span><br>
+&nbsp;&nbsp; <span style="COLOR: #008000">// 开始分词 </span><br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//=======================================================
+				</span><br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">public</span> List&lt;WordResult[]&gt; Segment(<span style="COLOR: #0000ff">string</span> 
+				sentence) <br>
+&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b><span style="COLOR: #0000ff">return</span> wordSegment.Segment(sentence, 
+				nKind); </b><br>
+&nbsp;&nbsp; } <br>
+&nbsp;&nbsp;&nbsp; <br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//=======================================================
+				</span><br>
+&nbsp;&nbsp; <span style="COLOR: #008000">// 输出分词过程中每一步的中间结果 </span><br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//=======================================================
+				</span><br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">private</span>
+				<span style="COLOR: #0000ff">void</span> OnSegmentEventHandler(<span style="COLOR: #0000ff">object</span> 
+				sender, SegmentEventArgs e) <br>
+&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">switch</span> (e.Stage)
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">case</span> 
+				SegmentStage.BeginSegment: <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(<span style="COLOR: #ff00ff">&quot;\r\n==== 
+				原始句子：\r\n&quot;</span>); <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(e.Info 
+				+ <span style="COLOR: #ff00ff">&quot;\r\n&quot;</span>); <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<span style="COLOR: #0000ff">break</span>; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">case</span> 
+				SegmentStage.AtomSegment: <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(<span style="COLOR: #ff00ff">&quot;\r\n==== 
+				原子切分：\r\n&quot;</span>); <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(e.Info);
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<span style="COLOR: #0000ff">break</span>; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">case</span> 
+				SegmentStage.GenSegGraph: <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(<span style="COLOR: #ff00ff">&quot;\r\n==== 
+				生成 segGraph：\r\n&quot;</span>); <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(e.Info);
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<span style="COLOR: #0000ff">break</span>; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">case</span> 
+				SegmentStage.GenBiSegGraph: <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(<span style="COLOR: #ff00ff">&quot;\r\n==== 
+				生成 biSegGraph：\r\n&quot;</span>); <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(e.Info);
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<span style="COLOR: #0000ff">break</span>; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">case</span> 
+				SegmentStage.NShortPath: <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(<span style="COLOR: #ff00ff">&quot;\r\n==== 
+				NShortPath 初步切分的到的 N 个结果：\r\n&quot;</span>); <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(e.Info);
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<span style="COLOR: #0000ff">break</span>; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">case</span> 
+				SegmentStage.BeforeOptimize: <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(<span style="COLOR: #ff00ff">&quot;\r\n==== 
+				经过数字、日期合并等策略处理后的 N 个结果：\r\n&quot;</span>); <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(e.Info);
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<span style="COLOR: #0000ff">break</span>; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">case</span> 
+				SegmentStage.OptimumSegment: <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(<span style="COLOR: #ff00ff">&quot;\r\n==== 
+				将 N 个结果归并入OptimumSegment：\r\n&quot;</span>); <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(e.Info);
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<span style="COLOR: #0000ff">break</span>; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">case</span> 
+				SegmentStage.PersonAndPlaceRecognition: <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(<span style="COLOR: #ff00ff">&quot;\r\n==== 
+				加入对姓名、翻译人名以及地名的识别：\r\n&quot;</span>); <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(e.Info);
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<span style="COLOR: #0000ff">break</span>; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">case</span> 
+				SegmentStage.BiOptimumSegment: <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(<span style="COLOR: #ff00ff">&quot;\r\n==== 
+				对加入对姓名、地名的OptimumSegment生成BiOptimumSegment：\r\n&quot;</span>); <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(e.Info);
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<span style="COLOR: #0000ff">break</span>; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">case</span> 
+				SegmentStage.FinishSegment: <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(<span style="COLOR: #ff00ff">&quot;\r\n==== 
+				最终识别结果：\r\n&quot;</span>); <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(e.Info);
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<span style="COLOR: #0000ff">break</span>; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } <br>
+&nbsp;&nbsp; } <br>
+				} <br>
+			</div>
+		</div>
+		<p>从中我们可以看出，首先添加对SharpICTCLAS命名空间的引用，然后创建WordSegment类的一个实例。如果需要拦截分词过程中的事件的话，那么可以订阅WordSegment类的OnSegmentEvent事件，上面的代码用OnSegmentEventHandler方法订阅了事件，并且输出了所有分词Stage的中间结果。</p>
+		<p>WordSegmentSample类中的 nKind 属性是在NShortPath方法中用来决定初步切分时分成几种结果。如果不特殊指明，nKind取1，用户也可以自己定义一个1～10之间的整数（超过10，系统自动取10），数越大分词准确率越高（可以参考张华平的论文），但系统执行效率会下降。</p>
+		<p>WordSegment类的InitWordSegment方法主要用来初始化各个词典，用户在这里需要提供词典所在的目录信息，系统自动到该目录下搜索所有词典。</p>
+		<p>有了WordSegmentSample类，主程序如下：</p>
+		<div class="code">
+			<div class="title">
+				<div style="FLOAT: right">
+					<img class="copyCodeImage" src="images/copycode.gif" align="absMiddle" name="ccImage">
+					<a onclick="CopyCode(this)" href="javascript:">Copy Code</a></div>
+				<div style="CLEAR: none">
+					程序</div>
+			</div>
+			<div class="content">
+				<span style="COLOR: #0000ff">using</span> System; <br>
+				<span style="COLOR: #0000ff">using</span> System.Collections.Generic;
+				<br>
+				<span style="COLOR: #0000ff">using</span> System.Text; <br>
+				<span style="COLOR: #0000ff">using</span> System.IO; <br>
+				<span style="COLOR: #0000ff">using</span> SharpICTCLAS; <br>
+				<br>
+				<span style="COLOR: #0000ff">class</span> Program <br>
+				{ <br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">static</span>
+				<span style="COLOR: #0000ff">void</span> Main(<span style="COLOR: #0000ff">string</span>[] 
+				args) <br>
+&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; List&lt;WordResult[]&gt; result; <br>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">string</span> DictPath 
+				= Path.Combine(Environment.CurrentDirectory,
+				<span style="COLOR: #ff00ff">&quot;Data&quot;</span>) +&nbsp; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Path.DirectorySeparatorChar;
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(<span style="COLOR: #ff00ff">&quot;正在初始化字典库，请稍候...&quot;</span>);
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; WordSegmentSample sample =
+				<span style="COLOR: #0000ff">new</span> WordSegmentSample(DictPath, 
+				5); <br>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; result = sample.Segment(@<span style="COLOR: #ff00ff">&quot;王晓平在1月份滦南大会上说的确实在理&quot;</span>);
+				<br>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #008000">//---------- 输出结果 ----------
+				</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #008000">//Console.WriteLine(&quot;\r\n==== 
+				最终识别结果：\r\n&quot;); </span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #008000">//for (int i = 0; i 
+				&lt; result.Count; i++) </span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #008000">//{ </span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #008000">//&nbsp;&nbsp; for (int 
+				j = 0; j &lt; result[i].Length; j++) </span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #008000">//&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				Console.Write(&quot;{0} /{1} &quot;, result[i][j].sWord, Utility.GetPOSString(result[i][j].nPOS));
+				</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #008000">//&nbsp;&nbsp; Console.WriteLine();
+				</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #008000">//} </span><br>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.Write(<span style="COLOR: #ff00ff">&quot;按下回车键退出......&quot;</span>);
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.ReadLine(); <br>
+&nbsp;&nbsp; } <br>
+				} <br>
+			</div>
+		</div>
+		<p>内容比较简单，此处就不再多说。由于我们在WordSegmentSample中订阅了所有阶段的事件，因此程序会输出整个过程各个阶段的中间结果，也包括最终分词结果，因此上面代码中我将输出结果部分的代码注释起来了。如果没有订阅任何事件的话，可以使用注释起来的这段代码输出分词最终结果。</p>
+		<p>该程序的执行结果如下：</p>
+		<div class="code">
+			<div class="title">
+				<div style="FLOAT: right">
+					<img class="copyCodeImage" src="images/copycode.gif" align="absMiddle" name="ccImage">
+					<a onclick="CopyCode(this)" href="javascript:">Copy Code</a></div>
+				<div style="CLEAR: none">
+					WordSegmentSample程序执行结果</div>
+			</div>
+			<div class="content">
+				正在初始化字典库，请稍候... <br>
+				<br>
+				<span style="COLOR: #008000">//==== 原始句子： </span><br>
+				<br>
+				王晓平在1月份滦南大会上说的确实在理 <br>
+				<br>
+				<br>
+				<span style="COLOR: #008000">//==== 原子切分： </span><br>
+				<br>
+				始##始, 王, 晓, 平, 在, 1, 月, 份, 滦, 南, 大, 会, 上, 说, 的, 确, 实, 在, 理, 末##末,&nbsp;
+				<br>
+				<br>
+				<br>
+				<span style="COLOR: #008000">//==== 生成 segGraph： </span><br>
+				<br>
+				row:&nbsp; 0,&nbsp; col:&nbsp; 1,&nbsp; eWeight: 329805.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1,&nbsp;&nbsp; sWord:始##始 
+				<br>
+				row:&nbsp; 1,&nbsp; col:&nbsp; 2,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 
+				218.00,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:王 <br>
+				row:&nbsp; 2,&nbsp; col:&nbsp; 3,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				9.00,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:晓 <br>
+				row:&nbsp; 3,&nbsp; col:&nbsp; 4,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 
+				271.00,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:平 <br>
+				row:&nbsp; 4,&nbsp; col:&nbsp; 5,&nbsp; eWeight:&nbsp; 78484.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:在 <br>
+				row:&nbsp; 5,&nbsp; col:&nbsp; 6,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				0.00,&nbsp;&nbsp; nPOS: -27904,&nbsp;&nbsp; sWord:未##数 <br>
+				row:&nbsp; 6,&nbsp; col:&nbsp; 7,&nbsp; eWeight:&nbsp;&nbsp; 1900.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:月 <br>
+				row:&nbsp; 6,&nbsp; col:&nbsp; 8,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 
+				11.00,&nbsp;&nbsp; nPOS:&nbsp; 28160,&nbsp;&nbsp; sWord:月份 <br>
+				row:&nbsp; 7,&nbsp; col:&nbsp; 8,&nbsp; eWeight:&nbsp;&nbsp; 1234.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:份 <br>
+				row:&nbsp; 8,&nbsp; col:&nbsp; 9,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				1.00,&nbsp;&nbsp; nPOS:&nbsp; 27136,&nbsp;&nbsp; sWord:滦 <br>
+				row:&nbsp; 9,&nbsp; col: 10,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 813.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:南 <br>
+				row: 10,&nbsp; col: 11,&nbsp; eWeight:&nbsp; 14536.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:大 <br>
+				row: 10,&nbsp; col: 12,&nbsp; eWeight:&nbsp;&nbsp; 1333.00,&nbsp;&nbsp; 
+				nPOS:&nbsp; 28160,&nbsp;&nbsp; sWord:大会 <br>
+				row: 11,&nbsp; col: 12,&nbsp; eWeight:&nbsp;&nbsp; 6136.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:会 <br>
+				row: 11,&nbsp; col: 13,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 469.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:会上 <br>
+				row: 12,&nbsp; col: 13,&nbsp; eWeight:&nbsp; 23706.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:上 <br>
+				row: 13,&nbsp; col: 14,&nbsp; eWeight:&nbsp; 17649.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:说 <br>
+				row: 14,&nbsp; col: 15,&nbsp; eWeight: 358156.00,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				0,&nbsp;&nbsp; sWord:的 <br>
+				row: 14,&nbsp; col: 16,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 210.00,&nbsp;&nbsp; 
+				nPOS:&nbsp; 25600,&nbsp;&nbsp; sWord:的确 <br>
+				row: 15,&nbsp; col: 16,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 181.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:确 <br>
+				row: 15,&nbsp; col: 17,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 361.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:确实 <br>
+				row: 16,&nbsp; col: 17,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 357.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:实 <br>
+				row: 16,&nbsp; col: 18,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 295.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:实在 <br>
+				row: 17,&nbsp; col: 18,&nbsp; eWeight:&nbsp; 78484.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:在 <br>
+				row: 17,&nbsp; col: 19,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				3.00,&nbsp;&nbsp; nPOS:&nbsp; 24832,&nbsp;&nbsp; sWord:在理 <br>
+				row: 18,&nbsp; col: 19,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 129.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:理 <br>
+				row: 19,&nbsp; col: 20,&nbsp; eWeight:2079997.00,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				4,&nbsp;&nbsp; sWord:末##末 <br>
+				<br>
+				<br>
+				<span style="COLOR: #008000">//==== 生成 biSegGraph： </span><br>
+				<br>
+				row:&nbsp; 0,&nbsp; col:&nbsp; 1,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				4.18,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1,&nbsp;&nbsp; 
+				sWord:始##始@王 <br>
+				row:&nbsp; 1,&nbsp; col:&nbsp; 2,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 
+				11.46,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:王@晓 <br>
+				row:&nbsp; 2,&nbsp; col:&nbsp; 3,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 
+				13.93,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:晓@平 <br>
+				row:&nbsp; 3,&nbsp; col:&nbsp; 4,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 
+				11.25,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:平@在 <br>
+				row:&nbsp; 4,&nbsp; col:&nbsp; 5,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				3.74,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:在@未##数 <br>
+				row:&nbsp; 5,&nbsp; col:&nbsp; 6,&nbsp; eWeight: -27898.79,&nbsp;&nbsp; 
+				nPOS: -27904,&nbsp;&nbsp; sWord:未##数@月 <br>
+				row:&nbsp; 5,&nbsp; col:&nbsp; 7,&nbsp; eWeight: -27898.75,&nbsp;&nbsp; 
+				nPOS: -27904,&nbsp;&nbsp; sWord:未##数@月份 <br>
+				row:&nbsp; 6,&nbsp; col:&nbsp; 8,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				9.33,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:月@份 <br>
+				row:&nbsp; 7,&nbsp; col:&nbsp; 9,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 
+				13.83,&nbsp;&nbsp; nPOS:&nbsp; 28160,&nbsp;&nbsp; sWord:月份@滦 <br>
+				row:&nbsp; 8,&nbsp; col:&nbsp; 9,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				9.76,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:份@滦 <br>
+				row:&nbsp; 9,&nbsp; col: 10,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 
+				14.46,&nbsp;&nbsp; nPOS:&nbsp; 27136,&nbsp;&nbsp; sWord:滦@南 <br>
+				row: 10,&nbsp; col: 11,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				5.19,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:南@大 <br>
+				row: 10,&nbsp; col: 12,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 10.17,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:南@大会 
+				<br>
+				row: 11,&nbsp; col: 13,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				7.30,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:大@会 <br>
+				row: 11,&nbsp; col: 14,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				7.30,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:大@会上 <br>
+				row: 12,&nbsp; col: 15,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				2.11,&nbsp;&nbsp; nPOS:&nbsp; 28160,&nbsp;&nbsp; sWord:大会@上 <br>
+				row: 13,&nbsp; col: 15,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				8.16,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:会@上 <br>
+				row: 14,&nbsp; col: 16,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				3.42,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:会上@说 <br>
+				row: 15,&nbsp; col: 16,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				4.07,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:上@说 <br>
+				row: 16,&nbsp; col: 17,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				4.05,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:说@的 <br>
+				row: 16,&nbsp; col: 18,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				7.11,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:说@的确 <br>
+				row: 17,&nbsp; col: 19,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				4.10,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:的@确 <br>
+				row: 17,&nbsp; col: 20,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				4.10,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:的@确实 <br>
+				row: 18,&nbsp; col: 21,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 11.49,&nbsp;&nbsp; 
+				nPOS:&nbsp; 25600,&nbsp;&nbsp; sWord:的确@实 <br>
+				row: 19,&nbsp; col: 21,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 11.63,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:确@实 <br>
+				row: 18,&nbsp; col: 22,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 11.49,&nbsp;&nbsp; 
+				nPOS:&nbsp; 25600,&nbsp;&nbsp; sWord:的确@实在 <br>
+				row: 19,&nbsp; col: 22,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 11.63,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:确@实在 
+				<br>
+				row: 20,&nbsp; col: 23,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				3.92,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:确实@在 <br>
+				row: 21,&nbsp; col: 23,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 10.98,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:实@在 <br>
+				row: 20,&nbsp; col: 24,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 10.97,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:确实@在理 
+				<br>
+				row: 21,&nbsp; col: 24,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 10.98,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:实@在理 
+				<br>
+				row: 22,&nbsp; col: 25,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 11.17,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:实在@理 
+				<br>
+				row: 23,&nbsp; col: 25,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				5.62,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:在@理 <br>
+				row: 24,&nbsp; col: 26,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 14.30,&nbsp;&nbsp; 
+				nPOS:&nbsp; 24832,&nbsp;&nbsp; sWord:在理@末##末 <br>
+				row: 25,&nbsp; col: 26,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 11.95,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:理@末##末 
+				<br>
+				<br>
+				<br>
+				<span style="COLOR: #008000">//==== NShortPath 初步切分的到的 N 个结果： 
+				</span><br>
+				<br>
+				始##始, 王, 晓, 平, 在, 1, 月份, 滦, 南, 大, 会上, 说, 的, 确实, 在, 理, 末##末,&nbsp;
+				<br>
+				始##始, 王, 晓, 平, 在, 1, 月份, 滦, 南, 大会, 上, 说, 的, 确实, 在, 理, 末##末,&nbsp;
+				<br>
+				始##始, 王, 晓, 平, 在, 1, 月份, 滦, 南, 大, 会上, 说, 的, 确实, 在理, 末##末,&nbsp;
+				<br>
+				始##始, 王, 晓, 平, 在, 1, 月份, 滦, 南, 大会, 上, 说, 的, 确实, 在理, 末##末,&nbsp;
+				<br>
+				始##始, 王, 晓, 平, 在, 1, 月, 份, 滦, 南, 大, 会上, 说, 的, 确实, 在, 理, 末##末,&nbsp;
+				<br>
+				<br>
+				<br>
+				<span style="COLOR: #008000">//==== 经过数字、日期合并等策略处理后的 N 个结果： 
+				</span><br>
+				<br>
+				始##始, 王, 晓, 平, 在, 1月份, 滦, 南, 大, 会上, 说, 的, 确实, 在, 理, 末##末,&nbsp;
+				<br>
+				始##始, 王, 晓, 平, 在, 1月份, 滦, 南, 大会, 上, 说, 的, 确实, 在, 理, 末##末,&nbsp;
+				<br>
+				始##始, 王, 晓, 平, 在, 1月份, 滦, 南, 大, 会上, 说, 的, 确实, 在理, 末##末,&nbsp;
+				<br>
+				始##始, 王, 晓, 平, 在, 1月份, 滦, 南, 大会, 上, 说, 的, 确实, 在理, 末##末,&nbsp;
+				<br>
+				始##始, 王, 晓, 平, 在, 1月, 份, 滦, 南, 大, 会上, 说, 的, 确实, 在, 理, 末##末,&nbsp;
+				<br>
+				<br>
+				<br>
+				<span style="COLOR: #008000">//==== 加入对姓名、翻译人名以及地名的识别： </span>
+				<br>
+				<br>
+				row:&nbsp; 0,&nbsp; col:&nbsp; 1,&nbsp; eWeight: 329805.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1,&nbsp;&nbsp; sWord:始##始 
+				<br>
+				row:&nbsp; 1,&nbsp; col:&nbsp; 2,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 
+				218.00,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:王 <br>
+				row:&nbsp; 1,&nbsp; col:&nbsp; 4,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 
+				10.86,&nbsp;&nbsp; nPOS: -28274,&nbsp;&nbsp; sWord:未##人 <br>
+				row:&nbsp; 2,&nbsp; col:&nbsp; 3,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				9.00,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:晓 <br>
+				row:&nbsp; 2,&nbsp; col:&nbsp; 4,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 
+				13.27,&nbsp;&nbsp; nPOS: -28274,&nbsp;&nbsp; sWord:未##人 <br>
+				row:&nbsp; 3,&nbsp; col:&nbsp; 4,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 
+				271.00,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:平 <br>
+				row:&nbsp; 4,&nbsp; col:&nbsp; 5,&nbsp; eWeight:&nbsp; 78484.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:在 <br>
+				row:&nbsp; 5,&nbsp; col:&nbsp; 7,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				0.00,&nbsp;&nbsp; nPOS: -29696,&nbsp;&nbsp; sWord:未##时 <br>
+				row:&nbsp; 5,&nbsp; col:&nbsp; 8,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				0.00,&nbsp;&nbsp; nPOS: -29696,&nbsp;&nbsp; sWord:未##时 <br>
+				row:&nbsp; 7,&nbsp; col:&nbsp; 8,&nbsp; eWeight:&nbsp;&nbsp; 1234.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:份 <br>
+				row:&nbsp; 8,&nbsp; col:&nbsp; 9,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				1.00,&nbsp;&nbsp; nPOS:&nbsp; 27136,&nbsp;&nbsp; sWord:滦 <br>
+				row:&nbsp; 8,&nbsp; col: 10,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 
+				20.37,&nbsp;&nbsp; nPOS: -28275,&nbsp;&nbsp; sWord:未##地 <br>
+				row:&nbsp; 9,&nbsp; col: 10,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 813.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:南 <br>
+				row: 10,&nbsp; col: 11,&nbsp; eWeight:&nbsp; 14536.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:大 <br>
+				row: 10,&nbsp; col: 12,&nbsp; eWeight:&nbsp;&nbsp; 1333.00,&nbsp;&nbsp; 
+				nPOS:&nbsp; 28160,&nbsp;&nbsp; sWord:大会 <br>
+				row: 11,&nbsp; col: 13,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 469.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:会上 <br>
+				row: 12,&nbsp; col: 13,&nbsp; eWeight:&nbsp; 23706.00,&nbsp;&nbsp; 
+				nPOS: -27904,&nbsp;&nbsp; sWord:未##数 <br>
+				row: 13,&nbsp; col: 14,&nbsp; eWeight:&nbsp; 17649.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:说 <br>
+				row: 14,&nbsp; col: 15,&nbsp; eWeight: 358156.00,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				0,&nbsp;&nbsp; sWord:的 <br>
+				row: 15,&nbsp; col: 17,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 361.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:确实 <br>
+				row: 17,&nbsp; col: 18,&nbsp; eWeight:&nbsp; 78484.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:在 <br>
+				row: 17,&nbsp; col: 19,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				3.00,&nbsp;&nbsp; nPOS:&nbsp; 24832,&nbsp;&nbsp; sWord:在理 <br>
+				row: 18,&nbsp; col: 19,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 129.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:理 <br>
+				row: 19,&nbsp; col: 20,&nbsp; eWeight:2079997.00,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				4,&nbsp;&nbsp; sWord:末##末 <br>
+				<br>
+				<br>
+				<span style="COLOR: #008000">//==== 生成 biSegGraph： </span><br>
+				<br>
+				row:&nbsp; 0,&nbsp; col:&nbsp; 1,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				4.18,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1,&nbsp;&nbsp; 
+				sWord:始##始@王 <br>
+				row:&nbsp; 0,&nbsp; col:&nbsp; 2,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				2.88,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1,&nbsp;&nbsp; 
+				sWord:始##始@未##人 <br>
+				row:&nbsp; 1,&nbsp; col:&nbsp; 3,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 
+				11.46,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:王@晓 <br>
+				row:&nbsp; 1,&nbsp; col:&nbsp; 4,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				3.88,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:王@未##人 <br>
+				row:&nbsp; 3,&nbsp; col:&nbsp; 5,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 
+				13.93,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:晓@平 <br>
+				row:&nbsp; 2,&nbsp; col:&nbsp; 6,&nbsp; eWeight: -28270.43,&nbsp;&nbsp; 
+				nPOS: -28274,&nbsp;&nbsp; sWord:未##人@在 <br>
+				row:&nbsp; 4,&nbsp; col:&nbsp; 6,&nbsp; eWeight: -28270.43,&nbsp;&nbsp; 
+				nPOS: -28274,&nbsp;&nbsp; sWord:未##人@在 <br>
+				row:&nbsp; 5,&nbsp; col:&nbsp; 6,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 
+				11.25,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:平@在 <br>
+				row:&nbsp; 6,&nbsp; col:&nbsp; 7,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				4.01,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:在@未##时 <br>
+				row:&nbsp; 6,&nbsp; col:&nbsp; 8,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				4.01,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:在@未##时 <br>
+				row:&nbsp; 7,&nbsp; col:&nbsp; 9,&nbsp; eWeight: -29690.16,&nbsp;&nbsp; 
+				nPOS: -29696,&nbsp;&nbsp; sWord:未##时@份 <br>
+				row:&nbsp; 8,&nbsp; col: 10,&nbsp; eWeight: -29690.16,&nbsp;&nbsp; 
+				nPOS: -29696,&nbsp;&nbsp; sWord:未##时@滦 <br>
+				row:&nbsp; 9,&nbsp; col: 10,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				9.76,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:份@滦 <br>
+				row:&nbsp; 8,&nbsp; col: 11,&nbsp; eWeight: -29690.17,&nbsp;&nbsp; 
+				nPOS: -29696,&nbsp;&nbsp; sWord:未##时@未##地 <br>
+				row:&nbsp; 9,&nbsp; col: 11,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				9.76,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:份@未##地 <br>
+				row: 10,&nbsp; col: 12,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 14.46,&nbsp;&nbsp; 
+				nPOS:&nbsp; 27136,&nbsp;&nbsp; sWord:滦@南 <br>
+				row: 11,&nbsp; col: 13,&nbsp; eWeight: -28267.95,&nbsp;&nbsp; nPOS: 
+				-28275,&nbsp;&nbsp; sWord:未##地@大 <br>
+				row: 12,&nbsp; col: 13,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				5.19,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:南@大 <br>
+				row: 11,&nbsp; col: 14,&nbsp; eWeight: -28266.85,&nbsp;&nbsp; nPOS: 
+				-28275,&nbsp;&nbsp; sWord:未##地@大会 <br>
+				row: 12,&nbsp; col: 14,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 10.17,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:南@大会 
+				<br>
+				row: 13,&nbsp; col: 15,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				7.30,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:大@会上 <br>
+				row: 14,&nbsp; col: 16,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				4.81,&nbsp;&nbsp; nPOS:&nbsp; 28160,&nbsp;&nbsp; sWord:大会@未##数 
+				<br>
+				row: 15,&nbsp; col: 17,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				3.42,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:会上@说 <br>
+				row: 16,&nbsp; col: 17,&nbsp; eWeight: -27898.75,&nbsp;&nbsp; nPOS: 
+				-27904,&nbsp;&nbsp; sWord:未##数@说 <br>
+				row: 17,&nbsp; col: 18,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				4.05,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:说@的 <br>
+				row: 18,&nbsp; col: 19,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				4.10,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:的@确实 <br>
+				row: 19,&nbsp; col: 20,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				3.92,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:确实@在 <br>
+				row: 19,&nbsp; col: 21,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 10.97,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:确实@在理 
+				<br>
+				row: 20,&nbsp; col: 22,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				5.62,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:在@理 <br>
+				row: 21,&nbsp; col: 23,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 14.30,&nbsp;&nbsp; 
+				nPOS:&nbsp; 24832,&nbsp;&nbsp; sWord:在理@末##末 <br>
+				row: 22,&nbsp; col: 23,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 11.95,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:理@末##末 
+				<br>
+				<br>
+				<br>
+				<span style="COLOR: #008000">//==== 最终识别结果： </span><br>
+				<br>
+				王晓平 /nr 在 /p&nbsp; 1月份 /t&nbsp; 滦南 /ns 大会 /n&nbsp; 上 /v&nbsp; 说 
+				/v&nbsp; 的 /uj 确实 /ad 在 /p&nbsp; 理 /n <br>
+			</div>
+		</div>
+		<p>　</p>
+		</td>
+	</tr>
+</table>
+
+</body>
+
+</html>

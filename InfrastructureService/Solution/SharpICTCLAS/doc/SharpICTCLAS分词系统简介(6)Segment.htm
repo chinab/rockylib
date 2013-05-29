@@ -1,0 +1,852 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="zh-cn" />
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>SharpICTCLAS分词系统简介(6)Segment</title>
+<link href="css/style.css" rel="stylesheet" type="text/css" />
+<link href="css/customercss.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript">/*<![CDATA[*/
+if(typeof(HTMLElement)!="undefined" && !window.opera)
+{
+  HTMLElement.prototype.__defineGetter__("parentElement", function () 
+  {
+    if (this.parentNode == this.ownerDocument) return null;
+    return this.parentNode;
+  });
+}
+
+HTMLElement.prototype.innerHTML getter = function(){
+   return getInnerHTML(this);
+}
+/*]]>*/
+</script>
+<script language="javascript">
+function CopyCode(key)
+{
+  var divElements = document.getElementsByTagName("div");
+  var i;
+  occur = 0;  
+  for(i = 0; i < divElements.length; ++i)
+  {
+    if(key.parentElement.parentElement.parentElement == divElements[i].parentElement)
+    {
+      if(occur == 1)
+      {
+        if(navigator.appName.indexOf('Microsoft') != -1)
+          copyToClipboard(divElements[i].innerText);
+        else
+          copyToClipboard(Html2Txt(divElements[i].innerHTML));
+      }
+      occur++;
+    }
+  }
+}
+function Html2Txt(htmlText)
+{
+  str = htmlText.replace(/\r\n/g, " ");
+  str = str.replace(/\r/g, " "); 
+  str = str.replace(/\n/g, " "); 
+  str = str.replace(/\t/g, "");
+  str = str.replace(/<BR>/gi,"\r\n");
+  str = str.replace(/<[^>]+?>/g,"");
+  str = str.replace(/&nbsp;/g, " ");
+  str = str.replace(/&gt;/g, ">");
+  str = str.replace(/&lt;/g, "<");
+  str = str.replace(/&amp;/g, "&");
+  return str;
+}
+
+function copyToClipboard(txt)
+{
+ if(window.clipboardData) 
+  {
+    window.clipboardData.clearData();
+    window.clipboardData.setData("Text", txt);
+  }
+  else if(navigator.userAgent.indexOf("Opera") != -1) 
+  {
+    window.location = txt;
+  } 
+  else if (window.netscape) 
+  {
+    try 
+    {
+      netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
+    } 
+    catch (e) 
+    {
+      alert("您的firefox安全限制限制您进行剪贴板操作，请在地址栏中输入“about:config”将“signed.applets.codebase_principal_support”设置为“true”之后重试");
+      return false;
+    }
+    var clip = Components.classes['@mozilla.org/widget/clipboard;1'].createInstance(Components.interfaces.nsIClipboard);
+    if (!clip)
+      return;
+    var trans = Components.classes['@mozilla.org/widget/transferable;1'].createInstance(Components.interfaces.nsITransferable);
+    if (!trans)
+      return;
+    trans.addDataFlavor('text/unicode');
+    var str = new Object();
+    var len = new Object();
+    var str = Components.classes["@mozilla.org/supports-string;1"].createInstance(Components.interfaces.nsISupportsString);
+    var copytext = txt;
+    str.data = copytext;
+    trans.setTransferData("text/unicode",str,copytext.length*2);
+    var clipid = Components.interfaces.nsIClipboard;
+    if (!clip)
+      return false;
+    clip.setData(trans,null,clipid.kGlobalClipboard);
+  }
+} 
+</script>
+</head>
+
+<body>
+
+<p>　</p>
+<table width="95%" align="center">
+	<tr>
+		<td>
+		<p>DynamicArray与NShortPath是ICTCLAS中的基础类，本人在完成了基础改造工作后，就着手开始对Segment分词进行移植与改造。SharpICTCLAS中的改造主要体现在以下几方面：</p>
+		<p><font color="#800080"><b>1）合并不同类中的部分代码</b></font></p>
+		<p>原有ICTCLAS中使用了SegGraph与Segment两个类完成分词过程，SegGraph类负责完成原子分词与segGraph的生成，而Segment类负责BiSegGraph的生成和NShortPath优化，而最终的人名、地名识别以及Optimum优化又分散在了Segment类与WordSegment类中。</p>
+		<p>SharpICTCLAS将原有SegGraph类与Segment合二为一，因为它们所作的工作仅仅是分词中的几个步骤而已。而WordSegment类中基本保留了原有内容，因为这个类更多的做一些外围工作。</p>
+		<p><font color="#800080"><b>2）改造了程序中用到的部分数据结构</b></font></p>
+		<p>原有ICTCLAS大量使用了数组与二维数组，由于数组的固有缺陷使得我们随处可以看到如此这般的数组定义：</p>
+		<p><code>m_pWordSeg = new PWORD_RESULT[MAX_SEGMENT_NUM];</code></p>
+		<p>由于不知道最终会分成几个词，所以定义数组时只能用最大的容量<code> MAX_SEGMENT_NUM </code>进行预设，所以一旦存在某些异常数据就会造成“溢出”错误。</p>
+		<p>而SharpICTCLAS中大量使用了<code> List&lt;int[]&gt; </code>的方式记录结果 ，范型的List首先可以确保结果集的数量可以动态调整而不用事先定义，另外每个结果的数组长度也可各不相同。</p>
+		<p>再有的改造就是在Segment类中使用了链表结构处理结果，这大大简化了原有ICTCLAS中的数组结构带来的种种问题。</p>
+		<p><font color="#800080"><b>3）大量使用了静态方法</b></font></p>
+		<p>由于某些过程的调用根本不需要建立对象，这些过程仅仅完成例行计算而已，因此将这些方法声明为静态方法更合适，何况静态方法的调用效率比实例方法高。因此本人在将ICTCLAS移植到C#平台上时，将尽可能的方法定义成静态方法。</p>
+		<p>下面我就说说SharpICTCLAS中Segment类的一些主要内容：</p>
+		<h3>1、主体部分</h3>
+		<p>比较典型的一个运算过程可以参考BiSegment方法，代码（经过简化）如下：</p>
+		<div class="code">
+			<div class="title">
+				<div style="FLOAT: right">
+					<img class="copyCodeImage" src="images/copycode.gif" align="absMiddle" name="ccImage">
+					<a onclick="CopyCode(this)" href="javascript:">Copy Code</a></div>
+				<div style="CLEAR: none">
+					Segment类的BiSegment方法</div>
+			</div>
+			<div class="content">
+				<span style="COLOR: #0000ff">public</span>
+				<span style="COLOR: #0000ff">int</span> BiSegment(<span style="COLOR: #0000ff">string</span> 
+				sSentence, <span style="COLOR: #0000ff">double</span> smoothPara,
+				<span style="COLOR: #0000ff">int</span> nKind) <br>
+				{ <br>
+&nbsp;&nbsp; WordResult[] tmpResult; <br>
+&nbsp;&nbsp; WordLinkedArray linkedArray; <br>
+&nbsp;&nbsp; m_pWordSeg = <span style="COLOR: #0000ff">new</span> List&lt;WordResult[]&gt;();
+				<br>
+&nbsp;&nbsp; m_graphOptimum = <span style="COLOR: #0000ff">new</span> RowFirstDynamicArray&lt;ChainContent&gt;();
+				<br>
+				<br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//---原子分词 </span><br>
+&nbsp;&nbsp; <font color="#FF0000">atomSegment = AtomSegment(sSentence); </font>
+				<br>
+				<br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//---检索词库，加入所有可能分词方案并存入链表结构 </span>
+				<br>
+&nbsp;&nbsp; segGraph = GenerateWordNet(atomSegment, coreDict); <br>
+				<br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//---检索所有可能的两两组合 </span><br>
+&nbsp;&nbsp; biGraphResult = BiGraphGenerate(segGraph, smoothPara, biDict, coreDict);
+				<br>
+				<br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//---N 最短路径计算出多个分词方案 </span><br>
+&nbsp;&nbsp; NShortPath.Calculate(biGraphResult, nKind); <br>
+&nbsp;&nbsp; List&lt;<span style="COLOR: #0000ff">int</span>[]&gt; spResult = NShortPath.GetNPaths(Predefine.MAX_SEGMENT_NUM);
+				<br>
+				<br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//---对结果进行优化，例如合并日期等工作 </span><br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">for</span> (<span style="COLOR: #0000ff">int</span> 
+				i = 0; i &lt; spResult.Count; i++) <br>
+&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <font color="#FF0000">linkedArray = BiPath2LinkedArray(spResult[i], 
+				segGraph, atomSegment); </font><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tmpResult = GenerateWord(spResult[i], linkedArray, 
+				m_graphOptimum); <br>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">if</span> (tmpResult 
+				!= <span style="COLOR: #0000ff">null</span>) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; m_pWordSeg.Add(tmpResult); <br>
+&nbsp;&nbsp; } <br>
+				<br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">return</span> m_pWordSeg.Count; <br>
+				}</div>
+		</div>
+		<p>从上面代码可以看出，已经将原有ICTCLAS的原子分词功能合并入Segment类了。</p>
+		<p>就拿“<font color="#0000FF">他在1月份大会上说的确实在理</font>”这句话来说，上面几个步骤得到的中间结果如下：</p>
+		<div class="code">
+			<div class="title">
+				<div style="FLOAT: right">
+					<img class="copyCodeImage" src="images/copycode.gif" align="absMiddle" name="ccImage">
+					<a onclick="CopyCode(this)" href="javascript:">Copy Code</a></div>
+				<div style="CLEAR: none">
+					程序</div>
+			</div>
+			<div class="content">
+				<span style="COLOR: #008000">//==== 原始句子： </span><br>
+				<br>
+				他在1月份大会上说的确实在理 <br>
+				<br>
+				<br>
+				<span style="COLOR: #008000">//==== 原子切分： </span><br>
+				<br>
+				始##始, 他, 在, 1, 月, 份, 大, 会, 上, 说, 的, 确, 实, 在, 理, 末##末, <br>
+				<br>
+				<br>
+				<span style="COLOR: #008000">//==== 生成 segGraph： </span><br>
+				<br>
+				row:&nbsp; 0,&nbsp; col:&nbsp; 1,&nbsp; eWeight: 329805.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1,&nbsp;&nbsp; sWord:始##始 
+				<br>
+				row:&nbsp; 1,&nbsp; col:&nbsp; 2,&nbsp; eWeight:&nbsp; 19823.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:他 <br>
+				row:&nbsp; 2,&nbsp; col:&nbsp; 3,&nbsp; eWeight:&nbsp; 78484.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:在 <br>
+				row:&nbsp; 3,&nbsp; col:&nbsp; 4,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				0.00,&nbsp;&nbsp; nPOS: -27904,&nbsp;&nbsp; sWord:未##数 <br>
+				row:&nbsp; 4,&nbsp; col:&nbsp; 5,&nbsp; eWeight:&nbsp;&nbsp; 1900.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:月 <br>
+				row:&nbsp; 4,&nbsp; col:&nbsp; 6,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 
+				11.00,&nbsp;&nbsp; nPOS:&nbsp; 28160,&nbsp;&nbsp; sWord:月份 <br>
+				row:&nbsp; 5,&nbsp; col:&nbsp; 6,&nbsp; eWeight:&nbsp;&nbsp; 1234.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:份 <br>
+				row:&nbsp; 6,&nbsp; col:&nbsp; 7,&nbsp; eWeight:&nbsp; 14536.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:大 <br>
+				row:&nbsp; 6,&nbsp; col:&nbsp; 8,&nbsp; eWeight:&nbsp;&nbsp; 1333.00,&nbsp;&nbsp; 
+				nPOS:&nbsp; 28160,&nbsp;&nbsp; sWord:大会 <br>
+				row:&nbsp; 7,&nbsp; col:&nbsp; 8,&nbsp; eWeight:&nbsp;&nbsp; 6136.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:会 <br>
+				row:&nbsp; 7,&nbsp; col:&nbsp; 9,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 
+				469.00,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:会上 <br>
+				row:&nbsp; 8,&nbsp; col:&nbsp; 9,&nbsp; eWeight:&nbsp; 23706.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:上 <br>
+				row:&nbsp; 9,&nbsp; col: 10,&nbsp; eWeight:&nbsp; 17649.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:说 <br>
+				row: 10,&nbsp; col: 11,&nbsp; eWeight: 358156.00,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				0,&nbsp;&nbsp; sWord:的 <br>
+				row: 10,&nbsp; col: 12,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 210.00,&nbsp;&nbsp; 
+				nPOS:&nbsp; 25600,&nbsp;&nbsp; sWord:的确 <br>
+				row: 11,&nbsp; col: 12,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 181.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:确 <br>
+				row: 11,&nbsp; col: 13,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 361.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:确实 <br>
+				row: 12,&nbsp; col: 13,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 357.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:实 <br>
+				row: 12,&nbsp; col: 14,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 295.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:实在 <br>
+				row: 13,&nbsp; col: 14,&nbsp; eWeight:&nbsp; 78484.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:在 <br>
+				row: 13,&nbsp; col: 15,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				3.00,&nbsp;&nbsp; nPOS:&nbsp; 24832,&nbsp;&nbsp; sWord:在理 <br>
+				row: 14,&nbsp; col: 15,&nbsp; eWeight:&nbsp;&nbsp;&nbsp; 129.00,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:理 <br>
+				row: 15,&nbsp; col: 16,&nbsp; eWeight:2079997.00,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				4,&nbsp;&nbsp; sWord:末##末 <br>
+				<br>
+				<br>
+				<span style="COLOR: #008000">//==== 生成 biSegGraph： </span><br>
+				<br>
+				row:&nbsp; 0,&nbsp; col:&nbsp; 1,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				3.37,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1,&nbsp;&nbsp; 
+				sWord:始##始@他 <br>
+				row:&nbsp; 1,&nbsp; col:&nbsp; 2,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				3.37,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:他@在 <br>
+				row:&nbsp; 2,&nbsp; col:&nbsp; 3,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				3.74,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:在@未##数 <br>
+				row:&nbsp; 3,&nbsp; col:&nbsp; 4,&nbsp; eWeight: -27898.79,&nbsp;&nbsp; 
+				nPOS: -27904,&nbsp;&nbsp; sWord:未##数@月 <br>
+				row:&nbsp; 3,&nbsp; col:&nbsp; 5,&nbsp; eWeight: -27898.75,&nbsp;&nbsp; 
+				nPOS: -27904,&nbsp;&nbsp; sWord:未##数@月份 <br>
+				row:&nbsp; 4,&nbsp; col:&nbsp; 6,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				9.33,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:月@份 <br>
+				row:&nbsp; 5,&nbsp; col:&nbsp; 7,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 
+				13.83,&nbsp;&nbsp; nPOS:&nbsp; 28160,&nbsp;&nbsp; sWord:月份@大 <br>
+				row:&nbsp; 6,&nbsp; col:&nbsp; 7,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				9.76,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:份@大 <br>
+				row:&nbsp; 5,&nbsp; col:&nbsp; 8,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 
+				13.83,&nbsp;&nbsp; nPOS:&nbsp; 28160,&nbsp;&nbsp; sWord:月份@大会 
+				<br>
+				row:&nbsp; 6,&nbsp; col:&nbsp; 8,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				9.76,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:份@大会 <br>
+				row:&nbsp; 7,&nbsp; col:&nbsp; 9,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				7.30,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:大@会 <br>
+				row:&nbsp; 7,&nbsp; col: 10,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				7.30,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:大@会上 <br>
+				row:&nbsp; 8,&nbsp; col: 11,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				2.11,&nbsp;&nbsp; nPOS:&nbsp; 28160,&nbsp;&nbsp; sWord:大会@上 <br>
+				row:&nbsp; 9,&nbsp; col: 11,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				8.16,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:会@上 <br>
+				row: 10,&nbsp; col: 12,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				3.42,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:会上@说 <br>
+				row: 11,&nbsp; col: 12,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				4.07,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:上@说 <br>
+				row: 12,&nbsp; col: 13,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				4.05,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:说@的 <br>
+				row: 12,&nbsp; col: 14,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				7.11,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:说@的确 <br>
+				row: 13,&nbsp; col: 15,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				4.10,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:的@确 <br>
+				row: 13,&nbsp; col: 16,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				4.10,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:的@确实 <br>
+				row: 14,&nbsp; col: 17,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 11.49,&nbsp;&nbsp; 
+				nPOS:&nbsp; 25600,&nbsp;&nbsp; sWord:的确@实 <br>
+				row: 15,&nbsp; col: 17,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 11.63,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:确@实 <br>
+				row: 14,&nbsp; col: 18,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 11.49,&nbsp;&nbsp; 
+				nPOS:&nbsp; 25600,&nbsp;&nbsp; sWord:的确@实在 <br>
+				row: 15,&nbsp; col: 18,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 11.63,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:确@实在 
+				<br>
+				row: 16,&nbsp; col: 19,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				3.92,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:确实@在 <br>
+				row: 17,&nbsp; col: 19,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 10.98,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:实@在 <br>
+				row: 16,&nbsp; col: 20,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 10.97,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:确实@在理 
+				<br>
+				row: 17,&nbsp; col: 20,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 10.98,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:实@在理 
+				<br>
+				row: 18,&nbsp; col: 21,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 11.17,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:实在@理 
+				<br>
+				row: 19,&nbsp; col: 21,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				5.62,&nbsp;&nbsp; nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; 
+				sWord:在@理 <br>
+				row: 20,&nbsp; col: 22,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 14.30,&nbsp;&nbsp; 
+				nPOS:&nbsp; 24832,&nbsp;&nbsp; sWord:在理@末##末 <br>
+				row: 21,&nbsp; col: 22,&nbsp; eWeight:&nbsp;&nbsp;&nbsp;&nbsp; 11.95,&nbsp;&nbsp; 
+				nPOS:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0,&nbsp;&nbsp; sWord:理@末##末 
+				<br>
+				<br>
+				<br>
+				<span style="COLOR: #008000">//==== NShortPath 初步切分的到的 N 个结果： 
+				</span><br>
+				<br>
+				始##始, 他, 在, 1, 月份, 大会, 上, 说, 的, 确实, 在, 理, 末##末, <br>
+				始##始, 他, 在, 1, 月份, 大会, 上, 说, 的, 确实, 在理, 末##末, <br>
+				始##始, 他, 在, 1, 月份, 大, 会上, 说, 的, 确实, 在, 理, 末##末, <br>
+				始##始, 他, 在, 1, 月, 份, 大会, 上, 说, 的, 确实, 在, 理, 末##末, <br>
+				始##始, 他, 在, 1, 月份, 大, 会上, 说, 的, 确实, 在理, 末##末, <br>
+				<br>
+				<br>
+				<span style="COLOR: #008000">//==== 经过数字、日期合并等策略处理后的 N 个结果： 
+				</span><br>
+				<br>
+				始##始, 他, 在, <font color="#FF0000">1月份</font>, 大会, 上, 说, 的, 确实, 在, 
+				理, 末##末, <br>
+				始##始, 他, 在, <font color="#FF0000">1月份</font>, 大会, 上, 说, 的, 确实, 在理, 
+				末##末, <br>
+				始##始, 他, 在, <font color="#FF0000">1月份</font>, 大, 会上, 说, 的, 确实, 在, 
+				理, 末##末, <br>
+				始##始, 他, 在, <font color="#FF0000">1月</font>, 份, 大会, 上, 说, 的, 确实, 
+				在, 理, 末##末, <br>
+				始##始, 他, 在, <font color="#FF0000">1月份</font>, 大, 会上, 说, 的, 确实, 在理, 
+				末##末, <br>
+			</div>
+		</div>
+		<p>这些内容在前面的文章中已经涉及过，我这里主要说说SharpICTCLAS中两处地方的内容，分别是原子分词以及数字日期合并策略。</p>
+		<h3>2、原子分词</h3>
+		<p>原子分词看起来应当是程序中最简单的部分，无非是将汉字逐一分开。但是也是最值得改进的地方。SharpICTCLAS目前仍然沿用了原有ICTCLAS的算法并做了微小调整。但我对于 
+		这种原子分词方法不太满意，如果有机会，可以考虑使用一系列正则表达式将某些“原子”词单独摘出来。比如“甲子”、“乙亥”等年份信息属于原子信息，还有URL、Email等都可以预先进行原子识别，这可以大大简化后续工作。因此日后可以考虑这方面的处理。</p>
+		<h3>3、对结果的处理</h3>
+		<p>ICTCLAS与SharpICTCLAS都通过NShortPath计算最短路径并将结果以数组的方式进行输出，数组仅仅记录了分词的位置，我们还需要通过一些后续处理手段将这些数组转换成“分词”结果。</p>
+		<p>原有ICTCLAS的实现如下：</p>
+		<div class="code">
+			<div class="title">
+				<div style="FLOAT: right">
+					<img class="copyCodeImage" src="images/copycode.gif" align="absMiddle" name="ccImage">
+					<a onclick="CopyCode(this)" href="javascript:">Copy Code</a></div>
+				<div style="CLEAR: none">
+					ICTCLAS对NShortPath结果的处理</div>
+			</div>
+			<div class="content">
+				<span style="COLOR: #0000ff">while</span> (i &lt; m_nSegmentCount)
+				<br>
+				{ <br>
+&nbsp; BiPath2UniPath(nSegRoute[i]);&nbsp; <span style="COLOR: #008000">//Path convert 
+				to unipath </span><br>
+&nbsp; GenerateWord(nSegRoute, i);&nbsp;&nbsp;&nbsp;
+				<span style="COLOR: #008000">//Gernerate word according the Segmentation 
+				route </span><br>
+&nbsp; i++; <br>
+				}</div>
+		</div>
+		<p>其中这个BiPath2UniPath方法做的工作可以用如下案例说明：</p>
+		<div class="code">
+			<div class="content">
+				将BiPath转换为UniPath <br>
+				例如“他说的确实在理” <br>
+				<br>
+				BiPath：（0, 1, 2, 3, 6, 9, 11, 12） <br>
+&nbsp;&nbsp; 0&nbsp;&nbsp; 1&nbsp;&nbsp; 2&nbsp;&nbsp; 3&nbsp;&nbsp; 4&nbsp;&nbsp;&nbsp; 
+				5&nbsp;&nbsp; 6&nbsp;&nbsp;&nbsp; 7&nbsp;&nbsp; 8&nbsp;&nbsp;&nbsp; 
+				9&nbsp;&nbsp; 10&nbsp;&nbsp; 11&nbsp; 12 <br>
+				始##始&nbsp; 他&nbsp; 说&nbsp; 的&nbsp; 的确&nbsp; 确&nbsp; 确实&nbsp; 实&nbsp; 
+				实在&nbsp; 在&nbsp; 在理&nbsp; 理&nbsp; 末##末 <br>
+				<br>
+				经过转换后 <br>
+				UniPath：（0, 1, 2, 3, 4, 6, 7, 8） <br>
+&nbsp;&nbsp; 0&nbsp;&nbsp; 1&nbsp;&nbsp; 2&nbsp;&nbsp; 3&nbsp; 4&nbsp;&nbsp; 5&nbsp;&nbsp; 
+				6&nbsp;&nbsp; 7&nbsp;&nbsp; 8 <br>
+				始##始&nbsp; 他&nbsp; 说&nbsp; 的&nbsp; 确&nbsp; 实&nbsp; 在&nbsp; 理&nbsp; 
+				末##末 <br>
+			</div>
+		</div>
+		<p>由此可见UniPath记录了针对原子分词的分割位置。而后面的GenerateWord方法又针对这个数组去做合并及优化工作。</p>
+		<p>本人在SharpICTCLAS的改造过程中发现在这里数组的表述方式给后续工作带来了很大的困难（可以考虑一下，让你合并链表中两个相邻结点简单呢还是数组中两个相邻结点简单？），所以我决定在SharpICTCLAS中将BiPath转换为链表结构供后续使用，实践证明简化了不少工作。</p>
+		<p>这点在BiSegment方法中有所体现，如下：</p>
+		<p><code>linkedArray = BiPath2LinkedArray(spResult[i], segGraph, atomSegment);
+		</code></p>
+		<p>这样改造后，还使得原有ICTCLAS中<code> int *m_npWordPosMapTable; </code>不再需要，与其相关的代码也可以一并删除了。</p>
+		<h3>4、日期、数字合并策略</h3>
+		<p>数字、日期等合并以及拆分策略的实施是在GenerateWord方法中实现的，原有ICTCLAS中，该方法是一个超级庞大的方法，里面有不下6、7层的if嵌套、while嵌套等，分析其内部功能的工作异常复杂。经过一番研究后，我将其中的主要功能部分提取出来，改用了“管道”方式进行处理，简化了代码复杂度。但对于部分逻辑结构异常复杂的日期时间识别功能，SharpICTCLAS中仍然保留了绝大多数原始内容。</p>
+		<p>让我们先来看看原始ICTCLAS的GenerateWord方法（超级长的一个方法）：</p>
+		<div class="code">
+			<div class="title">
+				<div style="FLOAT: right">
+					<img class="copyCodeImage" src="images/copycode.gif" align="absMiddle" name="ccImage">
+					<a onclick="CopyCode(this)" href="javascript:">Copy Code</a></div>
+				<div style="CLEAR: none">
+					ICTCLAS中GenerateWord方法</div>
+			</div>
+			<div class="content">
+				<span style="COLOR: #008000">//Generate Word according the segmentation 
+				route </span><br>
+				<span style="COLOR: #0000ff">bool</span> CSegment::GenerateWord(<span style="COLOR: #0000ff">int</span> 
+				**nSegRoute, <span style="COLOR: #0000ff">int</span> nIndex) <br>
+				{ <br>
+&nbsp; unsigned <span style="COLOR: #0000ff">int</span> i = 0, k = 0; <br>
+&nbsp; <span style="COLOR: #0000ff">int</span> j, nStartVertex, nEndVertex, nPOS;
+				<br>
+&nbsp; <span style="COLOR: #0000ff">char</span> sAtom[WORD_MAXLENGTH], sNumCandidate[100], 
+				sCurWord[100]; <br>
+&nbsp; ELEMENT_TYPE fValue; <br>
+&nbsp; <span style="COLOR: #0000ff">while</span> (nSegRoute[nIndex][i] !=&nbsp; 
+				- 1 &amp;&amp; nSegRoute[nIndex][i + 1] !=&nbsp; - 1 &amp;&amp; <br>
+&nbsp;&nbsp;&nbsp; nSegRoute[nIndex][i] &lt; nSegRoute[nIndex][i + 1]) <br>
+&nbsp; { <br>
+&nbsp;&nbsp;&nbsp; nStartVertex = nSegRoute[nIndex][i]; <br>
+&nbsp;&nbsp;&nbsp; j = nStartVertex; <span style="COLOR: #008000">//Set the start 
+				vertex </span><br>
+&nbsp;&nbsp;&nbsp; nEndVertex = nSegRoute[nIndex][i + 1];
+				<span style="COLOR: #008000">//Set the end vertex </span><br>
+&nbsp;&nbsp;&nbsp; nPOS = 0; <br>
+&nbsp;&nbsp;&nbsp; m_graphSeg.m_segGraph.GetElement(nStartVertex, nEndVertex, &amp;fValue, 
+				&amp;nPOS); <br>
+&nbsp;&nbsp;&nbsp; sAtom[0] = 0; <br>
+&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">while</span> (j &lt; nEndVertex)
+				<br>
+&nbsp;&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #008000">//Generate the word 
+				according the segmentation route </span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; strcat(sAtom, m_graphSeg.m_sAtom[j]); <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; j++; <br>
+&nbsp;&nbsp;&nbsp; } <br>
+&nbsp;&nbsp;&nbsp; m_pWordSeg[nIndex][k].sWord[0] = 0;
+				<span style="COLOR: #008000">//Init the result ending </span>
+				<br>
+&nbsp;&nbsp;&nbsp; strcpy(sNumCandidate, sAtom); <br>
+&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">while</span> (sAtom[0] != 0 &amp;&amp; (IsAllNum((unsigned
+				<span style="COLOR: #0000ff">char</span>*)sNumCandidate) || <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; IsAllChineseNum(sNumCandidate))) <br>
+&nbsp;&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #008000">//Merge all seperate 
+				continue num into one number </span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #008000">//sAtom[0]!=0: add in 
+				2002-5-9 </span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; strcpy(m_pWordSeg[nIndex][k].sWord, sNumCandidate);
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #008000">//Save them in the result 
+				segmentation </span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; i++; <span style="COLOR: #008000">//Skip to next 
+				atom now&nbsp; </span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sAtom[0] = 0; <br>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">while</span> (j &lt; nSegRoute[nIndex][i 
+				+ 1]) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #008000">//Generate 
+				the word according the segmentation route </span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; strcat(sAtom, m_graphSeg.m_sAtom[j]);
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; j++; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; strcat(sNumCandidate, sAtom); <br>
+&nbsp;&nbsp;&nbsp; } <br>
+&nbsp;&nbsp;&nbsp; unsigned <span style="COLOR: #0000ff">int</span> nLen = strlen(m_pWordSeg[nIndex][k].sWord);
+				<br>
+&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">if</span> (nLen == 4 &amp;&amp; CC_Find(<span style="COLOR: #ff00ff">&quot;第上成±—＋∶·．／&quot;</span>,
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; m_pWordSeg[nIndex][k].sWord) || nLen == 1 &amp;&amp; strchr(<span style="COLOR: #ff00ff">&quot;+-./&quot;</span>,
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; m_pWordSeg[nIndex][k].sWord[0])) <br>
+&nbsp;&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #008000">//Only one word
+				</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; strcpy(sCurWord, m_pWordSeg[nIndex][k].sWord);
+				<span style="COLOR: #008000">//Record current word </span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; i--; <br>
+&nbsp;&nbsp;&nbsp; } <br>
+&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">else</span>
+				<span style="COLOR: #0000ff">if</span> (m_pWordSeg[nIndex][k].sWord[0] 
+				== 0) <br>
+&nbsp;&nbsp;&nbsp; <span style="COLOR: #008000">//Have never entering the while 
+				loop </span><br>
+&nbsp;&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; strcpy(m_pWordSeg[nIndex][k].sWord, sAtom); <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #008000">//Save them in the result 
+				segmentation </span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; strcpy(sCurWord, sAtom);
+				<span style="COLOR: #008000">//Record current word </span><br>
+&nbsp;&nbsp;&nbsp; } <br>
+&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">else</span> <br>
+&nbsp;&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #008000">//It is a num </span>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">if</span> (strcmp(<span style="COLOR: #ff00ff">&quot;－－&quot;</span>, 
+				m_pWordSeg[nIndex][k].sWord) == 0 || strcmp(<span style="COLOR: #ff00ff">&quot;—&quot;</span>,
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; m_pWordSeg[nIndex][k].sWord) == 0 || 
+				m_pWordSeg[nIndex][k].sWord[0] == <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#39;-&#39; &amp;&amp; m_pWordSeg[nIndex][k].sWord[1] 
+				== 0) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #008000">//The delimiter &quot;－－&quot;
+				</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nPOS = 30464;
+				<span style="COLOR: #008000">//&#39;w&#39;*256;Set the POS with &#39;w&#39;
+				</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; i--; <span style="COLOR: #008000">//Not 
+				num, back to previous word </span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">else</span> <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #008000">//Adding 
+				time suffix </span><br>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">char</span> 
+				sInitChar[3]; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; unsigned <span style="COLOR: #0000ff">
+				int</span> nCharIndex = 0; <span style="COLOR: #008000">//Get first 
+				char </span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sInitChar[nCharIndex] = m_pWordSeg[nIndex][k].sWord[nCharIndex];
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">if</span> 
+				(sInitChar[nCharIndex] &lt; 0) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nCharIndex += 1; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sInitChar[nCharIndex] = m_pWordSeg[nIndex][k].sWord[nCharIndex];
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nCharIndex += 1; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; sInitChar[nCharIndex] = &#39;\0&#39;; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">if</span> 
+				(k &gt; 0 &amp;&amp; (abs(m_pWordSeg[nIndex][k - 1].nHandle) == 27904 || abs
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (m_pWordSeg[nIndex][k - 1].nHandle) 
+				== 29696) &amp;&amp; (strcmp(sInitChar,&nbsp; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<span style="COLOR: #ff00ff">&quot;—&quot;</span>) == 0 || sInitChar[0] == 
+				&#39;-&#39;) &amp;&amp; (strlen <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (m_pWordSeg[nIndex][k].sWord) 
+				&gt; nCharIndex)) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<span style="COLOR: #008000">//3-4月&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				//27904=&#39;m&#39;*256 </span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<span style="COLOR: #008000">//Split the sInitChar from the original 
+				word </span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; strcpy(m_pWordSeg[nIndex][k 
+				+ 1].sWord, m_pWordSeg[nIndex][k].sWord + <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nCharIndex);
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; m_pWordSeg[nIndex][k + 1].dValue 
+				= m_pWordSeg[nIndex][k].dValue; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; m_pWordSeg[nIndex][k + 1].nHandle 
+				= 27904; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; m_pWordSeg[nIndex][k].sWord[nCharIndex] 
+				= 0; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; m_pWordSeg[nIndex][k].dValue 
+				= 0; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; m_pWordSeg[nIndex][k].nHandle 
+				= 30464; <span style="COLOR: #008000">//&#39;w&#39;*256; </span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; m_graphOptimum.SetElement(nStartVertex, 
+				nStartVertex + 1, <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; m_pWordSeg[nIndex][k].dValue, 
+				m_pWordSeg[nIndex][k].nHandle, <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; m_pWordSeg[nIndex][k].sWord);
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nStartVertex += 1; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; k += 1; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nLen = strlen(m_pWordSeg[nIndex][k].sWord);
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">if</span> 
+				((strlen(sAtom) == 2 &amp;&amp; CC_Find(<span style="COLOR: #ff00ff">&quot;月日时分秒&quot;</span>, 
+				sAtom)) || strcmp <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (sAtom,
+				<span style="COLOR: #ff00ff">&quot;月份&quot;</span>) == 0) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<span style="COLOR: #008000">//2001年 </span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; strcat(m_pWordSeg[nIndex][k].sWord, 
+				sAtom); <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; strcpy(sCurWord,
+				<span style="COLOR: #ff00ff">&quot;未##时&quot;</span>); <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nPOS =&nbsp; - 29696;
+				<span style="COLOR: #008000">//&#39;t&#39;*256;//Set the POS with &#39;m&#39;
+				</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">else</span>
+				<span style="COLOR: #0000ff">if</span> (strcmp(sAtom,
+				<span style="COLOR: #ff00ff">&quot;年&quot;</span>) == 0) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<span style="COLOR: #0000ff">if</span> (IsYearTime(m_pWordSeg[nIndex][k].sWord))
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<span style="COLOR: #008000">//strncmp(sAtom,&quot;年&quot;,2)==0&amp;&amp; </span>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<span style="COLOR: #008000">//1998年， </span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; strcat(m_pWordSeg[nIndex][k].sWord, 
+				sAtom); <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; strcpy(sCurWord,
+				<span style="COLOR: #ff00ff">&quot;未##时&quot;</span>); <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nPOS =&nbsp; 
+				- 29696; <span style="COLOR: #008000">//Set the POS with &#39;t&#39;
+				</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<span style="COLOR: #0000ff">else</span> <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; strcpy(sCurWord,
+				<span style="COLOR: #ff00ff">&quot;未##数&quot;</span>); <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nPOS =&nbsp; 
+				- 27904; <span style="COLOR: #008000">//Set the POS with &#39;m&#39;
+				</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; i--;
+				<span style="COLOR: #008000">//Can not be a time word </span>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">else</span>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<span style="COLOR: #008000">//早晨/t&nbsp; 五点/t&nbsp; </span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<span style="COLOR: #0000ff">if</span> (strcmp(m_pWordSeg[nIndex][k].sWord 
+				+ strlen <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (m_pWordSeg[nIndex][k].sWord) 
+				- 2, <span style="COLOR: #ff00ff">&quot;点&quot;</span>) == 0) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; strcpy(sCurWord,
+				<span style="COLOR: #ff00ff">&quot;未##时&quot;</span>); <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nPOS =&nbsp; 
+				- 29696; <span style="COLOR: #008000">//Set the POS with &#39;t&#39;
+				</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<span style="COLOR: #0000ff">else</span> <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<span style="COLOR: #0000ff">if</span> (!CC_Find(<span style="COLOR: #ff00ff">&quot;∶·．／&quot;</span>, 
+				m_pWordSeg[nIndex][k].sWord + nLen - 2) &amp;&amp; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; m_pWordSeg[nIndex][k].sWord[nLen 
+				- 1] != &#39;.&#39; &amp;&amp; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; m_pWordSeg[nIndex][k].sWord[nLen 
+				- 1] != &#39;/&#39;) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; strcpy(sCurWord,
+				<span style="COLOR: #ff00ff">&quot;未##数&quot;</span>); <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nPOS 
+				=&nbsp; - 27904; <span style="COLOR: #008000">//&#39;m&#39;*256;Set the 
+				POS with &#39;m&#39; </span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<span style="COLOR: #0000ff">else</span>
+				<span style="COLOR: #0000ff">if</span> (nLen &gt; strlen(sInitChar))
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<span style="COLOR: #008000">//Get rid of . example 1. </span>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<span style="COLOR: #0000ff">if</span> (m_pWordSeg[nIndex][k].sWord[nLen 
+				- 1] == &#39;.&#39; || <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				m_pWordSeg[nIndex][k].sWord[nLen - 1] == &#39;/&#39;) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				m_pWordSeg[nIndex][k].sWord[nLen - 1] = 0; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<span style="COLOR: #0000ff">else</span> <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+				m_pWordSeg[nIndex][k].sWord[nLen - 2] = 0; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; strcpy(sCurWord,
+				<span style="COLOR: #ff00ff">&quot;未##数&quot;</span>); <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nPOS 
+				=&nbsp; - 27904; <span style="COLOR: #008000">//&#39;m&#39;*256;Set the 
+				POS with &#39;m&#39; </span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; i--;
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; i--;
+				<span style="COLOR: #008000">//Not num, back to previous word
+				</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fValue = 0; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nEndVertex = nSegRoute[nIndex][i + 1];
+				<span style="COLOR: #008000">//Ending POS changed to latter
+				</span><br>
+&nbsp;&nbsp;&nbsp; } <br>
+&nbsp;&nbsp;&nbsp; m_pWordSeg[nIndex][k].nHandle = nPOS;
+				<span style="COLOR: #008000">//Get the POS of current word
+				</span><br>
+&nbsp;&nbsp;&nbsp; m_pWordSeg[nIndex][k].dValue = fValue;&nbsp; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #008000">//(int)(MAX_FREQUENCE*exp(-fValue));//Return 
+				the frequency of current word </span><br>
+&nbsp;&nbsp;&nbsp; m_graphOptimum.SetElement(nStartVertex, nEndVertex, fValue, nPOS, 
+				sCurWord); <br>
+&nbsp;&nbsp;&nbsp; <span style="COLOR: #008000">//Generate optimum segmentation 
+				graph according the segmentation result </span><br>
+&nbsp;&nbsp;&nbsp; i++; <span style="COLOR: #008000">//Skip to next atom </span>
+				<br>
+&nbsp;&nbsp;&nbsp; k++; <span style="COLOR: #008000">//Accept next word </span>
+				<br>
+&nbsp; } <br>
+&nbsp; m_pWordSeg[nIndex][k].sWord[0] = 0; <br>
+&nbsp; m_pWordSeg[nIndex][k].nHandle =&nbsp; - 1; <span style="COLOR: #008000">//Set 
+				ending </span><br>
+&nbsp; <span style="COLOR: #0000ff">return</span> <span style="COLOR: #0000ff">true</span>;
+				<br>
+				}</div>
+		</div>
+		<p>SharpICTCLAS中，对这段超长代码进行了功能剥离，采用一种“流水线”式的处理流程，不同工作部分负责处理不同功能，而将处理结果节节传递（很象设计模式中的职责链模式），这样使得整体结构变的清晰起来。SharpICTCLAS中GenerateWord方法定义如下：</p>
+		<div class="code">
+			<div class="title">
+				<div style="FLOAT: right">
+					<img class="copyCodeImage" src="images/copycode.gif" align="absMiddle" name="ccImage">
+					<a onclick="CopyCode(this)" href="javascript:">Copy Code</a></div>
+				<div style="CLEAR: none">
+					SharpICTCLAS中的GenerateWord方法</div>
+			</div>
+			<div class="content">
+				<span style="COLOR: #0000ff">private</span>
+				<span style="COLOR: #0000ff">static</span> WordResult[] GenerateWord(<span style="COLOR: #0000ff">int</span>[] 
+				uniPath, WordLinkedArray linkedArray,&nbsp; <br>
+&nbsp;&nbsp; RowFirstDynamicArray&lt;ChainContent&gt; m_graphOptimum) <br>
+				{ <br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">if</span> (linkedArray.Count == 0) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">return</span>
+				<span style="COLOR: #0000ff">null</span>; <br>
+				<br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//--------------------------------------------------------------------
+				</span><br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//Merge all seperate continue num into 
+				one number </span><br>
+&nbsp;&nbsp; MergeContinueNumIntoOne(<span style="COLOR: #0000ff">ref</span> linkedArray);
+				<br>
+				<br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//--------------------------------------------------------------------
+				</span><br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//The delimiter &quot;－－&quot; </span><br>
+&nbsp;&nbsp; ChangeDelimiterPOS(<span style="COLOR: #0000ff">ref</span> linkedArray);
+				<br>
+				<br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//--------------------------------------------------------------------
+				</span><br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//如果前一个词是数字，当前词以“－”或“-”开始，并且不止这一个字符， 
+				</span><br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//那么将此“－”符号从当前词中分离出来。 </span><br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//例如 “3 / -4 / 月”需要拆分成“3 / - / 4 / 月”
+				</span><br>
+&nbsp;&nbsp; SplitMiddleSlashFromDigitalWords(<span style="COLOR: #0000ff">ref</span> 
+				linkedArray); <br>
+				<br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//--------------------------------------------------------------------
+				</span><br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//1、如果当前词是数字，下一个词是“月、日、时、分、秒、月份”中的一个，则合并,且当前词词性是时间 
+				</span><br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//2、如果当前词是可以作为年份的数字，下一个词是“年”，则合并，词性为时间，否则为数字。 
+				</span><br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//3、如果最后一个汉字是&quot;点&quot; ，则认为当前数字是时间 </span>
+				<br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//4、如果当前串最后一个汉字不是&quot;∶·．／&quot;和半角的&#39;.&#39;&#39;/&#39;，那么是数 
+				</span><br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//5、当前串最后一个汉字是&quot;∶·．／&quot;和半角的&#39;.&#39;&#39;/&#39;，且长度大于1，那么去掉最后一个字符。例如&quot;1.&quot;
+				</span><br>
+&nbsp;&nbsp; <font color="#FF0000">CheckDateElements</font>(<span style="COLOR: #0000ff">ref</span> 
+				linkedArray); <br>
+				<br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//--------------------------------------------------------------------
+				</span><br>
+&nbsp;&nbsp; <span style="COLOR: #008000">//遍历链表输出结果 </span><br>
+&nbsp;&nbsp; WordResult[] result = <span style="COLOR: #0000ff">new</span> WordResult[linkedArray.Count];
+				<br>
+				<br>
+&nbsp;&nbsp; WordNode pCur = linkedArray.first; <br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">int</span> i = 0; <br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">while</span> (pCur !=
+				<span style="COLOR: #0000ff">null</span>) <br>
+&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; WordResult item = <span style="COLOR: #0000ff">new</span> 
+				WordResult(); <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; item.sWord = pCur.theWord.sWord; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; item.nPOS = pCur.theWord.nPOS; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; item.dValue = pCur.theWord.dValue; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; result[i] = item; <br>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; m_graphOptimum.SetElement(pCur.row, pCur.col,
+				<span style="COLOR: #0000ff">new</span> ChainContent(item.dValue, 
+				item.nPOS, pCur.sWordInSegGraph)); <br>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pCur = pCur.next; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; i++; <br>
+&nbsp;&nbsp; } <br>
+				<br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">return</span> result; <br>
+				}</div>
+		</div>
+		<p>从中可以看到linkedArray作为“绣球”在多个处理流程中被传递和加工，最终输出相应的结果。只是CheckDateElement方法内容涉及到的东西太多，因此目前看来其实现仍有些臃肿，日后可以进一步进行功能的剥离。</p>
+		<p>　</p>
+		<ul>
+			<li><font color="#800080"><b>小结</b></font></li>
+		</ul>
+		<p>1）Segment类是SharpICTCLAS中最大的一个类，实现了分词过程中一些关键的步骤。</p>
+		<p>2）Segment类对原有ICTCLAS中的代码做了大量修改，力争通过新的数据结构简化原有操作。</p>
+		<p>3）Segment中定义了部分静态方法以提高调用效率。</p>
+		<p>　</p>
+		</td>
+	</tr>
+</table>
+
+</body>
+
+</html>

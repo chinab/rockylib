@@ -1,0 +1,198 @@
+﻿h1 {
+  margin : 0px;
+  margin-top : 50px;
+  margin-bottom : 5px;
+  font-size : 24px;
+  line-height: 200%;
+}
+h2 {
+  margin-top : 40px;
+  margin-bottom : 3px;
+  font-size : 18px;
+}
+
+h3 {
+  margin-top : 25px;
+  font-size : 16px;
+}
+h4 {
+  margin-top : 15px;
+  font-size: 14px;
+}
+p {
+  margin: 10px 0px;
+  text-indent: 20px;
+  line-height: 150%;
+}
+.caltitle
+{
+  background-color : #014e82;
+  border-color:#adf;
+  font-family:arial;
+  font-size: 13px;
+  font-weight:normal;
+  color : white;  
+  margin-left : 0px;
+  padding : 0px;
+  height:100%;
+}
+.calnextprev
+{
+  background-color : #014e82;
+  color : white;  
+}
+.caldayheader
+{
+  background-color:#186aa2;
+  color : white;  
+}
+div.news
+{
+  font-size : 11.5px;
+  font-family : verdana, geneva, arial, helvetica, sans-serif;
+  padding: 5px;
+  padding-left: 10px;
+}
+.headerbar
+{
+  font-size : 11.5px;
+  font-weight: normal;
+  border-collapse: collapse;
+  background-image: url(images/bluetabback.gif);
+  background-repeat:repeat-x;
+}
+.blogstatsbar
+{
+  font-size : 11.5px;
+  text-align:right;
+  font-weight: normal;
+  color: silver;
+  border-collapse:collapse;
+}
+p.date {
+  font-size : 11.5px;
+  font-weight : bold;
+  margin-bottom : 0px;
+  padding-top: 2px;
+  padding-right: 0px;
+  padding-bottom: 4px;
+  text-align: right;
+}
+blockquote {
+  font-size : 11.5px;
+  font-style : italic;
+}
+div.postfoot
+{
+  font-size : 11.5px;
+  background-color: whitesmoke;
+  border-top: gainsboro 1px solid;
+  padding-right: 3px;
+  padding-left: 3px;
+  padding-bottom: 1px;
+  padding-top: 1px;
+  text-align: right;
+}
+#leftmenu h3 {
+  font-size : 11.5px;
+  margin : 0px;
+  margin-top : 10px;  
+  padding-bottom: 2px;
+  padding-left: 3px;
+  border-top: solid 1px gainsboro;
+}
+#leftmenu ul {
+  font-size : 11.5px;
+  list-style: none;
+  margin : 0px;
+  padding-left : 5px;
+  margin-left : 5px;
+  margin-bottom : 10px;
+}
+#leftmenu a
+{
+  font-size : 11.5px;
+  padding: 1px;
+  text-decoration: none;
+}
+#footer {
+  font-size : 11.5px;
+  margin : 0px;  
+  padding-top : 5px;
+  text-align : center;
+}
+#commentform
+{
+  font-size : 11.5px;
+  font-family : verdana, geneva, arial, helvetica, sans-serif;
+}
+input, textarea
+{
+  font-size : 11.5px;
+  font-family : verdana, geneva, arial, helvetica, sans-serif;  
+}
+.commentform
+{
+  font-size : 11.5px;
+  font-family : verdana, geneva, arial, helvetica, sans-serif;
+}
+#leftmenu {
+  position : absolute;
+  left : 0px;
+  width : 200px;
+  height:auto;
+  background-color: whitesmoke;
+  padding-top: 0px;
+}
+#main {
+  margin-left : 200px; 
+  background-color : white;
+  padding : 10px;
+  border-left : 1px solid #555;
+  border-bottom : 4px solid black;
+}
+pre {
+  font-family: "courier new", courier, "????";
+  background-color: #eeeeee;
+}
+code {
+  color: #000099;
+}
+div.code div.title
+{
+  background: #efeff7;
+  border-bottom-color: #c8cdde;
+  border-bottom-style: solid;
+  border-bottom-width: 1;
+  padding-top: 2;
+  padding-bottom: 2;
+  color: #000066;
+  font-weight: bold;
+  margin-top:15;
+  margin-bottom: 0;
+  margin-left:10;
+  margin-right: 10;
+  padding-left: 5;
+  padding-right: 5;
+  font-size: 95%;
+  overflow: auto;
+}
+div.code div.content
+{
+  background: #f7f7ff;
+  border-top-color: #ffffff;
+  border-top-style: solid;
+  border-top-width: 1;
+  padding-left: 6;
+  padding-right: 6;
+  padding-top: 10;
+  padding-bottom: 10;
+  font-size: 12px; 
+  margin-top:0;
+  margin-bottom: 15;
+  margin-left:10;
+  margin-right: 10;
+  overflow: auto; 
+  line-height: 120%; 
+  font-family: courier new
+}

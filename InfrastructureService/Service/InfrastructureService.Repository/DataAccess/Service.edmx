@@ -1,0 +1,1744 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="2.0" xmlns:edmx="http://schemas.microsoft.com/ado/2008/10/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="InfrastructureServiceModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
+        <EntityContainer Name="InfrastructureServiceModelStoreContainer">
+          <EntitySet Name="ActionLog" EntityType="InfrastructureServiceModel.Store.ActionLog" store:Type="Tables" store:Schema="dbo" store:Name="ActionLog">
+            <DefiningQuery>SELECT 
+      [ActionLog].[ControlID] AS [ControlID], 
+      [ActionLog].[UserID] AS [UserID], 
+      [ActionLog].[UserIP] AS [UserIP], 
+      [ActionLog].[ActionType] AS [ActionType], 
+      [ActionLog].[Message] AS [Message], 
+      [ActionLog].[Trace] AS [Trace], 
+      [ActionLog].[CreateDate] AS [CreateDate]
+      FROM [dbo].[ActionLog] AS [ActionLog]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="AppEmailConfigMap" EntityType="InfrastructureServiceModel.Store.AppEmailConfigMap" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="AppInfo" EntityType="InfrastructureServiceModel.Store.AppInfo" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="AppSMSConfigMap" EntityType="InfrastructureServiceModel.Store.AppSMSConfigMap" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="ComponentInfo" EntityType="InfrastructureServiceModel.Store.ComponentInfo" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="ControlInfo" EntityType="InfrastructureServiceModel.Store.ControlInfo" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="EmailConfig" EntityType="InfrastructureServiceModel.Store.EmailConfig" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="EmailMessage" EntityType="InfrastructureServiceModel.Store.EmailMessage" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Feedback" EntityType="InfrastructureServiceModel.Store.Feedback" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="FileStorage" EntityType="InfrastructureServiceModel.Store.FileStorage" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="FriendLink" EntityType="InfrastructureServiceModel.Store.FriendLink" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="News" EntityType="InfrastructureServiceModel.Store.News" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="NewsCategory" EntityType="InfrastructureServiceModel.Store.NewsCategory" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="RoleControlMap" EntityType="InfrastructureServiceModel.Store.RoleControlMap" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="RoleInfo" EntityType="InfrastructureServiceModel.Store.RoleInfo" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="SearchKeyword" EntityType="InfrastructureServiceModel.Store.SearchKeyword" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="ServiceInfo" EntityType="InfrastructureServiceModel.Store.ServiceInfo" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="SiteAD" EntityType="InfrastructureServiceModel.Store.SiteAD" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="SMSConfig" EntityType="InfrastructureServiceModel.Store.SMSConfig" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="SMSMessage" EntityType="InfrastructureServiceModel.Store.SMSMessage" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="UserControlMap" EntityType="InfrastructureServiceModel.Store.UserControlMap" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="UserInfo" EntityType="InfrastructureServiceModel.Store.UserInfo" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="UserRoleMap" EntityType="InfrastructureServiceModel.Store.UserRoleMap" store:Type="Tables" Schema="dbo" />
+          <AssociationSet Name="FK_AppEmailConfigMap_AppInfo" Association="InfrastructureServiceModel.Store.FK_AppEmailConfigMap_AppInfo">
+            <End Role="AppInfo" EntitySet="AppInfo" />
+            <End Role="AppEmailConfigMap" EntitySet="AppEmailConfigMap" />
+          </AssociationSet>
+          <AssociationSet Name="FK_AppEmailConfigMap_EmailConfig" Association="InfrastructureServiceModel.Store.FK_AppEmailConfigMap_EmailConfig">
+            <End Role="EmailConfig" EntitySet="EmailConfig" />
+            <End Role="AppEmailConfigMap" EntitySet="AppEmailConfigMap" />
+          </AssociationSet>
+          <AssociationSet Name="FK_AppSMSConfigMap_AppInfo" Association="InfrastructureServiceModel.Store.FK_AppSMSConfigMap_AppInfo">
+            <End Role="AppInfo" EntitySet="AppInfo" />
+            <End Role="AppSMSConfigMap" EntitySet="AppSMSConfigMap" />
+          </AssociationSet>
+          <AssociationSet Name="FK_AppSMSConfigMap_SMSConfig" Association="InfrastructureServiceModel.Store.FK_AppSMSConfigMap_SMSConfig">
+            <End Role="SMSConfig" EntitySet="SMSConfig" />
+            <End Role="AppSMSConfigMap" EntitySet="AppSMSConfigMap" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ComponentInfo_ServiceInfo" Association="InfrastructureServiceModel.Store.FK_ComponentInfo_ServiceInfo">
+            <End Role="ServiceInfo" EntitySet="ServiceInfo" />
+            <End Role="ComponentInfo" EntitySet="ComponentInfo" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ControlInfo_ComponentInfo" Association="InfrastructureServiceModel.Store.FK_ControlInfo_ComponentInfo">
+            <End Role="ComponentInfo" EntitySet="ComponentInfo" />
+            <End Role="ControlInfo" EntitySet="ControlInfo" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EmailMessage_AppInfo" Association="InfrastructureServiceModel.Store.FK_EmailMessage_AppInfo">
+            <End Role="AppInfo" EntitySet="AppInfo" />
+            <End Role="EmailMessage" EntitySet="EmailMessage" />
+          </AssociationSet>
+          <AssociationSet Name="FK_FeedbackInfo_AppInfo" Association="InfrastructureServiceModel.Store.FK_FeedbackInfo_AppInfo">
+            <End Role="AppInfo" EntitySet="AppInfo" />
+            <End Role="Feedback" EntitySet="Feedback" />
+          </AssociationSet>
+          <AssociationSet Name="FK_FriendLinkInfo_AppInfo" Association="InfrastructureServiceModel.Store.FK_FriendLinkInfo_AppInfo">
+            <End Role="AppInfo" EntitySet="AppInfo" />
+            <End Role="FriendLink" EntitySet="FriendLink" />
+          </AssociationSet>
+          <AssociationSet Name="FK_News_AppInfo" Association="InfrastructureServiceModel.Store.FK_News_AppInfo">
+            <End Role="AppInfo" EntitySet="AppInfo" />
+            <End Role="News" EntitySet="News" />
+          </AssociationSet>
+          <AssociationSet Name="FK_News_NewsCategory" Association="InfrastructureServiceModel.Store.FK_News_NewsCategory">
+            <End Role="NewsCategory" EntitySet="NewsCategory" />
+            <End Role="News" EntitySet="News" />
+          </AssociationSet>
+          <AssociationSet Name="FK_NewsCategory_AppInfo" Association="InfrastructureServiceModel.Store.FK_NewsCategory_AppInfo">
+            <End Role="AppInfo" EntitySet="AppInfo" />
+            <End Role="NewsCategory" EntitySet="NewsCategory" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RoleControlMap_ControlInfo" Association="InfrastructureServiceModel.Store.FK_RoleControlMap_ControlInfo">
+            <End Role="ControlInfo" EntitySet="ControlInfo" />
+            <End Role="RoleControlMap" EntitySet="RoleControlMap" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RoleControlMap_RoleInfo" Association="InfrastructureServiceModel.Store.FK_RoleControlMap_RoleInfo">
+            <End Role="RoleInfo" EntitySet="RoleInfo" />
+            <End Role="RoleControlMap" EntitySet="RoleControlMap" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SearchKeyword_ComponentInfo1" Association="InfrastructureServiceModel.Store.FK_SearchKeyword_ComponentInfo1">
+            <End Role="ComponentInfo" EntitySet="ComponentInfo" />
+            <End Role="SearchKeyword" EntitySet="SearchKeyword" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ServiceInfo_AppInfo" Association="InfrastructureServiceModel.Store.FK_ServiceInfo_AppInfo">
+            <End Role="AppInfo" EntitySet="AppInfo" />
+            <End Role="ServiceInfo" EntitySet="ServiceInfo" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SiteADInfo_AppInfo" Association="InfrastructureServiceModel.Store.FK_SiteADInfo_AppInfo">
+            <End Role="AppInfo" EntitySet="AppInfo" />
+            <End Role="SiteAD" EntitySet="SiteAD" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SMSMessage_AppInfo" Association="InfrastructureServiceModel.Store.FK_SMSMessage_AppInfo">
+            <End Role="AppInfo" EntitySet="AppInfo" />
+            <End Role="SMSMessage" EntitySet="SMSMessage" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserControlMap_ControlInfo" Association="InfrastructureServiceModel.Store.FK_UserControlMap_ControlInfo">
+            <End Role="ControlInfo" EntitySet="ControlInfo" />
+            <End Role="UserControlMap" EntitySet="UserControlMap" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserControlMap_UserInfo" Association="InfrastructureServiceModel.Store.FK_UserControlMap_UserInfo">
+            <End Role="UserInfo" EntitySet="UserInfo" />
+            <End Role="UserControlMap" EntitySet="UserControlMap" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserInfo_AppInfo" Association="InfrastructureServiceModel.Store.FK_UserInfo_AppInfo">
+            <End Role="AppInfo" EntitySet="AppInfo" />
+            <End Role="UserInfo" EntitySet="UserInfo" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserRoleMap_RoleInfo" Association="InfrastructureServiceModel.Store.FK_UserRoleMap_RoleInfo">
+            <End Role="RoleInfo" EntitySet="RoleInfo" />
+            <End Role="UserRoleMap" EntitySet="UserRoleMap" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserRoleMap_UserInfo" Association="InfrastructureServiceModel.Store.FK_UserRoleMap_UserInfo">
+            <End Role="UserInfo" EntitySet="UserInfo" />
+            <End Role="UserRoleMap" EntitySet="UserRoleMap" />
+          </AssociationSet>
+        </EntityContainer>
+        <!--生成过程中发现错误:
+      警告 6002: 表/视图“InfrastructureService.dbo.ActionLog”未定义主键。已推断出该键，并将定义创建为只读的表/视图。
+      -->
+        <EntityType Name="ActionLog">
+          <Key>
+            <PropertyRef Name="ControlID" />
+            <PropertyRef Name="UserID" />
+            <PropertyRef Name="UserIP" />
+            <PropertyRef Name="ActionType" />
+            <PropertyRef Name="Message" />
+            <PropertyRef Name="CreateDate" />
+          </Key>
+          <Property Name="ControlID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="UserID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="UserIP" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="ActionType" Type="int" Nullable="false" />
+          <Property Name="Message" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="Trace" Type="varchar(max)" />
+          <Property Name="CreateDate" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="AppEmailConfigMap">
+          <Key>
+            <PropertyRef Name="AppID" />
+            <PropertyRef Name="EmailConfigID" />
+          </Key>
+          <Property Name="AppID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="EmailConfigID" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
+        <EntityType Name="AppInfo">
+          <Key>
+            <PropertyRef Name="AppID" />
+          </Key>
+          <Property Name="AppID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="AppName" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="CreateDate" Type="smalldatetime" Nullable="false" />
+          <Property Name="Status" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="AppSMSConfigMap">
+          <Key>
+            <PropertyRef Name="AppID" />
+            <PropertyRef Name="SMSConfigID" />
+          </Key>
+          <Property Name="AppID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="SMSConfigID" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ComponentInfo">
+          <Key>
+            <PropertyRef Name="RowID" />
+          </Key>
+          <Property Name="RowID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="ServiceID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Name" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="spName" Type="varchar" MaxLength="50" />
+          <Property Name="Description" Type="varchar" MaxLength="255" />
+          <Property Name="Sort" Type="int" Nullable="false" />
+          <Property Name="Status" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ControlInfo">
+          <Key>
+            <PropertyRef Name="RowID" />
+          </Key>
+          <Property Name="RowID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="ComponentID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Name" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="Description" Type="varchar" MaxLength="255" />
+          <Property Name="Path" Type="varchar" Nullable="false" MaxLength="255" />
+          <Property Name="Sort" Type="int" Nullable="false" />
+          <Property Name="Status" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EmailConfig">
+          <Key>
+            <PropertyRef Name="RowID" />
+          </Key>
+          <Property Name="RowID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="SmtpAuthority" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="UserName" Type="varchar" MaxLength="50" />
+          <Property Name="Password" Type="varchar" MaxLength="50" />
+          <Property Name="FromEmail" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="FromDisplayName" Type="varchar" MaxLength="50" />
+          <Property Name="EnableSsl" Type="bit" Nullable="false" />
+          <Property Name="CreateDate" Type="smalldatetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EmailMessage">
+          <Key>
+            <PropertyRef Name="RowID" />
+          </Key>
+          <Property Name="RowID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="AppID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="From" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="To" Type="varchar" Nullable="false" MaxLength="250" />
+          <Property Name="CC" Type="varchar" MaxLength="250" />
+          <Property Name="Subject" Type="varchar" Nullable="false" MaxLength="500" />
+          <Property Name="Body" Type="varchar(max)" />
+          <Property Name="CreateDate" Type="smalldatetime" Nullable="false" />
+          <Property Name="SendDate" Type="smalldatetime" />
+          <Property Name="ExpiredDate" Type="smalldatetime" />
+          <Property Name="Status" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Feedback">
+          <Key>
+            <PropertyRef Name="RowID" />
+          </Key>
+          <Property Name="RowID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="AppID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Name" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="Phone" Type="varchar" MaxLength="50" />
+          <Property Name="Email" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="Kind" Type="int" Nullable="false" />
+          <Property Name="Content" Type="varchar(max)" Nullable="false" />
+          <Property Name="CreateDate" Type="smalldatetime" Nullable="false" />
+          <Property Name="Status" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="FileStorage">
+          <Key>
+            <PropertyRef Name="FileKey" />
+          </Key>
+          <Property Name="FileKey" Type="varchar" Nullable="false" MaxLength="32" />
+          <Property Name="FileName" Type="varchar" Nullable="false" MaxLength="100" />
+          <Property Name="VirtualPath" Type="varchar" Nullable="false" MaxLength="250" />
+          <Property Name="PhysicalPath" Type="varchar" Nullable="false" MaxLength="500" />
+          <Property Name="ServerAuthority" Type="varchar" MaxLength="50" />
+          <Property Name="CreateDate" Type="smalldatetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="FriendLink">
+          <Key>
+            <PropertyRef Name="RowID" />
+          </Key>
+          <Property Name="RowID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="AppID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="SiteName" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="SiteUrl" Type="varchar" Nullable="false" MaxLength="255" />
+          <Property Name="LinkText" Type="varchar" MaxLength="50" />
+          <Property Name="LinkFileKey" Type="varchar" MaxLength="32" />
+          <Property Name="Sort" Type="int" Nullable="false" />
+          <Property Name="RenderKind" Type="int" Nullable="false" />
+          <Property Name="CreateDate" Type="smalldatetime" Nullable="false" />
+          <Property Name="Status" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="News">
+          <Key>
+            <PropertyRef Name="RowID" />
+          </Key>
+          <Property Name="RowID" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="AppID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="CategoryID" Type="int" Nullable="false" />
+          <Property Name="Title" Type="varchar" Nullable="false" MaxLength="100" />
+          <Property Name="Content" Type="text" />
+          <Property Name="Origin" Type="varchar" MaxLength="50" />
+          <Property Name="Author" Type="varchar" MaxLength="50" />
+          <Property Name="ImageFileKey" Type="varchar" MaxLength="255" />
+          <Property Name="AttachmentFileKey" Type="varchar" MaxLength="255" />
+          <Property Name="Tag" Type="varchar" MaxLength="255" />
+          <Property Name="ViewCount" Type="int" Nullable="false" />
+          <Property Name="Flags" Type="int" Nullable="false" />
+          <Property Name="Status" Type="int" Nullable="false" />
+          <Property Name="CreateDate" Type="smalldatetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="NewsCategory">
+          <Key>
+            <PropertyRef Name="RowID" />
+          </Key>
+          <Property Name="RowID" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="AppID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="ParentID" Type="int" Nullable="false" />
+          <Property Name="Name" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="Sort" Type="int" Nullable="false" />
+          <Property Name="Level" Type="int" Nullable="false" />
+          <Property Name="Path" Type="varchar" Nullable="false" MaxLength="255" />
+          <Property Name="SEO_Keyword" Type="varchar(max)" />
+          <Property Name="SEO_Description" Type="varchar(max)" />
+        </EntityType>
+        <EntityType Name="RoleControlMap">
+          <Key>
+            <PropertyRef Name="RoleID" />
+            <PropertyRef Name="ControlID" />
+          </Key>
+          <Property Name="RoleID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="ControlID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="PermissionFlags" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="RoleInfo">
+          <Key>
+            <PropertyRef Name="RowID" />
+          </Key>
+          <Property Name="RowID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Name" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="Description" Type="varchar" MaxLength="255" />
+        </EntityType>
+        <EntityType Name="SearchKeyword">
+          <Key>
+            <PropertyRef Name="ComponentID" />
+            <PropertyRef Name="Keyword" />
+          </Key>
+          <Property Name="ComponentID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Keyword" Type="varchar" Nullable="false" MaxLength="25" />
+          <Property Name="Pinyin" Type="varchar" MaxLength="50" />
+          <Property Name="PinyinCaps" Type="varchar" MaxLength="50" />
+          <Property Name="Count" Type="int" Nullable="false" />
+          <Property Name="RecordCount" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ServiceInfo">
+          <Key>
+            <PropertyRef Name="RowID" />
+          </Key>
+          <Property Name="RowID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="AppID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Name" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="Description" Type="varchar" MaxLength="255" />
+          <Property Name="Sort" Type="int" Nullable="false" />
+          <Property Name="Status" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="SiteAD">
+          <Key>
+            <PropertyRef Name="RowID" />
+          </Key>
+          <Property Name="RowID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="AppID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Name" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="Url" Type="varchar" MaxLength="255" />
+          <Property Name="FileKey" Type="varchar" Nullable="false" MaxLength="32" />
+          <Property Name="Sort" Type="int" Nullable="false" />
+          <Property Name="RenderWidth" Type="int" Nullable="false" />
+          <Property Name="RenderHeight" Type="int" Nullable="false" />
+          <Property Name="BeginDate" Type="smalldatetime" Nullable="false" />
+          <Property Name="EndDate" Type="smalldatetime" Nullable="false" />
+          <Property Name="Status" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="SMSConfig">
+          <Key>
+            <PropertyRef Name="RowID" />
+          </Key>
+          <Property Name="RowID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="WebAuthority" Type="varchar" Nullable="false" MaxLength="250" />
+          <Property Name="UserName" Type="varchar" MaxLength="50" />
+          <Property Name="Password" Type="varchar" MaxLength="50" />
+          <Property Name="Sign" Type="varchar" MaxLength="50" />
+          <Property Name="CreateDate" Type="smalldatetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="SMSMessage">
+          <Key>
+            <PropertyRef Name="RowID" />
+          </Key>
+          <Property Name="RowID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="AppID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="ReceiveMobile" Type="varchar" MaxLength="50" />
+          <Property Name="SendMessage" Type="varchar" MaxLength="250" />
+          <Property Name="ServiceReturn" Type="varchar" MaxLength="255" />
+          <Property Name="CreateDate" Type="smalldatetime" Nullable="false" />
+          <Property Name="SendDate" Type="smalldatetime" />
+          <Property Name="ExpiredDate" Type="smalldatetime" />
+          <Property Name="Status" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="UserControlMap">
+          <Key>
+            <PropertyRef Name="UserID" />
+            <PropertyRef Name="ControlID" />
+          </Key>
+          <Property Name="UserID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="ControlID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="PermissionFlags" Type="int" Nullable="false" />
+          <Property Name="BeginDate" Type="smalldatetime" Nullable="false" />
+          <Property Name="EndDate" Type="smalldatetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="UserInfo">
+          <Key>
+            <PropertyRef Name="RowID" />
+          </Key>
+          <Property Name="RowID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="AppID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="UserName" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="Password" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="Email" Type="varchar" MaxLength="50" />
+          <Property Name="Mobile" Type="varchar" MaxLength="50" />
+          <Property Name="Remark" Type="varchar(max)" />
+          <Property Name="LastSignInDate" Type="smalldatetime" Nullable="false" />
+          <Property Name="LastSignInIP" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="Status" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="UserRoleMap">
+          <Key>
+            <PropertyRef Name="UserID" />
+            <PropertyRef Name="RoleID" />
+          </Key>
+          <Property Name="UserID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="RoleID" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_AppEmailConfigMap_AppInfo">
+          <End Role="AppInfo" Type="InfrastructureServiceModel.Store.AppInfo" Multiplicity="1" />
+          <End Role="AppEmailConfigMap" Type="InfrastructureServiceModel.Store.AppEmailConfigMap" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AppInfo">
+              <PropertyRef Name="AppID" />
+            </Principal>
+            <Dependent Role="AppEmailConfigMap">
+              <PropertyRef Name="AppID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_AppEmailConfigMap_EmailConfig">
+          <End Role="EmailConfig" Type="InfrastructureServiceModel.Store.EmailConfig" Multiplicity="1" />
+          <End Role="AppEmailConfigMap" Type="InfrastructureServiceModel.Store.AppEmailConfigMap" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EmailConfig">
+              <PropertyRef Name="RowID" />
+            </Principal>
+            <Dependent Role="AppEmailConfigMap">
+              <PropertyRef Name="EmailConfigID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_AppSMSConfigMap_AppInfo">
+          <End Role="AppInfo" Type="InfrastructureServiceModel.Store.AppInfo" Multiplicity="1" />
+          <End Role="AppSMSConfigMap" Type="InfrastructureServiceModel.Store.AppSMSConfigMap" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AppInfo">
+              <PropertyRef Name="AppID" />
+            </Principal>
+            <Dependent Role="AppSMSConfigMap">
+              <PropertyRef Name="AppID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_AppSMSConfigMap_SMSConfig">
+          <End Role="SMSConfig" Type="InfrastructureServiceModel.Store.SMSConfig" Multiplicity="1" />
+          <End Role="AppSMSConfigMap" Type="InfrastructureServiceModel.Store.AppSMSConfigMap" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SMSConfig">
+              <PropertyRef Name="RowID" />
+            </Principal>
+            <Dependent Role="AppSMSConfigMap">
+              <PropertyRef Name="SMSConfigID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ComponentInfo_ServiceInfo">
+          <End Role="ServiceInfo" Type="InfrastructureServiceModel.Store.ServiceInfo" Multiplicity="1" />
+          <End Role="ComponentInfo" Type="InfrastructureServiceModel.Store.ComponentInfo" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ServiceInfo">
+              <PropertyRef Name="RowID" />
+            </Principal>
+            <Dependent Role="ComponentInfo">
+              <PropertyRef Name="ServiceID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ControlInfo_ComponentInfo">
+          <End Role="ComponentInfo" Type="InfrastructureServiceModel.Store.ComponentInfo" Multiplicity="1" />
+          <End Role="ControlInfo" Type="InfrastructureServiceModel.Store.ControlInfo" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ComponentInfo">
+              <PropertyRef Name="RowID" />
+            </Principal>
+            <Dependent Role="ControlInfo">
+              <PropertyRef Name="ComponentID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_EmailMessage_AppInfo">
+          <End Role="AppInfo" Type="InfrastructureServiceModel.Store.AppInfo" Multiplicity="1" />
+          <End Role="EmailMessage" Type="InfrastructureServiceModel.Store.EmailMessage" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AppInfo">
+              <PropertyRef Name="AppID" />
+            </Principal>
+            <Dependent Role="EmailMessage">
+              <PropertyRef Name="AppID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_FeedbackInfo_AppInfo">
+          <End Role="AppInfo" Type="InfrastructureServiceModel.Store.AppInfo" Multiplicity="1" />
+          <End Role="Feedback" Type="InfrastructureServiceModel.Store.Feedback" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AppInfo">
+              <PropertyRef Name="AppID" />
+            </Principal>
+            <Dependent Role="Feedback">
+              <PropertyRef Name="AppID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_FriendLinkInfo_AppInfo">
+          <End Role="AppInfo" Type="InfrastructureServiceModel.Store.AppInfo" Multiplicity="1" />
+          <End Role="FriendLink" Type="InfrastructureServiceModel.Store.FriendLink" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AppInfo">
+              <PropertyRef Name="AppID" />
+            </Principal>
+            <Dependent Role="FriendLink">
+              <PropertyRef Name="AppID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_News_AppInfo">
+          <End Role="AppInfo" Type="InfrastructureServiceModel.Store.AppInfo" Multiplicity="1" />
+          <End Role="News" Type="InfrastructureServiceModel.Store.News" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AppInfo">
+              <PropertyRef Name="AppID" />
+            </Principal>
+            <Dependent Role="News">
+              <PropertyRef Name="AppID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_News_NewsCategory">
+          <End Role="NewsCategory" Type="InfrastructureServiceModel.Store.NewsCategory" Multiplicity="1" />
+          <End Role="News" Type="InfrastructureServiceModel.Store.News" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="NewsCategory">
+              <PropertyRef Name="RowID" />
+            </Principal>
+            <Dependent Role="News">
+              <PropertyRef Name="CategoryID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_NewsCategory_AppInfo">
+          <End Role="AppInfo" Type="InfrastructureServiceModel.Store.AppInfo" Multiplicity="1" />
+          <End Role="NewsCategory" Type="InfrastructureServiceModel.Store.NewsCategory" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AppInfo">
+              <PropertyRef Name="AppID" />
+            </Principal>
+            <Dependent Role="NewsCategory">
+              <PropertyRef Name="AppID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RoleControlMap_ControlInfo">
+          <End Role="ControlInfo" Type="InfrastructureServiceModel.Store.ControlInfo" Multiplicity="1" />
+          <End Role="RoleControlMap" Type="InfrastructureServiceModel.Store.RoleControlMap" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ControlInfo">
+              <PropertyRef Name="RowID" />
+            </Principal>
+            <Dependent Role="RoleControlMap">
+              <PropertyRef Name="ControlID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RoleControlMap_RoleInfo">
+          <End Role="RoleInfo" Type="InfrastructureServiceModel.Store.RoleInfo" Multiplicity="1" />
+          <End Role="RoleControlMap" Type="InfrastructureServiceModel.Store.RoleControlMap" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RoleInfo">
+              <PropertyRef Name="RowID" />
+            </Principal>
+            <Dependent Role="RoleControlMap">
+              <PropertyRef Name="RoleID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SearchKeyword_ComponentInfo1">
+          <End Role="ComponentInfo" Type="InfrastructureServiceModel.Store.ComponentInfo" Multiplicity="1" />
+          <End Role="SearchKeyword" Type="InfrastructureServiceModel.Store.SearchKeyword" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ComponentInfo">
+              <PropertyRef Name="RowID" />
+            </Principal>
+            <Dependent Role="SearchKeyword">
+              <PropertyRef Name="ComponentID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ServiceInfo_AppInfo">
+          <End Role="AppInfo" Type="InfrastructureServiceModel.Store.AppInfo" Multiplicity="1" />
+          <End Role="ServiceInfo" Type="InfrastructureServiceModel.Store.ServiceInfo" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AppInfo">
+              <PropertyRef Name="AppID" />
+            </Principal>
+            <Dependent Role="ServiceInfo">
+              <PropertyRef Name="AppID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SiteADInfo_AppInfo">
+          <End Role="AppInfo" Type="InfrastructureServiceModel.Store.AppInfo" Multiplicity="1" />
+          <End Role="SiteAD" Type="InfrastructureServiceModel.Store.SiteAD" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AppInfo">
+              <PropertyRef Name="AppID" />
+            </Principal>
+            <Dependent Role="SiteAD">
+              <PropertyRef Name="AppID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SMSMessage_AppInfo">
+          <End Role="AppInfo" Type="InfrastructureServiceModel.Store.AppInfo" Multiplicity="1" />
+          <End Role="SMSMessage" Type="InfrastructureServiceModel.Store.SMSMessage" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AppInfo">
+              <PropertyRef Name="AppID" />
+            </Principal>
+            <Dependent Role="SMSMessage">
+              <PropertyRef Name="AppID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserControlMap_ControlInfo">
+          <End Role="ControlInfo" Type="InfrastructureServiceModel.Store.ControlInfo" Multiplicity="1" />
+          <End Role="UserControlMap" Type="InfrastructureServiceModel.Store.UserControlMap" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ControlInfo">
+              <PropertyRef Name="RowID" />
+            </Principal>
+            <Dependent Role="UserControlMap">
+              <PropertyRef Name="ControlID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserControlMap_UserInfo">
+          <End Role="UserInfo" Type="InfrastructureServiceModel.Store.UserInfo" Multiplicity="1" />
+          <End Role="UserControlMap" Type="InfrastructureServiceModel.Store.UserControlMap" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserInfo">
+              <PropertyRef Name="RowID" />
+            </Principal>
+            <Dependent Role="UserControlMap">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserInfo_AppInfo">
+          <End Role="AppInfo" Type="InfrastructureServiceModel.Store.AppInfo" Multiplicity="1" />
+          <End Role="UserInfo" Type="InfrastructureServiceModel.Store.UserInfo" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AppInfo">
+              <PropertyRef Name="AppID" />
+            </Principal>
+            <Dependent Role="UserInfo">
+              <PropertyRef Name="AppID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserRoleMap_RoleInfo">
+          <End Role="RoleInfo" Type="InfrastructureServiceModel.Store.RoleInfo" Multiplicity="1" />
+          <End Role="UserRoleMap" Type="InfrastructureServiceModel.Store.UserRoleMap" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RoleInfo">
+              <PropertyRef Name="RowID" />
+            </Principal>
+            <Dependent Role="UserRoleMap">
+              <PropertyRef Name="RoleID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserRoleMap_UserInfo">
+          <End Role="UserInfo" Type="InfrastructureServiceModel.Store.UserInfo" Multiplicity="1" />
+          <End Role="UserRoleMap" Type="InfrastructureServiceModel.Store.UserRoleMap" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserInfo">
+              <PropertyRef Name="RowID" />
+            </Principal>
+            <Dependent Role="UserRoleMap">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Function Name="msp_Assign_Role_Control" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="RoleID" Type="uniqueidentifier" Mode="In" />
+          <Parameter Name="ControlIDList" Type="varchar(max)" Mode="In" />
+          <Parameter Name="PermissionFlagsList" Type="varchar(max)" Mode="In" />
+        </Function>
+        <Function Name="msp_Assign_User_Control" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="UserID" Type="uniqueidentifier" Mode="In" />
+          <Parameter Name="ControlID" Type="uniqueidentifier" Mode="In" />
+          <Parameter Name="PermissionFlags" Type="int" Mode="In" />
+          <Parameter Name="BeginDate" Type="smalldatetime" Mode="In" />
+          <Parameter Name="EndDate" Type="smalldatetime" Mode="In" />
+        </Function>
+        <Function Name="msp_Assign_User_Role" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="UserID" Type="uniqueidentifier" Mode="In" />
+          <Parameter Name="RoleIDList" Type="varchar(max)" Mode="In" />
+        </Function>
+        <Function Name="msp_BlockRole" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="RoleID" Type="uniqueidentifier" Mode="In" />
+        </Function>
+        <Function Name="msp_GetUserComponent" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="UserID" Type="uniqueidentifier" Mode="In" />
+        </Function>
+        <Function Name="msp_GetUserControl" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="UserID" Type="uniqueidentifier" Mode="In" />
+          <Parameter Name="ComponentID" Type="uniqueidentifier" Mode="In" />
+        </Function>
+        <Function Name="msp_GetUserPermission" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="UserID" Type="uniqueidentifier" Mode="In" />
+          <Parameter Name="Path" Type="varchar" Mode="In" />
+          <Parameter Name="PermissionFlags" Type="int" Mode="InOut" />
+        </Function>
+        <Function Name="msp_InsertRole" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Name" Type="varchar" Mode="In" />
+          <Parameter Name="Description" Type="varchar" Mode="In" />
+          <Parameter Name="ControlIDList" Type="varchar(max)" Mode="In" />
+          <Parameter Name="PermissionFlagsList" Type="varchar(max)" Mode="In" />
+        </Function>
+        <Function Name="msp_QueryRoleDetail" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="RoleID" Type="uniqueidentifier" Mode="In" />
+        </Function>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="InfrastructureServiceModel" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
+        <EntityContainer Name="InfrastructureServiceEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="ActionLogs" EntityType="InfrastructureServiceModel.ActionLog" />
+          <EntitySet Name="AppInfoes" EntityType="InfrastructureServiceModel.AppInfo" />
+          <EntitySet Name="ComponentInfoes" EntityType="InfrastructureServiceModel.ComponentInfo" />
+          <EntitySet Name="ControlInfoes" EntityType="InfrastructureServiceModel.ControlInfo" />
+          <EntitySet Name="EmailConfigs" EntityType="InfrastructureServiceModel.EmailConfig" />
+          <EntitySet Name="EmailMessages" EntityType="InfrastructureServiceModel.EmailMessage" />
+          <EntitySet Name="Feedbacks" EntityType="InfrastructureServiceModel.Feedback" />
+          <EntitySet Name="FileStorages" EntityType="InfrastructureServiceModel.FileStorage" />
+          <EntitySet Name="FriendLinks" EntityType="InfrastructureServiceModel.FriendLink" />
+          <EntitySet Name="News" EntityType="InfrastructureServiceModel.News" />
+          <EntitySet Name="NewsCategories" EntityType="InfrastructureServiceModel.NewsCategory" />
+          <EntitySet Name="RoleControlMaps" EntityType="InfrastructureServiceModel.RoleControlMap" />
+          <EntitySet Name="RoleInfoes" EntityType="InfrastructureServiceModel.RoleInfo" />
+          <EntitySet Name="SearchKeywords" EntityType="InfrastructureServiceModel.SearchKeyword" />
+          <EntitySet Name="ServiceInfoes" EntityType="InfrastructureServiceModel.ServiceInfo" />
+          <EntitySet Name="SiteADs" EntityType="InfrastructureServiceModel.SiteAD" />
+          <EntitySet Name="SMSConfigs" EntityType="InfrastructureServiceModel.SMSConfig" />
+          <EntitySet Name="SMSMessages" EntityType="InfrastructureServiceModel.SMSMessage" />
+          <EntitySet Name="UserControlMaps" EntityType="InfrastructureServiceModel.UserControlMap" />
+          <EntitySet Name="UserInfoes" EntityType="InfrastructureServiceModel.UserInfo" />
+          <AssociationSet Name="FK_EmailMessage_AppInfo" Association="InfrastructureServiceModel.FK_EmailMessage_AppInfo">
+            <End Role="AppInfo" EntitySet="AppInfoes" />
+            <End Role="EmailMessage" EntitySet="EmailMessages" />
+          </AssociationSet>
+          <AssociationSet Name="FK_FeedbackInfo_AppInfo" Association="InfrastructureServiceModel.FK_FeedbackInfo_AppInfo">
+            <End Role="AppInfo" EntitySet="AppInfoes" />
+            <End Role="Feedback" EntitySet="Feedbacks" />
+          </AssociationSet>
+          <AssociationSet Name="FK_FriendLinkInfo_AppInfo" Association="InfrastructureServiceModel.FK_FriendLinkInfo_AppInfo">
+            <End Role="AppInfo" EntitySet="AppInfoes" />
+            <End Role="FriendLink" EntitySet="FriendLinks" />
+          </AssociationSet>
+          <AssociationSet Name="FK_News_AppInfo" Association="InfrastructureServiceModel.FK_News_AppInfo">
+            <End Role="AppInfo" EntitySet="AppInfoes" />
+            <End Role="News" EntitySet="News" />
+          </AssociationSet>
+          <AssociationSet Name="FK_NewsCategory_AppInfo" Association="InfrastructureServiceModel.FK_NewsCategory_AppInfo">
+            <End Role="AppInfo" EntitySet="AppInfoes" />
+            <End Role="NewsCategory" EntitySet="NewsCategories" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ServiceInfo_AppInfo" Association="InfrastructureServiceModel.FK_ServiceInfo_AppInfo">
+            <End Role="AppInfo" EntitySet="AppInfoes" />
+            <End Role="ServiceInfo" EntitySet="ServiceInfoes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SiteADInfo_AppInfo" Association="InfrastructureServiceModel.FK_SiteADInfo_AppInfo">
+            <End Role="AppInfo" EntitySet="AppInfoes" />
+            <End Role="SiteAD" EntitySet="SiteADs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SMSMessage_AppInfo" Association="InfrastructureServiceModel.FK_SMSMessage_AppInfo">
+            <End Role="AppInfo" EntitySet="AppInfoes" />
+            <End Role="SMSMessage" EntitySet="SMSMessages" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserInfo_AppInfo" Association="InfrastructureServiceModel.FK_UserInfo_AppInfo">
+            <End Role="AppInfo" EntitySet="AppInfoes" />
+            <End Role="UserInfo" EntitySet="UserInfoes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ComponentInfo_ServiceInfo" Association="InfrastructureServiceModel.FK_ComponentInfo_ServiceInfo">
+            <End Role="ServiceInfo" EntitySet="ServiceInfoes" />
+            <End Role="ComponentInfo" EntitySet="ComponentInfoes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ControlInfo_ComponentInfo" Association="InfrastructureServiceModel.FK_ControlInfo_ComponentInfo">
+            <End Role="ComponentInfo" EntitySet="ComponentInfoes" />
+            <End Role="ControlInfo" EntitySet="ControlInfoes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SearchKeyword_ComponentInfo1" Association="InfrastructureServiceModel.FK_SearchKeyword_ComponentInfo1">
+            <End Role="ComponentInfo" EntitySet="ComponentInfoes" />
+            <End Role="SearchKeyword" EntitySet="SearchKeywords" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RoleControlMap_ControlInfo" Association="InfrastructureServiceModel.FK_RoleControlMap_ControlInfo">
+            <End Role="ControlInfo" EntitySet="ControlInfoes" />
+            <End Role="RoleControlMap" EntitySet="RoleControlMaps" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserControlMap_ControlInfo" Association="InfrastructureServiceModel.FK_UserControlMap_ControlInfo">
+            <End Role="ControlInfo" EntitySet="ControlInfoes" />
+            <End Role="UserControlMap" EntitySet="UserControlMaps" />
+          </AssociationSet>
+          <AssociationSet Name="FK_News_NewsCategory" Association="InfrastructureServiceModel.FK_News_NewsCategory">
+            <End Role="NewsCategory" EntitySet="NewsCategories" />
+            <End Role="News" EntitySet="News" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RoleControlMap_RoleInfo" Association="InfrastructureServiceModel.FK_RoleControlMap_RoleInfo">
+            <End Role="RoleInfo" EntitySet="RoleInfoes" />
+            <End Role="RoleControlMap" EntitySet="RoleControlMaps" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserControlMap_UserInfo" Association="InfrastructureServiceModel.FK_UserControlMap_UserInfo">
+            <End Role="UserInfo" EntitySet="UserInfoes" />
+            <End Role="UserControlMap" EntitySet="UserControlMaps" />
+          </AssociationSet>
+          <AssociationSet Name="AppEmailConfigMap" Association="InfrastructureServiceModel.AppEmailConfigMap">
+            <End Role="AppInfo" EntitySet="AppInfoes" />
+            <End Role="EmailConfig" EntitySet="EmailConfigs" />
+          </AssociationSet>
+          <AssociationSet Name="AppSMSConfigMap" Association="InfrastructureServiceModel.AppSMSConfigMap">
+            <End Role="AppInfo" EntitySet="AppInfoes" />
+            <End Role="SMSConfig" EntitySet="SMSConfigs" />
+          </AssociationSet>
+          <AssociationSet Name="UserRoleMap" Association="InfrastructureServiceModel.UserRoleMap">
+            <End Role="RoleInfo" EntitySet="RoleInfoes" />
+            <End Role="UserInfo" EntitySet="UserInfoes" />
+          </AssociationSet>
+          <FunctionImport Name="msp_Assign_Role_Control">
+            <Parameter Name="RoleID" Mode="In" Type="Guid" />
+            <Parameter Name="ControlIDList" Mode="In" Type="String" />
+            <Parameter Name="PermissionFlagsList" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="msp_Assign_User_Control">
+            <Parameter Name="UserID" Mode="In" Type="Guid" />
+            <Parameter Name="ControlID" Mode="In" Type="Guid" />
+            <Parameter Name="PermissionFlags" Mode="In" Type="Int32" />
+            <Parameter Name="BeginDate" Mode="In" Type="DateTime" />
+            <Parameter Name="EndDate" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="msp_Assign_User_Role">
+            <Parameter Name="UserID" Mode="In" Type="Guid" />
+            <Parameter Name="RoleIDList" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="msp_BlockRole">
+            <Parameter Name="RoleID" Mode="In" Type="Guid" />
+          </FunctionImport>
+          <FunctionImport Name="msp_GetUserComponent">
+            <Parameter Name="UserID" Mode="In" Type="Guid" />
+          </FunctionImport>
+          <FunctionImport Name="msp_GetUserControl">
+            <Parameter Name="UserID" Mode="In" Type="Guid" />
+            <Parameter Name="ComponentID" Mode="In" Type="Guid" />
+          </FunctionImport>
+          <FunctionImport Name="msp_GetUserPermission">
+            <Parameter Name="UserID" Mode="In" Type="Guid" />
+            <Parameter Name="Path" Mode="In" Type="String" />
+            <Parameter Name="PermissionFlags" Mode="InOut" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="msp_InsertRole">
+            <Parameter Name="Name" Mode="In" Type="String" />
+            <Parameter Name="Description" Mode="In" Type="String" />
+            <Parameter Name="ControlIDList" Mode="In" Type="String" />
+            <Parameter Name="PermissionFlagsList" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="msp_QueryRoleDetail" ReturnType="Collection(InfrastructureServiceModel.msp_QueryRoleDetail_Result)">
+            <Parameter Name="RoleID" Mode="In" Type="Guid" />
+          </FunctionImport>
+        </EntityContainer>
+        <EntityType Name="ActionLog">
+          <Key>
+            <PropertyRef Name="ControlID" />
+            <PropertyRef Name="UserID" />
+            <PropertyRef Name="UserIP" />
+            <PropertyRef Name="ActionType" />
+            <PropertyRef Name="Message" />
+            <PropertyRef Name="CreateDate" />
+          </Key>
+          <Property Name="ControlID" Type="Guid" Nullable="false" />
+          <Property Name="UserID" Type="Guid" Nullable="false" />
+          <Property Name="UserIP" Type="String" Nullable="false" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="ActionType" Type="Int32" Nullable="false" />
+          <Property Name="Message" Type="String" Nullable="false" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="Trace" Type="String" MaxLength="Max" Unicode="false" FixedLength="false" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="AppInfo">
+          <Key>
+            <PropertyRef Name="AppID" />
+          </Key>
+          <Property Name="AppID" Type="Guid" Nullable="false" />
+          <Property Name="AppName" Type="String" Nullable="false" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Status" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="EmailMessages" Relationship="InfrastructureServiceModel.FK_EmailMessage_AppInfo" FromRole="AppInfo" ToRole="EmailMessage" />
+          <NavigationProperty Name="Feedbacks" Relationship="InfrastructureServiceModel.FK_FeedbackInfo_AppInfo" FromRole="AppInfo" ToRole="Feedback" />
+          <NavigationProperty Name="FriendLinks" Relationship="InfrastructureServiceModel.FK_FriendLinkInfo_AppInfo" FromRole="AppInfo" ToRole="FriendLink" />
+          <NavigationProperty Name="News" Relationship="InfrastructureServiceModel.FK_News_AppInfo" FromRole="AppInfo" ToRole="News" />
+          <NavigationProperty Name="NewsCategories" Relationship="InfrastructureServiceModel.FK_NewsCategory_AppInfo" FromRole="AppInfo" ToRole="NewsCategory" />
+          <NavigationProperty Name="ServiceInfoes" Relationship="InfrastructureServiceModel.FK_ServiceInfo_AppInfo" FromRole="AppInfo" ToRole="ServiceInfo" />
+          <NavigationProperty Name="SiteADs" Relationship="InfrastructureServiceModel.FK_SiteADInfo_AppInfo" FromRole="AppInfo" ToRole="SiteAD" />
+          <NavigationProperty Name="SMSMessages" Relationship="InfrastructureServiceModel.FK_SMSMessage_AppInfo" FromRole="AppInfo" ToRole="SMSMessage" />
+          <NavigationProperty Name="UserInfoes" Relationship="InfrastructureServiceModel.FK_UserInfo_AppInfo" FromRole="AppInfo" ToRole="UserInfo" />
+          <NavigationProperty Name="EmailConfigs" Relationship="InfrastructureServiceModel.AppEmailConfigMap" FromRole="AppInfo" ToRole="EmailConfig" />
+          <NavigationProperty Name="SMSConfigs" Relationship="InfrastructureServiceModel.AppSMSConfigMap" FromRole="AppInfo" ToRole="SMSConfig" />
+        </EntityType>
+        <EntityType Name="ComponentInfo">
+          <Key>
+            <PropertyRef Name="RowID" />
+          </Key>
+          <Property Name="RowID" Type="Guid" Nullable="false" />
+          <Property Name="ServiceID" Type="Guid" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="spName" Type="String" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="Description" Type="String" MaxLength="255" Unicode="false" FixedLength="false" />
+          <Property Name="Sort" Type="Int32" Nullable="false" />
+          <Property Name="Status" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="ServiceInfo" Relationship="InfrastructureServiceModel.FK_ComponentInfo_ServiceInfo" FromRole="ComponentInfo" ToRole="ServiceInfo" />
+          <NavigationProperty Name="ControlInfoes" Relationship="InfrastructureServiceModel.FK_ControlInfo_ComponentInfo" FromRole="ComponentInfo" ToRole="ControlInfo" />
+          <NavigationProperty Name="SearchKeywords" Relationship="InfrastructureServiceModel.FK_SearchKeyword_ComponentInfo1" FromRole="ComponentInfo" ToRole="SearchKeyword" />
+        </EntityType>
+        <EntityType Name="ControlInfo">
+          <Key>
+            <PropertyRef Name="RowID" />
+          </Key>
+          <Property Name="RowID" Type="Guid" Nullable="false" />
+          <Property Name="ComponentID" Type="Guid" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="Description" Type="String" MaxLength="255" Unicode="false" FixedLength="false" />
+          <Property Name="Path" Type="String" Nullable="false" MaxLength="255" Unicode="false" FixedLength="false" />
+          <Property Name="Sort" Type="Int32" Nullable="false" />
+          <Property Name="Status" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="ComponentInfo" Relationship="InfrastructureServiceModel.FK_ControlInfo_ComponentInfo" FromRole="ControlInfo" ToRole="ComponentInfo" />
+          <NavigationProperty Name="RoleControlMaps" Relationship="InfrastructureServiceModel.FK_RoleControlMap_ControlInfo" FromRole="ControlInfo" ToRole="RoleControlMap" />
+          <NavigationProperty Name="UserControlMaps" Relationship="InfrastructureServiceModel.FK_UserControlMap_ControlInfo" FromRole="ControlInfo" ToRole="UserControlMap" />
+        </EntityType>
+        <EntityType Name="EmailConfig">
+          <Key>
+            <PropertyRef Name="RowID" />
+          </Key>
+          <Property Name="RowID" Type="Guid" Nullable="false" />
+          <Property Name="SmtpAuthority" Type="String" Nullable="false" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="UserName" Type="String" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="Password" Type="String" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="FromEmail" Type="String" Nullable="false" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="FromDisplayName" Type="String" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="EnableSsl" Type="Boolean" Nullable="false" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="0" />
+          <NavigationProperty Name="AppInfoes" Relationship="InfrastructureServiceModel.AppEmailConfigMap" FromRole="EmailConfig" ToRole="AppInfo" />
+        </EntityType>
+        <EntityType Name="EmailMessage">
+          <Key>
+            <PropertyRef Name="RowID" />
+          </Key>
+          <Property Name="RowID" Type="Guid" Nullable="false" />
+          <Property Name="AppID" Type="Guid" Nullable="false" />
+          <Property Name="From" Type="String" Nullable="false" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="To" Type="String" Nullable="false" MaxLength="250" Unicode="false" FixedLength="false" />
+          <Property Name="CC" Type="String" MaxLength="250" Unicode="false" FixedLength="false" />
+          <Property Name="Subject" Type="String" Nullable="false" MaxLength="500" Unicode="false" FixedLength="false" />
+          <Property Name="Body" Type="String" MaxLength="Max" Unicode="false" FixedLength="false" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="SendDate" Type="DateTime" Precision="0" />
+          <Property Name="ExpiredDate" Type="DateTime" Precision="0" />
+          <Property Name="Status" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="AppInfo" Relationship="InfrastructureServiceModel.FK_EmailMessage_AppInfo" FromRole="EmailMessage" ToRole="AppInfo" />
+        </EntityType>
+        <EntityType Name="Feedback">
+          <Key>
+            <PropertyRef Name="RowID" />
+          </Key>
+          <Property Name="RowID" Type="Guid" Nullable="false" />
+          <Property Name="AppID" Type="Guid" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="Phone" Type="String" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="Email" Type="String" Nullable="false" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="Kind" Type="Int32" Nullable="false" />
+          <Property Name="Content" Type="String" Nullable="false" MaxLength="Max" Unicode="false" FixedLength="false" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Status" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="AppInfo" Relationship="InfrastructureServiceModel.FK_FeedbackInfo_AppInfo" FromRole="Feedback" ToRole="AppInfo" />
+        </EntityType>
+        <EntityType Name="FileStorage">
+          <Key>
+            <PropertyRef Name="FileKey" />
+          </Key>
+          <Property Name="FileKey" Type="String" Nullable="false" MaxLength="32" Unicode="false" FixedLength="false" />
+          <Property Name="FileName" Type="String" Nullable="false" MaxLength="100" Unicode="false" FixedLength="false" />
+          <Property Name="VirtualPath" Type="String" Nullable="false" MaxLength="250" Unicode="false" FixedLength="false" />
+          <Property Name="PhysicalPath" Type="String" Nullable="false" MaxLength="500" Unicode="false" FixedLength="false" />
+          <Property Name="ServerAuthority" Type="String" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="0" />
+        </EntityType>
+        <EntityType Name="FriendLink">
+          <Key>
+            <PropertyRef Name="RowID" />
+          </Key>
+          <Property Name="RowID" Type="Guid" Nullable="false" />
+          <Property Name="AppID" Type="Guid" Nullable="false" />
+          <Property Name="SiteName" Type="String" Nullable="false" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="SiteUrl" Type="String" Nullable="false" MaxLength="255" Unicode="false" FixedLength="false" />
+          <Property Name="LinkText" Type="String" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="LinkFileKey" Type="String" MaxLength="32" Unicode="false" FixedLength="false" />
+          <Property Name="Sort" Type="Int32" Nullable="false" />
+          <Property Name="RenderKind" Type="Int32" Nullable="false" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Status" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="AppInfo" Relationship="InfrastructureServiceModel.FK_FriendLinkInfo_AppInfo" FromRole="FriendLink" ToRole="AppInfo" />
+        </EntityType>
+        <EntityType Name="News">
+          <Key>
+            <PropertyRef Name="RowID" />
+          </Key>
+          <Property Name="RowID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="AppID" Type="Guid" Nullable="false" />
+          <Property Name="CategoryID" Type="Int32" Nullable="false" />
+          <Property Name="Title" Type="String" Nullable="false" MaxLength="100" Unicode="false" FixedLength="false" />
+          <Property Name="Content" Type="String" MaxLength="Max" Unicode="false" FixedLength="false" />
+          <Property Name="Origin" Type="String" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="Author" Type="String" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="ImageFileKey" Type="String" MaxLength="255" Unicode="false" FixedLength="false" />
+          <Property Name="AttachmentFileKey" Type="String" MaxLength="255" Unicode="false" FixedLength="false" />
+          <Property Name="Tag" Type="String" MaxLength="255" Unicode="false" FixedLength="false" />
+          <Property Name="ViewCount" Type="Int32" Nullable="false" />
+          <Property Name="Flags" Type="Int32" Nullable="false" />
+          <Property Name="Status" Type="Int32" Nullable="false" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="0" />
+          <NavigationProperty Name="AppInfo" Relationship="InfrastructureServiceModel.FK_News_AppInfo" FromRole="News" ToRole="AppInfo" />
+          <NavigationProperty Name="NewsCategory" Relationship="InfrastructureServiceModel.FK_News_NewsCategory" FromRole="News" ToRole="NewsCategory" />
+        </EntityType>
+        <EntityType Name="NewsCategory">
+          <Key>
+            <PropertyRef Name="RowID" />
+          </Key>
+          <Property Name="RowID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="AppID" Type="Guid" Nullable="false" />
+          <Property Name="ParentID" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="Sort" Type="Int32" Nullable="false" />
+          <Property Name="Level" Type="Int32" Nullable="false" />
+          <Property Name="Path" Type="String" Nullable="false" MaxLength="255" Unicode="false" FixedLength="false" />
+          <Property Name="SEO_Keyword" Type="String" MaxLength="Max" Unicode="false" FixedLength="false" />
+          <Property Name="SEO_Description" Type="String" MaxLength="Max" Unicode="false" FixedLength="false" />
+          <NavigationProperty Name="AppInfo" Relationship="InfrastructureServiceModel.FK_NewsCategory_AppInfo" FromRole="NewsCategory" ToRole="AppInfo" />
+          <NavigationProperty Name="News" Relationship="InfrastructureServiceModel.FK_News_NewsCategory" FromRole="NewsCategory" ToRole="News" />
+        </EntityType>
+        <EntityType Name="RoleControlMap">
+          <Key>
+            <PropertyRef Name="RoleID" />
+            <PropertyRef Name="ControlID" />
+          </Key>
+          <Property Name="RoleID" Type="Guid" Nullable="false" />
+          <Property Name="ControlID" Type="Guid" Nullable="false" />
+          <Property Name="PermissionFlags" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="ControlInfo" Relationship="InfrastructureServiceModel.FK_RoleControlMap_ControlInfo" FromRole="RoleControlMap" ToRole="ControlInfo" />
+          <NavigationProperty Name="RoleInfo" Relationship="InfrastructureServiceModel.FK_RoleControlMap_RoleInfo" FromRole="RoleControlMap" ToRole="RoleInfo" />
+        </EntityType>
+        <EntityType Name="RoleInfo">
+          <Key>
+            <PropertyRef Name="RowID" />
+          </Key>
+          <Property Name="RowID" Type="Guid" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="Description" Type="String" MaxLength="255" Unicode="false" FixedLength="false" />
+          <NavigationProperty Name="RoleControlMaps" Relationship="InfrastructureServiceModel.FK_RoleControlMap_RoleInfo" FromRole="RoleInfo" ToRole="RoleControlMap" />
+          <NavigationProperty Name="UserInfoes" Relationship="InfrastructureServiceModel.UserRoleMap" FromRole="RoleInfo" ToRole="UserInfo" />
+        </EntityType>
+        <EntityType Name="SearchKeyword">
+          <Key>
+            <PropertyRef Name="ComponentID" />
+            <PropertyRef Name="Keyword" />
+          </Key>
+          <Property Name="ComponentID" Type="Guid" Nullable="false" />
+          <Property Name="Keyword" Type="String" Nullable="false" MaxLength="25" Unicode="false" FixedLength="false" />
+          <Property Name="Pinyin" Type="String" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="PinyinCaps" Type="String" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="Count" Type="Int32" Nullable="false" />
+          <Property Name="RecordCount" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="ComponentInfo" Relationship="InfrastructureServiceModel.FK_SearchKeyword_ComponentInfo1" FromRole="SearchKeyword" ToRole="ComponentInfo" />
+        </EntityType>
+        <EntityType Name="ServiceInfo">
+          <Key>
+            <PropertyRef Name="RowID" />
+          </Key>
+          <Property Name="RowID" Type="Guid" Nullable="false" />
+          <Property Name="AppID" Type="Guid" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="Description" Type="String" MaxLength="255" Unicode="false" FixedLength="false" />
+          <Property Name="Sort" Type="Int32" Nullable="false" />
+          <Property Name="Status" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="AppInfo" Relationship="InfrastructureServiceModel.FK_ServiceInfo_AppInfo" FromRole="ServiceInfo" ToRole="AppInfo" />
+          <NavigationProperty Name="ComponentInfoes" Relationship="InfrastructureServiceModel.FK_ComponentInfo_ServiceInfo" FromRole="ServiceInfo" ToRole="ComponentInfo" />
+        </EntityType>
+        <EntityType Name="SiteAD">
+          <Key>
+            <PropertyRef Name="RowID" />
+          </Key>
+          <Property Name="RowID" Type="Guid" Nullable="false" />
+          <Property Name="AppID" Type="Guid" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="Url" Type="String" MaxLength="255" Unicode="false" FixedLength="false" />
+          <Property Name="FileKey" Type="String" Nullable="false" MaxLength="32" Unicode="false" FixedLength="false" />
+          <Property Name="Sort" Type="Int32" Nullable="false" />
+          <Property Name="RenderWidth" Type="Int32" Nullable="false" />
+          <Property Name="RenderHeight" Type="Int32" Nullable="false" />
+          <Property Name="BeginDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="EndDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Status" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="AppInfo" Relationship="InfrastructureServiceModel.FK_SiteADInfo_AppInfo" FromRole="SiteAD" ToRole="AppInfo" />
+        </EntityType>
+        <EntityType Name="SMSConfig">
+          <Key>
+            <PropertyRef Name="RowID" />
+          </Key>
+          <Property Name="RowID" Type="Guid" Nullable="false" />
+          <Property Name="WebAuthority" Type="String" Nullable="false" MaxLength="250" Unicode="false" FixedLength="false" />
+          <Property Name="UserName" Type="String" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="Password" Type="String" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="Sign" Type="String" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="0" />
+          <NavigationProperty Name="AppInfoes" Relationship="InfrastructureServiceModel.AppSMSConfigMap" FromRole="SMSConfig" ToRole="AppInfo" />
+        </EntityType>
+        <EntityType Name="SMSMessage">
+          <Key>
+            <PropertyRef Name="RowID" />
+          </Key>
+          <Property Name="RowID" Type="Guid" Nullable="false" />
+          <Property Name="AppID" Type="Guid" Nullable="false" />
+          <Property Name="ReceiveMobile" Type="String" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="SendMessage" Type="String" MaxLength="250" Unicode="false" FixedLength="false" />
+          <Property Name="ServiceReturn" Type="String" MaxLength="255" Unicode="false" FixedLength="false" />
+          <Property Name="CreateDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="SendDate" Type="DateTime" Precision="0" />
+          <Property Name="ExpiredDate" Type="DateTime" Precision="0" />
+          <Property Name="Status" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="AppInfo" Relationship="InfrastructureServiceModel.FK_SMSMessage_AppInfo" FromRole="SMSMessage" ToRole="AppInfo" />
+        </EntityType>
+        <EntityType Name="UserControlMap">
+          <Key>
+            <PropertyRef Name="UserID" />
+            <PropertyRef Name="ControlID" />
+          </Key>
+          <Property Name="UserID" Type="Guid" Nullable="false" />
+          <Property Name="ControlID" Type="Guid" Nullable="false" />
+          <Property Name="PermissionFlags" Type="Int32" Nullable="false" />
+          <Property Name="BeginDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="EndDate" Type="DateTime" Nullable="false" Precision="0" />
+          <NavigationProperty Name="ControlInfo" Relationship="InfrastructureServiceModel.FK_UserControlMap_ControlInfo" FromRole="UserControlMap" ToRole="ControlInfo" />
+          <NavigationProperty Name="UserInfo" Relationship="InfrastructureServiceModel.FK_UserControlMap_UserInfo" FromRole="UserControlMap" ToRole="UserInfo" />
+        </EntityType>
+        <EntityType Name="UserInfo">
+          <Key>
+            <PropertyRef Name="RowID" />
+          </Key>
+          <Property Name="RowID" Type="Guid" Nullable="false" />
+          <Property Name="AppID" Type="Guid" Nullable="false" />
+          <Property Name="UserName" Type="String" Nullable="false" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="Password" Type="String" Nullable="false" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="Email" Type="String" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="Mobile" Type="String" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="Remark" Type="String" MaxLength="Max" Unicode="false" FixedLength="false" />
+          <Property Name="LastSignInDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="LastSignInIP" Type="String" Nullable="false" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="Status" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="AppInfo" Relationship="InfrastructureServiceModel.FK_UserInfo_AppInfo" FromRole="UserInfo" ToRole="AppInfo" />
+          <NavigationProperty Name="UserControlMaps" Relationship="InfrastructureServiceModel.FK_UserControlMap_UserInfo" FromRole="UserInfo" ToRole="UserControlMap" />
+          <NavigationProperty Name="RoleInfoes" Relationship="InfrastructureServiceModel.UserRoleMap" FromRole="UserInfo" ToRole="RoleInfo" />
+        </EntityType>
+        <Association Name="FK_EmailMessage_AppInfo">
+          <End Role="AppInfo" Type="InfrastructureServiceModel.AppInfo" Multiplicity="1" />
+          <End Role="EmailMessage" Type="InfrastructureServiceModel.EmailMessage" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AppInfo">
+              <PropertyRef Name="AppID" />
+            </Principal>
+            <Dependent Role="EmailMessage">
+              <PropertyRef Name="AppID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_FeedbackInfo_AppInfo">
+          <End Role="AppInfo" Type="InfrastructureServiceModel.AppInfo" Multiplicity="1" />
+          <End Role="Feedback" Type="InfrastructureServiceModel.Feedback" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AppInfo">
+              <PropertyRef Name="AppID" />
+            </Principal>
+            <Dependent Role="Feedback">
+              <PropertyRef Name="AppID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_FriendLinkInfo_AppInfo">
+          <End Role="AppInfo" Type="InfrastructureServiceModel.AppInfo" Multiplicity="1" />
+          <End Role="FriendLink" Type="InfrastructureServiceModel.FriendLink" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AppInfo">
+              <PropertyRef Name="AppID" />
+            </Principal>
+            <Dependent Role="FriendLink">
+              <PropertyRef Name="AppID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_News_AppInfo">
+          <End Role="AppInfo" Type="InfrastructureServiceModel.AppInfo" Multiplicity="1" />
+          <End Role="News" Type="InfrastructureServiceModel.News" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AppInfo">
+              <PropertyRef Name="AppID" />
+            </Principal>
+            <Dependent Role="News">
+              <PropertyRef Name="AppID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_NewsCategory_AppInfo">
+          <End Role="AppInfo" Type="InfrastructureServiceModel.AppInfo" Multiplicity="1" />
+          <End Role="NewsCategory" Type="InfrastructureServiceModel.NewsCategory" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AppInfo">
+              <PropertyRef Name="AppID" />
+            </Principal>
+            <Dependent Role="NewsCategory">
+              <PropertyRef Name="AppID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ServiceInfo_AppInfo">
+          <End Role="AppInfo" Type="InfrastructureServiceModel.AppInfo" Multiplicity="1" />
+          <End Role="ServiceInfo" Type="InfrastructureServiceModel.ServiceInfo" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AppInfo">
+              <PropertyRef Name="AppID" />
+            </Principal>
+            <Dependent Role="ServiceInfo">
+              <PropertyRef Name="AppID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SiteADInfo_AppInfo">
+          <End Role="AppInfo" Type="InfrastructureServiceModel.AppInfo" Multiplicity="1" />
+          <End Role="SiteAD" Type="InfrastructureServiceModel.SiteAD" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AppInfo">
+              <PropertyRef Name="AppID" />
+            </Principal>
+            <Dependent Role="SiteAD">
+              <PropertyRef Name="AppID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SMSMessage_AppInfo">
+          <End Role="AppInfo" Type="InfrastructureServiceModel.AppInfo" Multiplicity="1" />
+          <End Role="SMSMessage" Type="InfrastructureServiceModel.SMSMessage" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AppInfo">
+              <PropertyRef Name="AppID" />
+            </Principal>
+            <Dependent Role="SMSMessage">
+              <PropertyRef Name="AppID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserInfo_AppInfo">
+          <End Role="AppInfo" Type="InfrastructureServiceModel.AppInfo" Multiplicity="1" />
+          <End Role="UserInfo" Type="InfrastructureServiceModel.UserInfo" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AppInfo">
+              <PropertyRef Name="AppID" />
+            </Principal>
+            <Dependent Role="UserInfo">
+              <PropertyRef Name="AppID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ComponentInfo_ServiceInfo">
+          <End Role="ServiceInfo" Type="InfrastructureServiceModel.ServiceInfo" Multiplicity="1" />
+          <End Role="ComponentInfo" Type="InfrastructureServiceModel.ComponentInfo" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ServiceInfo">
+              <PropertyRef Name="RowID" />
+            </Principal>
+            <Dependent Role="ComponentInfo">
+              <PropertyRef Name="ServiceID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ControlInfo_ComponentInfo">
+          <End Role="ComponentInfo" Type="InfrastructureServiceModel.ComponentInfo" Multiplicity="1" />
+          <End Role="ControlInfo" Type="InfrastructureServiceModel.ControlInfo" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ComponentInfo">
+              <PropertyRef Name="RowID" />
+            </Principal>
+            <Dependent Role="ControlInfo">
+              <PropertyRef Name="ComponentID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SearchKeyword_ComponentInfo1">
+          <End Role="ComponentInfo" Type="InfrastructureServiceModel.ComponentInfo" Multiplicity="1" />
+          <End Role="SearchKeyword" Type="InfrastructureServiceModel.SearchKeyword" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ComponentInfo">
+              <PropertyRef Name="RowID" />
+            </Principal>
+            <Dependent Role="SearchKeyword">
+              <PropertyRef Name="ComponentID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RoleControlMap_ControlInfo">
+          <End Role="ControlInfo" Type="InfrastructureServiceModel.ControlInfo" Multiplicity="1" />
+          <End Role="RoleControlMap" Type="InfrastructureServiceModel.RoleControlMap" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ControlInfo">
+              <PropertyRef Name="RowID" />
+            </Principal>
+            <Dependent Role="RoleControlMap">
+              <PropertyRef Name="ControlID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserControlMap_ControlInfo">
+          <End Role="ControlInfo" Type="InfrastructureServiceModel.ControlInfo" Multiplicity="1" />
+          <End Role="UserControlMap" Type="InfrastructureServiceModel.UserControlMap" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ControlInfo">
+              <PropertyRef Name="RowID" />
+            </Principal>
+            <Dependent Role="UserControlMap">
+              <PropertyRef Name="ControlID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_News_NewsCategory">
+          <End Role="NewsCategory" Type="InfrastructureServiceModel.NewsCategory" Multiplicity="1" />
+          <End Role="News" Type="InfrastructureServiceModel.News" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="NewsCategory">
+              <PropertyRef Name="RowID" />
+            </Principal>
+            <Dependent Role="News">
+              <PropertyRef Name="CategoryID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RoleControlMap_RoleInfo">
+          <End Role="RoleInfo" Type="InfrastructureServiceModel.RoleInfo" Multiplicity="1" />
+          <End Role="RoleControlMap" Type="InfrastructureServiceModel.RoleControlMap" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RoleInfo">
+              <PropertyRef Name="RowID" />
+            </Principal>
+            <Dependent Role="RoleControlMap">
+              <PropertyRef Name="RoleID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserControlMap_UserInfo">
+          <End Role="UserInfo" Type="InfrastructureServiceModel.UserInfo" Multiplicity="1" />
+          <End Role="UserControlMap" Type="InfrastructureServiceModel.UserControlMap" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserInfo">
+              <PropertyRef Name="RowID" />
+            </Principal>
+            <Dependent Role="UserControlMap">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="AppEmailConfigMap">
+          <End Role="AppInfo" Type="InfrastructureServiceModel.AppInfo" Multiplicity="*" />
+          <End Role="EmailConfig" Type="InfrastructureServiceModel.EmailConfig" Multiplicity="*" />
+        </Association>
+        <Association Name="AppSMSConfigMap">
+          <End Role="AppInfo" Type="InfrastructureServiceModel.AppInfo" Multiplicity="*" />
+          <End Role="SMSConfig" Type="InfrastructureServiceModel.SMSConfig" Multiplicity="*" />
+        </Association>
+        <Association Name="UserRoleMap">
+          <End Role="RoleInfo" Type="InfrastructureServiceModel.RoleInfo" Multiplicity="*" />
+          <End Role="UserInfo" Type="InfrastructureServiceModel.UserInfo" Multiplicity="*" />
+        </Association>
+        <ComplexType Name="msp_QueryRoleDetail_Result">
+          <Property Type="Guid" Name="RowID" Nullable="false" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="Description" Nullable="true" MaxLength="255" />
+        </ComplexType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2008/09/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="InfrastructureServiceModelStoreContainer" CdmEntityContainer="InfrastructureServiceEntities">
+          <EntitySetMapping Name="ActionLogs">
+            <EntityTypeMapping TypeName="InfrastructureServiceModel.ActionLog">
+              <MappingFragment StoreEntitySet="ActionLog">
+                <ScalarProperty Name="ControlID" ColumnName="ControlID" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="UserIP" ColumnName="UserIP" />
+                <ScalarProperty Name="ActionType" ColumnName="ActionType" />
+                <ScalarProperty Name="Message" ColumnName="Message" />
+                <ScalarProperty Name="Trace" ColumnName="Trace" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AppInfoes">
+            <EntityTypeMapping TypeName="InfrastructureServiceModel.AppInfo">
+              <MappingFragment StoreEntitySet="AppInfo">
+                <ScalarProperty Name="AppID" ColumnName="AppID" />
+                <ScalarProperty Name="AppName" ColumnName="AppName" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ComponentInfoes">
+            <EntityTypeMapping TypeName="InfrastructureServiceModel.ComponentInfo">
+              <MappingFragment StoreEntitySet="ComponentInfo">
+                <ScalarProperty Name="RowID" ColumnName="RowID" />
+                <ScalarProperty Name="ServiceID" ColumnName="ServiceID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="spName" ColumnName="spName" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Sort" ColumnName="Sort" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ControlInfoes">
+            <EntityTypeMapping TypeName="InfrastructureServiceModel.ControlInfo">
+              <MappingFragment StoreEntitySet="ControlInfo">
+                <ScalarProperty Name="RowID" ColumnName="RowID" />
+                <ScalarProperty Name="ComponentID" ColumnName="ComponentID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Path" ColumnName="Path" />
+                <ScalarProperty Name="Sort" ColumnName="Sort" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EmailConfigs">
+            <EntityTypeMapping TypeName="InfrastructureServiceModel.EmailConfig">
+              <MappingFragment StoreEntitySet="EmailConfig">
+                <ScalarProperty Name="RowID" ColumnName="RowID" />
+                <ScalarProperty Name="SmtpAuthority" ColumnName="SmtpAuthority" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="FromEmail" ColumnName="FromEmail" />
+                <ScalarProperty Name="FromDisplayName" ColumnName="FromDisplayName" />
+                <ScalarProperty Name="EnableSsl" ColumnName="EnableSsl" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EmailMessages">
+            <EntityTypeMapping TypeName="InfrastructureServiceModel.EmailMessage">
+              <MappingFragment StoreEntitySet="EmailMessage">
+                <ScalarProperty Name="RowID" ColumnName="RowID" />
+                <ScalarProperty Name="AppID" ColumnName="AppID" />
+                <ScalarProperty Name="From" ColumnName="From" />
+                <ScalarProperty Name="To" ColumnName="To" />
+                <ScalarProperty Name="CC" ColumnName="CC" />
+                <ScalarProperty Name="Subject" ColumnName="Subject" />
+                <ScalarProperty Name="Body" ColumnName="Body" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="SendDate" ColumnName="SendDate" />
+                <ScalarProperty Name="ExpiredDate" ColumnName="ExpiredDate" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Feedbacks">
+            <EntityTypeMapping TypeName="InfrastructureServiceModel.Feedback">
+              <MappingFragment StoreEntitySet="Feedback">
+                <ScalarProperty Name="RowID" ColumnName="RowID" />
+                <ScalarProperty Name="AppID" ColumnName="AppID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Phone" ColumnName="Phone" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Kind" ColumnName="Kind" />
+                <ScalarProperty Name="Content" ColumnName="Content" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="FileStorages">
+            <EntityTypeMapping TypeName="InfrastructureServiceModel.FileStorage">
+              <MappingFragment StoreEntitySet="FileStorage">
+                <ScalarProperty Name="FileKey" ColumnName="FileKey" />
+                <ScalarProperty Name="FileName" ColumnName="FileName" />
+                <ScalarProperty Name="VirtualPath" ColumnName="VirtualPath" />
+                <ScalarProperty Name="PhysicalPath" ColumnName="PhysicalPath" />
+                <ScalarProperty Name="ServerAuthority" ColumnName="ServerAuthority" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="FriendLinks">
+            <EntityTypeMapping TypeName="InfrastructureServiceModel.FriendLink">
+              <MappingFragment StoreEntitySet="FriendLink">
+                <ScalarProperty Name="RowID" ColumnName="RowID" />
+                <ScalarProperty Name="AppID" ColumnName="AppID" />
+                <ScalarProperty Name="SiteName" ColumnName="SiteName" />
+                <ScalarProperty Name="SiteUrl" ColumnName="SiteUrl" />
+                <ScalarProperty Name="LinkText" ColumnName="LinkText" />
+                <ScalarProperty Name="LinkFileKey" ColumnName="LinkFileKey" />
+                <ScalarProperty Name="Sort" ColumnName="Sort" />
+                <ScalarProperty Name="RenderKind" ColumnName="RenderKind" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="News">
+            <EntityTypeMapping TypeName="InfrastructureServiceModel.News">
+              <MappingFragment StoreEntitySet="News">
+                <ScalarProperty Name="RowID" ColumnName="RowID" />
+                <ScalarProperty Name="AppID" ColumnName="AppID" />
+                <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="Content" ColumnName="Content" />
+                <ScalarProperty Name="Origin" ColumnName="Origin" />
+                <ScalarProperty Name="Author" ColumnName="Author" />
+                <ScalarProperty Name="ImageFileKey" ColumnName="ImageFileKey" />
+                <ScalarProperty Name="AttachmentFileKey" ColumnName="AttachmentFileKey" />
+                <ScalarProperty Name="Tag" ColumnName="Tag" />
+                <ScalarProperty Name="ViewCount" ColumnName="ViewCount" />
+                <ScalarProperty Name="Flags" ColumnName="Flags" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="NewsCategories">
+            <EntityTypeMapping TypeName="InfrastructureServiceModel.NewsCategory">
+              <MappingFragment StoreEntitySet="NewsCategory">
+                <ScalarProperty Name="RowID" ColumnName="RowID" />
+                <ScalarProperty Name="AppID" ColumnName="AppID" />
+                <ScalarProperty Name="ParentID" ColumnName="ParentID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Sort" ColumnName="Sort" />
+                <ScalarProperty Name="Level" ColumnName="Level" />
+                <ScalarProperty Name="Path" ColumnName="Path" />
+                <ScalarProperty Name="SEO_Keyword" ColumnName="SEO_Keyword" />
+                <ScalarProperty Name="SEO_Description" ColumnName="SEO_Description" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RoleControlMaps">
+            <EntityTypeMapping TypeName="InfrastructureServiceModel.RoleControlMap">
+              <MappingFragment StoreEntitySet="RoleControlMap">
+                <ScalarProperty Name="RoleID" ColumnName="RoleID" />
+                <ScalarProperty Name="ControlID" ColumnName="ControlID" />
+                <ScalarProperty Name="PermissionFlags" ColumnName="PermissionFlags" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RoleInfoes">
+            <EntityTypeMapping TypeName="InfrastructureServiceModel.RoleInfo">
+              <MappingFragment StoreEntitySet="RoleInfo">
+                <ScalarProperty Name="RowID" ColumnName="RowID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SearchKeywords">
+            <EntityTypeMapping TypeName="InfrastructureServiceModel.SearchKeyword">
+              <MappingFragment StoreEntitySet="SearchKeyword">
+                <ScalarProperty Name="ComponentID" ColumnName="ComponentID" />
+                <ScalarProperty Name="Keyword" ColumnName="Keyword" />
+                <ScalarProperty Name="Pinyin" ColumnName="Pinyin" />
+                <ScalarProperty Name="PinyinCaps" ColumnName="PinyinCaps" />
+                <ScalarProperty Name="Count" ColumnName="Count" />
+                <ScalarProperty Name="RecordCount" ColumnName="RecordCount" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ServiceInfoes">
+            <EntityTypeMapping TypeName="InfrastructureServiceModel.ServiceInfo">
+              <MappingFragment StoreEntitySet="ServiceInfo">
+                <ScalarProperty Name="RowID" ColumnName="RowID" />
+                <ScalarProperty Name="AppID" ColumnName="AppID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Sort" ColumnName="Sort" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SiteADs">
+            <EntityTypeMapping TypeName="InfrastructureServiceModel.SiteAD">
+              <MappingFragment StoreEntitySet="SiteAD">
+                <ScalarProperty Name="RowID" ColumnName="RowID" />
+                <ScalarProperty Name="AppID" ColumnName="AppID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Url" ColumnName="Url" />
+                <ScalarProperty Name="FileKey" ColumnName="FileKey" />
+                <ScalarProperty Name="Sort" ColumnName="Sort" />
+                <ScalarProperty Name="RenderWidth" ColumnName="RenderWidth" />
+                <ScalarProperty Name="RenderHeight" ColumnName="RenderHeight" />
+                <ScalarProperty Name="BeginDate" ColumnName="BeginDate" />
+                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SMSConfigs">
+            <EntityTypeMapping TypeName="InfrastructureServiceModel.SMSConfig">
+              <MappingFragment StoreEntitySet="SMSConfig">
+                <ScalarProperty Name="RowID" ColumnName="RowID" />
+                <ScalarProperty Name="WebAuthority" ColumnName="WebAuthority" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="Sign" ColumnName="Sign" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SMSMessages">
+            <EntityTypeMapping TypeName="InfrastructureServiceModel.SMSMessage">
+              <MappingFragment StoreEntitySet="SMSMessage">
+                <ScalarProperty Name="RowID" ColumnName="RowID" />
+                <ScalarProperty Name="AppID" ColumnName="AppID" />
+                <ScalarProperty Name="ReceiveMobile" ColumnName="ReceiveMobile" />
+                <ScalarProperty Name="SendMessage" ColumnName="SendMessage" />
+                <ScalarProperty Name="ServiceReturn" ColumnName="ServiceReturn" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="SendDate" ColumnName="SendDate" />
+                <ScalarProperty Name="ExpiredDate" ColumnName="ExpiredDate" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserControlMaps">
+            <EntityTypeMapping TypeName="InfrastructureServiceModel.UserControlMap">
+              <MappingFragment StoreEntitySet="UserControlMap">
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="ControlID" ColumnName="ControlID" />
+                <ScalarProperty Name="PermissionFlags" ColumnName="PermissionFlags" />
+                <ScalarProperty Name="BeginDate" ColumnName="BeginDate" />
+                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserInfoes">
+            <EntityTypeMapping TypeName="InfrastructureServiceModel.UserInfo">
+              <MappingFragment StoreEntitySet="UserInfo">
+                <ScalarProperty Name="RowID" ColumnName="RowID" />
+                <ScalarProperty Name="AppID" ColumnName="AppID" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Mobile" ColumnName="Mobile" />
+                <ScalarProperty Name="Remark" ColumnName="Remark" />
+                <ScalarProperty Name="LastSignInDate" ColumnName="LastSignInDate" />
+                <ScalarProperty Name="LastSignInIP" ColumnName="LastSignInIP" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="AppEmailConfigMap" TypeName="InfrastructureServiceModel.AppEmailConfigMap" StoreEntitySet="AppEmailConfigMap">
+            <EndProperty Name="AppInfo">
+              <ScalarProperty Name="AppID" ColumnName="AppID" />
+            </EndProperty>
+            <EndProperty Name="EmailConfig">
+              <ScalarProperty Name="RowID" ColumnName="EmailConfigID" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <AssociationSetMapping Name="AppSMSConfigMap" TypeName="InfrastructureServiceModel.AppSMSConfigMap" StoreEntitySet="AppSMSConfigMap">
+            <EndProperty Name="AppInfo">
+              <ScalarProperty Name="AppID" ColumnName="AppID" />
+            </EndProperty>
+            <EndProperty Name="SMSConfig">
+              <ScalarProperty Name="RowID" ColumnName="SMSConfigID" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <AssociationSetMapping Name="UserRoleMap" TypeName="InfrastructureServiceModel.UserRoleMap" StoreEntitySet="UserRoleMap">
+            <EndProperty Name="RoleInfo">
+              <ScalarProperty Name="RowID" ColumnName="RoleID" />
+            </EndProperty>
+            <EndProperty Name="UserInfo">
+              <ScalarProperty Name="RowID" ColumnName="UserID" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <FunctionImportMapping FunctionImportName="msp_Assign_Role_Control" FunctionName="InfrastructureServiceModel.Store.msp_Assign_Role_Control" />
+          <FunctionImportMapping FunctionImportName="msp_Assign_User_Control" FunctionName="InfrastructureServiceModel.Store.msp_Assign_User_Control" />
+          <FunctionImportMapping FunctionImportName="msp_Assign_User_Role" FunctionName="InfrastructureServiceModel.Store.msp_Assign_User_Role" />
+          <FunctionImportMapping FunctionImportName="msp_BlockRole" FunctionName="InfrastructureServiceModel.Store.msp_BlockRole" />
+          <FunctionImportMapping FunctionImportName="msp_GetUserComponent" FunctionName="InfrastructureServiceModel.Store.msp_GetUserComponent" />
+          <FunctionImportMapping FunctionImportName="msp_GetUserControl" FunctionName="InfrastructureServiceModel.Store.msp_GetUserControl" />
+          <FunctionImportMapping FunctionImportName="msp_GetUserPermission" FunctionName="InfrastructureServiceModel.Store.msp_GetUserPermission" />
+          <FunctionImportMapping FunctionImportName="msp_InsertRole" FunctionName="InfrastructureServiceModel.Store.msp_InsertRole" />
+          <FunctionImportMapping FunctionImportName="msp_QueryRoleDetail" FunctionName="InfrastructureServiceModel.Store.msp_QueryRoleDetail">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="InfrastructureServiceModel.msp_QueryRoleDetail_Result">
+                <ScalarProperty Name="RowID" ColumnName="RowID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="False" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="无" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

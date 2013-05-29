@@ -1,0 +1,229 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="zh-cn" />
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>SharpICTCLAS分词系统简介(5)NShortPath-2</title>
+<link href="css/style.css" rel="stylesheet" type="text/css" />
+<link href="css/customercss.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript">/*<![CDATA[*/
+if(typeof(HTMLElement)!="undefined" && !window.opera)
+{
+  HTMLElement.prototype.__defineGetter__("parentElement", function () 
+  {
+    if (this.parentNode == this.ownerDocument) return null;
+    return this.parentNode;
+  });
+}
+
+HTMLElement.prototype.innerHTML getter = function(){
+   return getInnerHTML(this);
+}
+/*]]>*/
+</script>
+<script language="javascript">
+function CopyCode(key)
+{
+  var divElements = document.getElementsByTagName("div");
+  var i;
+  occur = 0;  
+  for(i = 0; i < divElements.length; ++i)
+  {
+    if(key.parentElement.parentElement.parentElement == divElements[i].parentElement)
+    {
+      if(occur == 1)
+      {
+        if(navigator.appName.indexOf('Microsoft') != -1)
+          copyToClipboard(divElements[i].innerText);
+        else
+          copyToClipboard(Html2Txt(divElements[i].innerHTML));
+      }
+      occur++;
+    }
+  }
+}
+function Html2Txt(htmlText)
+{
+  str = htmlText.replace(/\r\n/g, " ");
+  str = str.replace(/\r/g, " "); 
+  str = str.replace(/\n/g, " "); 
+  str = str.replace(/\t/g, "");
+  str = str.replace(/<BR>/gi,"\r\n");
+  str = str.replace(/<[^>]+?>/g,"");
+  str = str.replace(/&nbsp;/g, " ");
+  str = str.replace(/&gt;/g, ">");
+  str = str.replace(/&lt;/g, "<");
+  str = str.replace(/&amp;/g, "&");
+  return str;
+}
+
+function copyToClipboard(txt)
+{
+ if(window.clipboardData) 
+  {
+    window.clipboardData.clearData();
+    window.clipboardData.setData("Text", txt);
+  }
+  else if(navigator.userAgent.indexOf("Opera") != -1) 
+  {
+    window.location = txt;
+  } 
+  else if (window.netscape) 
+  {
+    try 
+    {
+      netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
+    } 
+    catch (e) 
+    {
+      alert("您的firefox安全限制限制您进行剪贴板操作，请在地址栏中输入“about:config”将“signed.applets.codebase_principal_support”设置为“true”之后重试");
+      return false;
+    }
+    var clip = Components.classes['@mozilla.org/widget/clipboard;1'].createInstance(Components.interfaces.nsIClipboard);
+    if (!clip)
+      return;
+    var trans = Components.classes['@mozilla.org/widget/transferable;1'].createInstance(Components.interfaces.nsITransferable);
+    if (!trans)
+      return;
+    trans.addDataFlavor('text/unicode');
+    var str = new Object();
+    var len = new Object();
+    var str = Components.classes["@mozilla.org/supports-string;1"].createInstance(Components.interfaces.nsISupportsString);
+    var copytext = txt;
+    str.data = copytext;
+    trans.setTransferData("text/unicode",str,copytext.length*2);
+    var clipid = Components.interfaces.nsIClipboard;
+    if (!clip)
+      return false;
+    clip.setData(trans,null,clipid.kGlobalClipboard);
+  }
+} 
+</script>
+</head>
+
+<body>
+
+<p>　</p>
+<table width="95%" align="center">
+	<tr>
+		<td>
+		<p>在了解了1-最短路径的计算方式后，我们看看N-最短路径的计算。</p>
+		<p>N-最短路径的计算方式与1-最短路径基本相同，只是在记录所有可达路径时，要保留最短的前N个结果。让我们仍然以上篇文章的案例来看看如何实现N-最短路径的运算。</p>
+		<h3>1、数据表示</h3>
+		<p>这里我们仍然沿用前文例子，对下图求N-最短路径，每条边的权重已经在图中标注出来了。</p>
+		<p><img border="0" src="images/0308002.gif" width="383" height="107"></p>
+		<p>（图一）</p>
+		<h3>2、运算过程</h3>
+		<p>仍然象1-最短路径一样，计算出每个结点上可达N-最短路的PreNode。我们这里以2-最短路径为例：</p>
+		<p>1）首先计算出每个结点上所有可达路径的可能路径长度并按从小到大排序。</p>
+		<p>2）根据排序结果取前2种路径长度并分别记录进各结点的PreNode队列。如下图：</p>
+		<p><img border="0" src="images/0308008.gif" width="456" height="278"></p>
+		<p>（图二）</p>
+		<p>在该图中，到达1号、2号、3号结点的路径虽然有多条，但长度只有一种长度，但到达4号“D”结点的路径长度有两种，即长度可能是3也可能是4，此时在“最短路”处（index＝0）记录长度为3时的PreNode，在“次短路”处（index＝1）处记录长度为4时的PreNode，依此类推。</p>
+		<p>值得注意的是，此时用来记录PreNode的坐标已经由前文求“1-最短路径”时的一个数（<font color="#0000FF">ParentNode值</font>)变为2个数（<font color="#0000FF">ParentNode值以及index值</font>）。</p>
+		<p>如图二所示，到达6号“末”结点的次短路径由两个ParentNode，一个是index=0中的4号结点，一个是index=1的5号结点，它们都使得总路径长度为6。</p>
+		<h3>3、具体实现</h3>
+		<p>在具体实现上述算法时，首先要求得所有可能路径的长度，这在SharpICTCLAS中是通过一个EnQueueCurNodeEdges方法实现的，上篇文章给出了它的简化版本的代码，这里将完整的求N-最短路径的EnQueueCurNodeEdges方法代码放上来：</p>
+		<div class="code">
+			<div class="title">
+				<div style="FLOAT: right">
+					<img class="copyCodeImage" src="images/copycode.gif" align="absMiddle" name="ccImage">
+					<a onclick="CopyCode(this)" href="javascript:">Copy Code</a></div>
+				<div style="CLEAR: none">
+					程序</div>
+			</div>
+			<div class="content">
+				<span style="COLOR: #008000">//====================================================================
+				</span><br>
+				<span style="COLOR: #008000">// 将所有到当前结点（nCurNode）可能的边根据eWeight排序并压入队列 
+				</span><br>
+				<span style="COLOR: #008000">//====================================================================
+				</span><br>
+				<span style="COLOR: #0000ff">private</span>
+				<span style="COLOR: #0000ff">static</span>
+				<span style="COLOR: #0000ff">void</span> EnQueueCurNodeEdges(<span style="COLOR: #0000ff">ref</span> 
+				CQueue queWork, <span style="COLOR: #0000ff">int</span> nCurNode)
+				<br>
+				{ <br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">int</span> nPreNode; <br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">double</span> eWeight; <br>
+&nbsp;&nbsp; ChainItem&lt;ChainContent&gt; pEdgeList; <br>
+				<br>
+&nbsp;&nbsp; queWork.Clear(); <br>
+&nbsp;&nbsp; pEdgeList = m_apCost.GetFirstElementOfCol(nCurNode); <br>
+				<br>
+&nbsp;&nbsp; <span style="COLOR: #008000">// Get all the edges </span><br>
+&nbsp;&nbsp; <span style="COLOR: #0000ff">while</span> (pEdgeList !=
+				<span style="COLOR: #0000ff">null</span> &amp;&amp; pEdgeList.col == nCurNode)
+				<br>
+&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; nPreNode = pEdgeList.row;&nbsp;
+				<span style="COLOR: #008000">// </span><font color="#FF0000">很特别的命令，利用了row与col的关系</font><span style="COLOR: #008000">
+				</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; eWeight = pEdgeList.Content.eWeight;
+				<span style="COLOR: #008000">//Get the eWeight of edges </span>
+				<br>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">for</span> (<span style="COLOR: #0000ff">int</span> 
+				i = 0; i &lt; <font color="#FF0000">m_nValueKind</font>; i++) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #008000">// 
+				第一个结点，没有PreNode，直接加入队列 </span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">if</span> 
+				(nPreNode == 0) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; queWork.EnQueue(<span style="COLOR: #0000ff">new</span> 
+				QueueElement(nPreNode, i, eWeight)); <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<span style="COLOR: #0000ff">break</span>; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } <br>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #008000">// 
+				如果PreNode的Weight == Predefine.INFINITE_VALUE，则没有必要继续下去了 </span>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span style="COLOR: #0000ff">if</span> 
+				(m_pWeight[nPreNode - 1][i] == Predefine.INFINITE_VALUE) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<span style="COLOR: #0000ff">break</span>; <br>
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; queWork.EnQueue(<span style="COLOR: #0000ff">new</span> 
+				QueueElement(nPreNode, i, eWeight + m_pWeight[nPreNode - 1][i]));
+				<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pEdgeList = pEdgeList.next; <br>
+&nbsp;&nbsp; } <br>
+				}</div>
+		</div>
+		<p>这里的m_nValueKind就是你希望N-最短路径保留几种路径的结果。</p>
+		<p>当m_nValueKind＝2时，我们求得了2-最短路径，路径长度有两种，分别长度为5和6，而路径总共有6条，如下：</p>
+		<p>最短路径：</p>
+		<ul>
+			<li><font color="#0000FF">0, 1, 3, 6,</font></li>
+			<li><font color="#0000FF">0, 1, 2, 3, 6,</font></li>
+			<li><font color="#0000FF">0, 1, 2, 4, 5, 6,</font></li>
+		</ul>
+		<p>========================</p>
+		<p>次短路径</p>
+		<ul>
+			<li><font color="#0000FF">0, 1, 2, 4, 6,</font></li>
+			<li><font color="#0000FF">0, 1, 3, 4, 5, 6,</font></li>
+			<li><font color="#0000FF">0, 1, 2, 3, 4, 5, 6,</font></li>
+		</ul>
+		<h3>4、求解N-最短路径</h3>
+		<p>N-最短路径的最终输出与上篇文章完全一致，仍然是借助堆栈完成的。只不过根据index的取值的不同，分多次完成压栈与出栈的操作而已。此处就不再重复，感兴趣的可以再看看上一篇文章。</p>
+		<p>　</p>
+		<ul>
+			<li><font color="#800080"><b>小结</b></font></li>
+		</ul>
+		<p>1）N-最短路径中用来记录PreNode的坐标由前文求“1-最短路径”时的一个数（<font color="#0000FF">ParentNode值</font>)变为2个数（<font color="#0000FF">ParentNode值以及index值</font>）。</p>
+		<p>2）N-最短路径并不意味着求得得路径只有N条。</p>
+		<p>3）文中只演示了2-最短路径，但可以推广到N-最短路径。程序求得的3-最短路径中，最长的路径为：（0, 1, 3, 4, 6）与（0, 1, 
+		2, 3, 4, 6），它们的长度都是7。</p>
+		<p>　</p>
+		</td>
+	</tr>
+</table>
+
+</body>
+
+</html>
