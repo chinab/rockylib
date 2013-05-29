@@ -119,7 +119,7 @@ namespace Rocky.Net
                 if (device != null)
                 {
                     device.WaitHandle.Close();
-                    Thread.Sleep(1000);
+					Thread.Sleep(1000 * 10);
                 }
                 if (q.Any())
                 {
