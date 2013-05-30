@@ -218,35 +218,35 @@ namespace Rocky.TestProject
         #region InitMenu
         private void InitMenu()
         {
-            ushort i = 0;
-            Action<string> act = txt =>
-            {
-                var menuItem = new ToolStripMenuItem();
-                menuItem.Name = "Item" + (i++);
-                menuItem.Text = txt;
-                _notify.ContextMenuStrip.Items.Add(menuItem);
-            };
-            act("配置");
-            act("日志");
-            act("我的设备");
-            act("启动Proxifier");
-            act("开机启动/禁止");
-            act("显示/隐藏");
-            act("重新载入");
-            act("退出");
+			Action<string,string> act = (txt, name) =>
+			{
+				var menuItem = new ToolStripMenuItem();
+				menuItem.Name = name;
+				menuItem.Text = txt;
+				_notify.ContextMenuStrip.Items.Add(menuItem);
+			};
+            act("配置", "C");
+            act("日志", "L");
+            act("我的设备", "D");
+            act("启动Proxifier", "P");
+			act("帮助", "H");
+            act("开机启动/禁止", "S");
+            act("显示/隐藏", "V");
+            act("重新载入", "R");
+            act("退出", "E");
             _notify.ContextMenuStrip.ItemClicked += new ToolStripItemClickedEventHandler(ContextMenuStrip_ItemClicked);
         }
         void ContextMenuStrip_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
             switch (e.ClickedItem.Name)
             {
-                case "Item0":
+                case "C":
                     Process.Start("Explorer.exe", "/select," + CloudAgentConfig.AppConfigPath);
                     break;
-                case "Item1":
+                case "L":
                     Process.Start("Explorer.exe", Runtime.CombinePath(@"logs\"));
                     break;
-                case "Item2":
+                case "D":
                     using (var pipeClient = new NamedPipeClientStream(SecurityPolicy.PipeName))
                     {
                         pipeClient.Connect();
@@ -254,7 +254,7 @@ namespace Rocky.TestProject
                         pipeClient.WaitForPipeDrain();
                     }
                     break;
-                case "Item3":
+                case "P":
                     using (var pipeClient = new NamedPipeClientStream(SecurityPolicy.PipeName))
                     {
                         pipeClient.Connect();
@@ -262,7 +262,10 @@ namespace Rocky.TestProject
                         pipeClient.WaitForPipeDrain();
                     }
                     break;
-                case "Item4":
+				case "H":
+					Process.Start("http://www.cnblogs.com/Googler/archive/2013/05/30/3109402.html");
+					break;
+                case "S":
                     string shortcutPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Programs), string.Format(@"{0}\{1}.appref-ms", Application.CompanyName, Application.ProductName));
                     Console.Out.WriteInfo(shortcutPath);
                     var reg = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
@@ -277,10 +280,10 @@ namespace Rocky.TestProject
                         Console.Out.WriteTip("开机禁止 Ok.");
                     }
                     break;
-                case "Item5":
+                case "V":
                     ConsoleNotify.Visible = !ConsoleNotify.Visible;
                     break;
-                case "Item6":
+                case "R":
                     Application.Restart();
                     this.Exit();
                     break;

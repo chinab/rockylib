@@ -1,12 +1,26 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="e:\ThirdParty\GitLib\Rocky.TestProject\CloudAgentApp.cs">
-    <Files>
-      <File FileName="e:\ThirdParty\GitLib\Rocky.TestProject\CloudAgentApp.cs" Line="1" Column="13" />
-    </Files>
+  <MonoDevelop.Ide.Workbench>
     <Pads>
       <Pad Id="ProjectPad">
-        <State expanded="True" />
+        <State expanded="True">
+          <Node name="04 Test" expanded="True">
+            <Node name="Rocky.TestProject" expanded="True">
+              <Node name="Common" expanded="True">
+                <Node name="ConsoleNotify.cs" selected="True" />
+              </Node>
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+      <Pad Id="ClassPad">
+        <State expanded="True" selected="True">
+          <Node name="02 Infrastructure" expanded="True">
+            <Node name="NoSQL" expanded="True">
+              <Node name="NoSQL" expanded="True" />
+            </Node>
+          </Node>
+        </State>
       </Pad>
     </Pads>
   </MonoDevelop.Ide.Workbench>
