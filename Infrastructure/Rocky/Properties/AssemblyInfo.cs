@@ -40,4 +40,6 @@ using System.Runtime.InteropServices;
  * 2.gacutil /i $(TargetPath)
  * 3.gacutil /u $(TargetPath)
  */
+//[assembly: AssemblyKeyFile("rocky.snk")]
+//[assembly: AssemblyDelaySign(false)]
 //[assembly: log4net.Config.XmlConfigurator(ConfigFile = "StandardLog4Net.config", Watch = true)]

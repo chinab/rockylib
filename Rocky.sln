@@ -5,7 +5,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01 Solution", "01 Solution"
 	ProjectSection(SolutionItems) = preProject
 		ReadMe.txt = ReadMe.txt
 		Solution\rocky.snk = Solution\rocky.snk
-		Solution\Solution.cs = Solution\Solution.cs
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ThirdParty", "ThirdParty", "{08018B28-EC09-4459-B927-A2FF1E63F40E}"

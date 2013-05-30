@@ -200,7 +200,7 @@ namespace Rocky.TestProject
             _notify = new NotifyIcon()
             {
                 Visible = _visible,
-                Icon = new Icon(Runtime.GetResourceStream("Rocky.TestProject.favicon.ico")),
+                Icon = new Icon(Runtime.GetResourceStream(string.Format("{0}.favicon.ico", typeof(ConsoleNotify).Namespace))),
                 Text = notifyText,
                 ContextMenuStrip = new ContextMenuStrip() { RenderMode = ToolStripRenderMode.System }
             };
@@ -309,10 +309,11 @@ namespace Rocky.TestProject
             SetConsoleCtrlHandler(_handler, true);
 
             _tokenSource = new CancellationTokenSource();
-            var task = TaskHelper.Factory.StartNew((state) =>
+            TaskHelper.Factory.StartNew((state) =>
             {
                 entry.Main(state);
-            }, null, _tokenSource.Token).ObservedException().ContinueWith(t => this.Exit());
+                this.Exit();
+            }, null, _tokenSource.Token).ObservedException();
             if (entryForm == null)
             {
                 Application.Run();
@@ -322,14 +323,13 @@ namespace Rocky.TestProject
                 Application.EnableVisualStyles();
                 Application.Run(entryForm);
             }
-            _handler(CtrlTypes.CTRL_C_EVENT);
         }
 
         public void Exit()
         {
             _tokenSource.Cancel(true);
             _handler(CtrlTypes.CTRL_C_EVENT);
-            Application.ExitThread();
+            Application.Exit();
         }
         #endregion
     }

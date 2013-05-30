@@ -119,9 +119,8 @@ namespace Rocky.Net
                 if (device != null)
                 {
                     device.WaitHandle.Close();
-					Thread.Sleep(1000 * 10);
                 }
-                if (q.Any())
+                if (!Runtime.Retry(() => !q.Any(), 3, 1000 * 8))
                 {
                     throw new InvalidOperationException("该设备已登录");
                 }

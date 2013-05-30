@@ -27,9 +27,6 @@ namespace Rocky.Net
         /// </summary>
         internal const ushort Timeout = 300;
         internal static readonly byte[] EmptyBuffer = new byte[0];
-        /// <summary>
-        /// HttpDirect
-        /// </summary>
         internal static readonly IPEndPoint GoAgent = new IPEndPoint(IPAddress.Loopback, 8087);
 
         internal static readonly ushort MaxDevice;

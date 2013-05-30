@@ -1,22 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Web;
 
 namespace Rocky.Net
 {
-    public static class xHttpServer
+    public class xHttpServer : IHttpHandler
     {
+        #region Fields
         private const string ProcessName = "CassiniDev4-console.exe";
+        private static readonly string[] Server;
+        #endregion
 
         static xHttpServer()
         {
-            string resourceName = string.Format("Rocky.Resource.{0}", ProcessName),
-                filePath = Runtime.CombinePath(ProcessName);
-            Runtime.CreateFileFromResource(resourceName, filePath);
-            Runtime.CreateFileFromResource(resourceName + ".config", filePath + ".config");
+            var q = from t in (ConfigurationManager.AppSettings["Agent-Server"] ?? string.Empty).Split(',')
+                    where !string.IsNullOrEmpty(t)
+                    select t;
+            Server = q.ToArray();
         }
 
         /// <summary>
@@ -26,8 +31,12 @@ namespace Rocky.Net
         /// <param name="serverUrl"></param>
         public static void Start(string applicationPath, out Uri serverUrl)
         {
-            string filePath = Runtime.CombinePath(ProcessName),
-                args = string.Format("/a:{0} /im:Any /pm:Specific /p:80 /t:0", applicationPath);
+            string resourceName = string.Format("Rocky.Resource.{0}", ProcessName),
+                filePath = Runtime.CombinePath(ProcessName);
+            Runtime.CreateFileFromResource(resourceName, filePath);
+            Runtime.CreateFileFromResource(resourceName + ".config", filePath + ".config");
+
+            string args = string.Format("/a:{0} /im:Any /pm:Specific /p:80 /t:0", applicationPath);
             var proc = Process.Start(new ProcessStartInfo(filePath, args)
             {
                 CreateNoWindow = false,
@@ -55,6 +64,24 @@ namespace Rocky.Net
             }
             serverUrl = new Uri(result.Substring(8));
             Runtime.DisposeService.Register(typeof(xHttpServer), proc);
+        }
+
+        public bool IsReusable
+        {
+            get { return true; }
+        }
+
+        public void ProcessRequest(HttpContext context)
+        {
+            if (Server.Length == 0)
+            {
+                context.Response.Close();
+                return;
+            }
+
+            var rnd = new Random();
+            int i = rnd.Next(0, Server.Length);
+            context.Response.Write(Server[i]);
         }
     }
 }

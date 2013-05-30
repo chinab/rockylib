@@ -1,4 +1,5 @@
-﻿using System;
+﻿//#define Mono
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics.Contracts;
@@ -13,18 +14,28 @@ namespace Rocky.TestProject
 {
     internal sealed class CloudAgentApp : IRawEntry
     {
+        private static string Domain;
         internal static CloudAgentApp Instance;
 
         internal HttpTunnelClient FirstClient { get; private set; }
 
         public CloudAgentApp()
         {
+            //服务端分配域名
+            var client = new HttpClient(new Uri("http://azure.xineworld.com/X.ashx"));
+            var res = client.GetResponse();
+            Domain = res.GetResponseText();
+            //Domain = "localhost:3463";
+            Console.Out.WriteInfo("连接服务器{0}...", Domain);
+
             Instance = this;
         }
 
         public void Main(object arg)
         {
+#if !Mono
             this.CatchExec(() => SecurityPolicy.App2Fw("CloudAgent", Runtime.CombinePath("CloudAgent.exe")), "防火墙例外");
+#endif
             if (!this.CatchExec(() => CryptoManaged.TrustCert(Runtime.GetResourceStream("Rocky.TestProject.Resource.CA.crt")), "导入Http证书"))
             {
                 Console.Out.WriteWarning("导入Http证书失败。");
@@ -108,26 +119,25 @@ namespace Rocky.TestProject
         private Uri GetServerUrl(CloudAgentConfig config)
         {
             Uri serverUrl;
-            if (config.AsServerNode)
+            //if (config.AsServerNode)
+            //{
+            //    //创建本地服务节点
+            //    xHttpServer.Start(@"C:\Packages\azure", out serverUrl);
+            //    Console.Out.WriteInfo("服务端节点{0}开启...", serverUrl);
+            //}
+            //else
+            //{
+            //默认服务端
+            if (config.EnableSsl)
             {
-                //创建本地服务节点
-                xHttpServer.Start(@"C:\Packages\azure", out serverUrl);
-                Console.Out.WriteInfo("服务端节点{0}开启...", serverUrl);
-            }
-            else
-            {
-                //默认服务端
-                if (config.EnableSsl)
+                if (!this.CatchExec(() => CryptoManaged.TrustCert(Runtime.GetResourceStream("Rocky.TestProject.Resource.xine.pfx"), "xine"), "导入证书"))
                 {
-                    if (!this.CatchExec(() => CryptoManaged.TrustCert(Runtime.GetResourceStream("Rocky.TestProject.Resource.xine.pfx"), "xine"), "导入证书"))
-                    {
-                        config.EnableSsl = false;
-                        Console.Out.WriteWarning("导入证书失败，将不启用加密通讯。");
-                    }
+                    config.EnableSsl = false;
+                    Console.Out.WriteWarning("导入证书失败，将不启用加密通讯。");
                 }
-                //config.Domain = "localhost:3463";
-                serverUrl = new Uri(string.Format("{0}://{1}/Go.ashx", config.EnableSsl ? Uri.UriSchemeHttps : Uri.UriSchemeHttp, config.Domain));
             }
+            serverUrl = new Uri(string.Format("{0}://{1}/Go.ashx", config.EnableSsl ? Uri.UriSchemeHttps : Uri.UriSchemeHttp, Domain));
+            //}
             return serverUrl;
         }
 
@@ -162,7 +172,6 @@ namespace Rocky.TestProject
                 }, ConfigurationUserLevel.None);
                 var config = new CloudAgentConfig();
                 config.AsServerNode = Convert.ToBoolean(GetValue(exe, "AsServerNode"));
-                config.Domain = GetValue(exe, "Domain");
                 config.EnableSsl = Convert.ToBoolean(GetValue(exe, "EnableSsl"));
                 config.Credential = GetCredential(exe, "Credential");
                 config.TunnelList = GetTunnelList(exe, "TunnelList");
@@ -216,7 +225,6 @@ namespace Rocky.TestProject
         }
 
         public bool AsServerNode;
-        public string Domain;
         public bool EnableSsl;
         public NetworkCredential Credential;
         public Tuple<ushort, string>[] TunnelList;
