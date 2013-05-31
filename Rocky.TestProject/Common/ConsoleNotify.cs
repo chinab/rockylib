@@ -218,18 +218,18 @@ namespace Rocky.TestProject
         #region InitMenu
         private void InitMenu()
         {
-			Action<string,string> act = (txt, name) =>
-			{
-				var menuItem = new ToolStripMenuItem();
-				menuItem.Name = name;
-				menuItem.Text = txt;
-				_notify.ContextMenuStrip.Items.Add(menuItem);
-			};
+            Action<string, string> act = (txt, name) =>
+            {
+                var menuItem = new ToolStripMenuItem();
+                menuItem.Name = name;
+                menuItem.Text = txt;
+                _notify.ContextMenuStrip.Items.Add(menuItem);
+            };
             act("配置", "C");
             act("日志", "L");
             act("我的设备", "D");
             act("启动Proxifier", "P");
-			act("帮助", "H");
+            act("帮助", "H");
             act("开机启动/禁止", "S");
             act("显示/隐藏", "V");
             act("重新载入", "R");
@@ -262,9 +262,9 @@ namespace Rocky.TestProject
                         pipeClient.WaitForPipeDrain();
                     }
                     break;
-				case "H":
-					Process.Start("http://www.cnblogs.com/Googler/archive/2013/05/30/3109402.html");
-					break;
+                case "H":
+                    Process.Start("http://www.cnblogs.com/Googler/archive/2013/05/30/3109402.html");
+                    break;
                 case "S":
                     string shortcutPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Programs), string.Format(@"{0}\{1}.appref-ms", Application.CompanyName, Application.ProductName));
                     Console.Out.WriteInfo(shortcutPath);

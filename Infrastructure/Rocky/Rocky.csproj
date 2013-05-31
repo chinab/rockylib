@@ -187,15 +187,7 @@
     <Compile Include="Data\ChangeTracking\SqlRowChangeMonitor.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Data\Context\ExpressionVisitor.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Data\Database\ConnectionStringBuilder.cs" />
-    <Compile Include="Data\Context\LinqToSqlExtensions.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Data\Context\EntityContext.cs" />
-    <Compile Include="Data\Context\DbLogger.cs" />
     <Compile Include="Data\Database\DbProviderName.cs" />
     <Compile Include="Data\Database\IRequiresFactory.cs" />
     <Compile Include="Data\Database\SQLConfig.cs" />
@@ -207,7 +199,7 @@
     <Compile Include="Data\Meta\EntityConverter.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Data\Context\EntityStoredProc.cs">
+    <Compile Include="Data\Database\EntityStoredProc.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Data\Meta\MappingException.cs">

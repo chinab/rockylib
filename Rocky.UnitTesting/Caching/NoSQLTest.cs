@@ -91,23 +91,23 @@ namespace Rocky.UnitTesting.Caching
             var connstr = ConfigurationManager.ConnectionStrings["NoSQL.Test.Properties.Settings.DevDbConnectionString"].ConnectionString;
             NoSQLHelper.RegisterChangeMonitor<UserTable>(connstr, TimeSpan.FromSeconds(1D));
 
-            using (var context = new CacheContext<NoSQLDataContext>(DataAccessFormat))
-            {
-                var query = from row in context.Linq.UserTables
-                            where row.RowID == 10
-                            select row;
-                var entity = context.ExecuteQuery(query).Single();
-                Console.WriteLine(string.Format("查询ID为10的用户名为：{0}", entity.UserName));
-                // 2秒内修改数据
-                Thread.Sleep(2000);
+            //using (var context = new CacheContext<NoSQLDataContext>(DataAccessFormat))
+            //{
+            //    var query = from row in context.Linq.UserTables
+            //                where row.RowID == 10
+            //                select row;
+            //    var entity = context.ExecuteQuery(query).Single();
+            //    Console.WriteLine(string.Format("查询ID为10的用户名为：{0}", entity.UserName));
+            //    // 2秒内修改数据
+            //    Thread.Sleep(2000);
 
-                // 如果修改数据后，会对应修改缓存内容
-                var keyMapper = context.CreateKeyMapper<UserTable>();
-                var memKey = keyMapper.GenerateKey(entity);
-                ICacheContext client = (ICacheContext)context;
-                var memEntity = (UserTable)client.Cache.Get(memKey);
-                Console.WriteLine(string.Format("缓存ID为10的用户名为：{0}", memEntity.UserName));
-            }
+            //    // 如果修改数据后，会对应修改缓存内容
+            //    var keyMapper = context.CreateKeyMapper<UserTable>();
+            //    var memKey = keyMapper.GenerateKey(entity);
+            //    ICacheContext client = (ICacheContext)context;
+            //    var memEntity = (UserTable)client.Cache.Get(memKey);
+            //    Console.WriteLine(string.Format("缓存ID为10的用户名为：{0}", memEntity.UserName));
+            //}
         }
         #endregion
 

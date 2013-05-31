@@ -67,7 +67,6 @@
     <Reference Include="System.Configuration" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ContextImpl\CacheContext.cs" />
     <Compile Include="CacheImpl\CacheKeyGenerator.cs" />
     <Compile Include="CacheImpl\RedisCache.cs" />
     <Compile Include="Common\NoSQLHelper.cs" />

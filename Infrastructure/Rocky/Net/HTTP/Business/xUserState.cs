@@ -120,7 +120,7 @@ namespace Rocky.Net
                 {
                     device.WaitHandle.Close();
                 }
-                if (!Runtime.Retry(() => !q.Any(), 3, 1000 * 8))
+                if (!Runtime.Retry(() => !q.Any(), 3, 1000 * 6))
                 {
                     throw new InvalidOperationException("该设备已登录");
                 }
@@ -260,6 +260,11 @@ namespace Rocky.Net
                 //每10秒一检测连接
                 isSet = device.WaitHandle.WaitOne(1000 * 10);
                 return device.ListenState;
+            }
+            catch (ObjectDisposedException)
+            {
+                this.SignOut(deviceID);
+                return default(ReverseListenState);
             }
             finally
             {
