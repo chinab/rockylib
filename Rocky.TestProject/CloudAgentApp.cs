@@ -50,7 +50,7 @@ namespace Rocky.TestProject
                     string remoteMsg = string.Empty;
                     Guid? remoteID = null;
                     string mode = tunnel.Item2;
-                    int i = mode.LastIndexOf(" ");
+                    int i = mode.LastIndexOf(@"\");
                     if (i != -1)
                     {
                         string sRemoteID = mode.Substring(i + 1);

@@ -19,26 +19,8 @@ namespace Rocky.Net
         #region NestedTypes
         private class UdpClientState : Disposable
         {
-            #region Static
-            /// <summary>
-            /// Key: RemoteEndPoint
-            /// </summary>
-            private static ConcurrentDictionary<long, UdpClientState> _mapper = new ConcurrentDictionary<long, UdpClientState>();
-
-            public static bool TryGet(IPEndPoint remoteIpe, out UdpClientState state)
-            {
-                long key = GenerateKey(remoteIpe);
-                return _mapper.TryGetValue(key, out state);
-            }
-
-            private static long GenerateKey(IPEndPoint ipe)
-            {
-                return BitConverter.ToUInt32(ipe.Address.GetAddressBytes(), 0) + ipe.Port;
-            }
-            #endregion
-
             #region Fields
-            private ConcurrentBag<long> _remoteEndPoints;
+            private SynchronizedCollection<EndPoint> _remoteEndPoints;
             private AutoResetEvent _waitHandle;
             #endregion
 
@@ -50,7 +32,7 @@ namespace Rocky.Net
             #region Constructors
             public UdpClientState()
             {
-                _remoteEndPoints = new ConcurrentBag<long>();
+                _remoteEndPoints = new SynchronizedCollection<EndPoint>();
                 _waitHandle = new AutoResetEvent(false);
             }
 
@@ -58,30 +40,51 @@ namespace Rocky.Net
             {
                 if (disposing)
                 {
-                    this.Client.Close();
-                    foreach (var key in _remoteEndPoints)
+                    this.Client.Client.Close();
+                    if (_waitHandle != null)
                     {
-                        UdpClientState dummy;
-                        _mapper.TryRemove(key, out dummy);
+                        _waitHandle.Close();
                     }
                 }
                 _waitHandle = null;
+                _remoteEndPoints = null;
             }
             #endregion
 
             #region Methods
-            public void AddRemoteEndPoint(IPEndPoint remoteIpe)
+            public void AddRemoteEndPoint(EndPoint remoteEndPoint)
             {
-                long key = GenerateKey(remoteIpe);
-                if (_mapper.TryAdd(key, this))
+                var de = remoteEndPoint as DnsEndPoint;
+                if (de != null)
                 {
-                    _remoteEndPoints.Add(key);
+                    var q = from ip in SocketHelper.GetHostAddresses(de.Host)
+                            select new IPEndPoint(ip, de.Port);
+                    foreach (var ipe in q)
+                    {
+                        if (!_remoteEndPoints.Contains(ipe))
+                        {
+                            _remoteEndPoints.Add(ipe);
+                        }
+                    }
+                }
+                else
+                {
+                    if (!_remoteEndPoints.Contains(remoteEndPoint))
+                    {
+                        _remoteEndPoints.Add(remoteEndPoint);
+                    }
                 }
             }
-            public bool HasRemoteEndPoint(IPEndPoint remoteIpe)
+            public bool HasRemoteEndPoint(IPEndPoint remoteEndPoint)
             {
-                long key = GenerateKey(remoteIpe);
-                return _mapper.ContainsKey(key);
+                var sb = new StringBuilder();
+                foreach (var ipe in _remoteEndPoints)
+                {
+                    sb.Append(ipe).Append("\t");
+                }
+                sb.Append("--").Append(remoteEndPoint);
+                Runtime.LogInfo("Has: {0}", sb);
+                return _remoteEndPoints.Contains(remoteEndPoint);
             }
 
             public void SetOnce()
@@ -95,7 +98,7 @@ namespace Rocky.Net
             public void WaitOnce()
             {
                 _waitHandle.WaitOne();
-                _waitHandle.Dispose();
+                _waitHandle.Close();
                 _waitHandle = null;
             }
             #endregion
@@ -133,20 +136,17 @@ namespace Rocky.Net
             };
             if (!_udpClients.TryAdd(controlClient, state))
             {
-                throw new TunnelStateMissingException("UDP ProxySock handle invalid")
+                throw new TunnelStateMissingException("Udp ProxySock handle invalid")
                 {
                     Client = controlClient.Client
                 };
             }
             this.PushTcpClient(controlClient, new IPEndPoint(IPAddress.None, IPEndPoint.MinPort));
             //监听连接状态
-            state.Client.BeginReceive(this.ReceiveCallbak, controlClient);
             controlClient.Client.BeginReceive(xHttpHandler.EmptyBuffer, 0, 0, SocketFlags.None, this.DisconnectCallbak, controlClient);
-            //Udp无连接先发送后接收
-            state.WaitOnce();
+            TaskHelper.Factory.StartNew(this.UdpDirectSend, controlClient);
             TaskHelper.Factory.StartNew(this.UdpDirectReceive, controlClient);
         }
-
         private void DisconnectCallbak(IAsyncResult ar)
         {
             var controlClient = (TcpClient)ar.AsyncState;
@@ -156,25 +156,19 @@ namespace Rocky.Net
                 int recv = controlClient.Client.EndReceive(ar);
                 if (recv == 0 || !controlClient.Connected)
                 {
-                    this.OutWrite("UDP {0} disconnect.", state.LocalEndPoint);
+                    this.OutWrite("Udp {0} disconnect.", state.LocalEndPoint);
                 }
             }
             catch (SocketException ex)
             {
-                TunnelExceptionHandler.Handle(ex, controlClient.Client, "UDP disconnect");
+                TunnelExceptionHandler.Handle(ex, controlClient.Client, "Udp disconnect");
             }
             finally
             {
                 controlClient.Client.Close();
-                state.Dispose();
                 this.PopTcpClient(controlClient);
-                if (!_udpClients.TryRemove(controlClient, out state))
-                {
-                    throw new TunnelStateMissingException("UDP ProxySock handle invalid")
-                    {
-                        Client = controlClient.Client
-                    };
-                }
+                state.Dispose();
+                _udpClients.TryRemove(controlClient, out state);
             }
         }
 
@@ -189,7 +183,7 @@ namespace Rocky.Net
             UdpClientState state;
             if (!_udpClients.TryGetValue(controlClient, out state))
             {
-                throw new TunnelStateMissingException("UDP ProxySock handle invalid")
+                throw new TunnelStateMissingException("Udp ProxySock handle invalid")
                 {
                     Client = controlClient.Client
                 };
@@ -199,92 +193,106 @@ namespace Rocky.Net
         #endregion
 
         #region UdpDirect
-        private void ReceiveCallbak(IAsyncResult ar)
+        private void UdpDirectSend(object state)
         {
-            var controlClient = (TcpClient)ar.AsyncState;
+            var controlClient = (TcpClient)state;
             if (!controlClient.Connected)
             {
                 return;
             }
-            var localIpe = new IPEndPoint(IPAddress.Any, IPEndPoint.MinPort);
+            string destIpe = null;
             try
             {
-                var state = this.GetUdpClientState(controlClient);
-                state.Client.BeginReceive(this.ReceiveCallbak, controlClient);
-
-                byte[] data = state.Client.EndReceive(ar, ref localIpe);
-                if (data.IsNullOrEmpty() || !(data[0] == 0 && data[1] == 0 && data[2] == 0) || !state.LocalEndPoint.Equals(localIpe))
+                var currentState = this.GetUdpClientState(controlClient);
+                while (controlClient.Connected)
                 {
-                    //1.非法数据包
-                    //2.本地端点非法
-                    this.OutWrite("UDP {0} Discard {1}bytes.", localIpe, data == null ? -1 : data.Length);
-                    return;
-                }
-                this.UdpDirectSend(controlClient, data);
-                //开始接收数据
-                state.SetOnce();
-            }
-            catch (ObjectDisposedException ex)
-            {
+                    try
+                    {
+                        var localIpe = new IPEndPoint(IPAddress.Any, IPEndPoint.MinPort);
+                        byte[] data = currentState.Client.Receive(ref localIpe);
+                        if (!controlClient.Connected)
+                        {
+                            break;
+                        }
+                        if (data.IsNullOrEmpty() || !(data[0] == 0 && data[1] == 0 && data[2] == 0))
+                        {
+                            this.OutWrite("Udp Send Discard {0} {1}bytes.", localIpe, data == null ? -1 : data.Length);
+                            Runtime.LogInfo("Udp Send Discard 非法数据包.");
+                            continue;
+                        }
+                        else if (!currentState.LocalEndPoint.Equals(localIpe))
+                        {
+                            this.OutWrite("Udp Send Discard {0} {1}bytes.", localIpe, data == null ? -1 : data.Length);
+                            Runtime.LogInfo("Udp Send Discard 非法本地端点.");
+                            continue;
+                        }
+
+                        int offset = 4;
+                        if (data[3] == 3)
+                        {
+                            DnsEndPoint de;
+                            Socks4Request.PackOut(data, ref offset, out de);
+                            currentState.AddRemoteEndPoint(de);
+                            destIpe = string.Format("{0}:{1}", de.Host, de.Port);
+                        }
+                        else
+                        {
+                            IPEndPoint ipe;
+                            Socks4Request.PackOut(data, ref offset, out ipe);
+                            currentState.AddRemoteEndPoint(ipe);
+                            destIpe = ipe.ToString();
+                        }
 #if DEBUG
-                Runtime.LogInfo(string.Format("Predictable objectDisposed exception: {0}", ex.StackTrace));
+                        this.OutWrite("Udp Record {0} {1}.", localIpe, destIpe);
 #endif
-            }
-            catch (SocketException ex)
-            {
-                TunnelExceptionHandler.Handle(ex, controlClient.Client, string.Format("UDPAcceptReceive={0}", localIpe));
+                        var tunnel = this.CreateTunnel(TunnelCommand.UdpSend, controlClient);
+                        tunnel.Headers[xHttpHandler.AgentDirect] = destIpe;
+                        var outStream = new MemoryStream(data, offset, data.Length - offset);
+#if DEBUG
+                        tunnel.Form[xHttpHandler.AgentChecksum] = CryptoManaged.MD5Hash(outStream);
+                        outStream.Position = 0L;
+#endif
+                        tunnel.Files.Add(new HttpFile(xHttpHandler.AgentDirect, xHttpHandler.AgentDirect, outStream));
+                        var response = tunnel.GetResponse();
+                        if (response.GetResponseText() != "1")
+                        {
+                            this.OutWrite("Udp {0} Send {1}\t{2}bytes failure.", currentState.LocalEndPoint, destIpe, outStream.Length);
+                            return;
+                        }
+                        this.OutWrite("Udp {0} Send {1}\t{2}bytes.", currentState.LocalEndPoint, destIpe, outStream.Length);
+
+                        //开始接收数据
+                        currentState.SetOnce();
+                    }
+                    catch (ObjectDisposedException ex)
+                    {
+#if DEBUG
+                        Runtime.LogInfo(string.Format("Predictable objectDisposed exception: {0}", ex.StackTrace));
+#endif
+                    }
+                    catch (WebException ex)
+                    {
+                        if (TunnelExceptionHandler.Handle(ex, string.Format("UdpDirectSend={0}", destIpe), _output))
+                        {
+                            controlClient.Client.Close();
+                        }
+                    }
+                    catch (SocketException ex)
+                    {
+                        if (ex.SocketErrorCode == SocketError.Interrupted)
+                        {
+#if DEBUG
+                            Runtime.LogInfo(string.Format("Predictable interrupted exception: {0}", ex.Message));
+#endif
+                            return;
+                        }
+                        TunnelExceptionHandler.Handle(ex, controlClient.Client, string.Format("UdpDirectSend={0}", destIpe));
+                    }
+                }
             }
             catch (Exception ex)
             {
-                TunnelExceptionHandler.Handle(ex, string.Format("UDPDirectSend={0}", localIpe));
-            }
-        }
-
-        private void UdpDirectSend(TcpClient controlClient, byte[] data)
-        {
-            if (!controlClient.Connected)
-            {
-                return;
-            }
-            var currentState = this.GetUdpClientState(controlClient);
-            IPEndPoint destIpe;
-            int offset = 4;
-            if (data[3] == 3)
-            {
-                DnsEndPoint de;
-                Socks4Request.PackOut(data, ref offset, out de);
-                destIpe = new IPEndPoint(SocketHelper.GetHostAddresses(de.Host).First(), de.Port);
-            }
-            else
-            {
-                Socks4Request.PackOut(data, ref offset, out destIpe);
-            }
-            currentState.AddRemoteEndPoint(destIpe);
-#if DEBUG
-            this.OutWrite("UDP {0} Record {1}.", currentState.LocalEndPoint, destIpe);
-#endif
-
-            try
-            {
-                var tunnel = this.CreateTunnel(TunnelCommand.UdpSend, controlClient);
-                tunnel.Headers[xHttpHandler.AgentDirect] = destIpe.ToString();
-                var outStream = new MemoryStream(data, offset, data.Length - offset);
-#if DEBUG
-                tunnel.Form[xHttpHandler.AgentChecksum] = CryptoManaged.MD5Hash(outStream);
-                outStream.Position = 0L;
-#endif
-                tunnel.Files.Add(new HttpFile(xHttpHandler.AgentDirect, xHttpHandler.AgentDirect, outStream));
-                var response = tunnel.GetResponse();
-                if (response.GetResponseText() != "1")
-                {
-                    this.OutWrite("UDP {0} Send {1}\t{2}bytes failure.", currentState.LocalEndPoint, destIpe, data.Length);
-                    return;
-                }
-                this.OutWrite("UDP {0} Send {1}\t{2}bytes.", currentState.LocalEndPoint, destIpe, data.Length);
-            }
-            catch (WebException ex)
-            {
-                TunnelExceptionHandler.Handle(ex, string.Format("UDPDirectSend={0}", destIpe), _output);
+                TunnelExceptionHandler.Handle(ex, string.Format("UdpDirectSend={0}", destIpe));
             }
         }
 
@@ -295,13 +303,12 @@ namespace Rocky.Net
             {
                 return;
             }
-            var currentState = this.GetUdpClientState(controlClient);
-#if DEBUG
-            this.OutWrite("UDP {0} StartReceive.", currentState.LocalEndPoint);
-#endif
             IPEndPoint remoteIpe = null;
             try
             {
+                var currentState = this.GetUdpClientState(controlClient);
+                //Udp无连接先发送后接收
+                currentState.WaitOnce();
                 var tunnel = this.CreateTunnel(TunnelCommand.UdpReceive, controlClient);
                 tunnel.SendReceiveTimeout = Timeout.Infinite;
                 var response = tunnel.GetResponse(webResponse =>
@@ -320,20 +327,22 @@ namespace Rocky.Net
                             {
                                 break;
                             }
-
                             //4-10 中间6字节为remoteIpe
                             Socks4Request.PackOut(data, ref offset, out remoteIpe);
-                            UdpClientState dummy;
-                            if (!UdpClientState.TryGet(remoteIpe, out dummy) || !dummy.HasRemoteEndPoint(remoteIpe))
+                            if (!currentState.HasRemoteEndPoint(remoteIpe))
                             {
-                                //1.远程端点非法
-                                this.OutWrite("UDP {0} Discard {1}bytes.", remoteIpe, read - 6);
+                                this.OutWrite("Udp Receive Discard {0} {1}bytes.", remoteIpe, read);
+                                Runtime.LogInfo("Udp Receive Discard 非法远程端点.");
                                 continue;
                             }
 
-                            int length = 10 + read;
-                            int sent = dummy.Client.Send(data, length, dummy.LocalEndPoint);
-                            this.OutWrite("UDP {0} Receive {1}\t{2}bytes.", dummy.LocalEndPoint, remoteIpe, length);
+                            int length = 4 + read;
+                            int sent = currentState.Client.Send(data, length, currentState.LocalEndPoint);
+                            if (length != sent)
+                            {
+                                throw new InvalidOperationException("Udp数据包错误");
+                            }
+                            this.OutWrite("Udp {0} Receive {1}\t{2}bytes.", currentState.LocalEndPoint, remoteIpe, read);
                         }
                         catch (ObjectDisposedException ex)
                         {
@@ -344,11 +353,11 @@ namespace Rocky.Net
                         }
                         catch (IOException ex)
                         {
-                            TunnelExceptionHandler.Handle(ex, controlClient.Client, string.Format("UDPDirectReceive={0}", remoteIpe));
+                            TunnelExceptionHandler.Handle(ex, controlClient.Client, string.Format("UdpDirectReceive={0}", remoteIpe));
                         }
                         catch (SocketException ex)
                         {
-                            TunnelExceptionHandler.Handle(ex, controlClient.Client, string.Format("UDPDirectReceive={0}", remoteIpe));
+                            TunnelExceptionHandler.Handle(ex, controlClient.Client, string.Format("UdpDirectReceive={0}", remoteIpe));
                         }
                     }
                 });
@@ -356,11 +365,11 @@ namespace Rocky.Net
             }
             catch (WebException ex)
             {
-                TunnelExceptionHandler.Handle(ex, string.Format("UDPDirectReceive={0}", remoteIpe), _output);
+                TunnelExceptionHandler.Handle(ex, string.Format("UdpDirectReceive={0}", remoteIpe), _output);
             }
             catch (Exception ex)
             {
-                TunnelExceptionHandler.Handle(ex, string.Format("UDPDirectReceive={0}", remoteIpe));
+                TunnelExceptionHandler.Handle(ex, string.Format("UdpDirectReceive={0}", remoteIpe));
             }
         }
         #endregion

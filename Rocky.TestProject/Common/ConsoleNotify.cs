@@ -218,23 +218,27 @@ namespace Rocky.TestProject
         #region InitMenu
         private void InitMenu()
         {
-            Action<string, string> act = (txt, name) =>
-            {
-                var menuItem = new ToolStripMenuItem();
-                menuItem.Name = name;
-                menuItem.Text = txt;
-                _notify.ContextMenuStrip.Items.Add(menuItem);
-            };
-            act("配置", "C");
-            act("日志", "L");
-            act("我的设备", "D");
-            act("启动Proxifier", "P");
-            act("帮助", "H");
-            act("开机启动/禁止", "S");
-            act("显示/隐藏", "V");
-            act("重新载入", "R");
-            act("退出", "E");
+            this.CreateMenuItem("配置", "C");
+            this.CreateMenuItem("日志", "L");
+            this.CreateMenuItem("我的设备", "D");
+            this.CreateMenuItem("启动Proxifier", "P");
+            this.CreateMenuItem("帮助", "H", true);
+            this.CreateMenuItem("开机启动/禁止", "S");
+            this.CreateMenuItem("显示/隐藏", "V");
+            this.CreateMenuItem("重新载入", "R");
+            this.CreateMenuItem("退出", "E");
             _notify.ContextMenuStrip.ItemClicked += new ToolStripItemClickedEventHandler(ContextMenuStrip_ItemClicked);
+        }
+        private void CreateMenuItem(string txt, string name, bool doSeparator = false)
+        {
+            var menuItem = new ToolStripMenuItem();
+            menuItem.Name = name;
+            menuItem.Text = txt;
+            _notify.ContextMenuStrip.Items.Add(menuItem);
+            if (doSeparator)
+            {
+                _notify.ContextMenuStrip.Items.Add(new ToolStripSeparator());
+            }
         }
         void ContextMenuStrip_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {

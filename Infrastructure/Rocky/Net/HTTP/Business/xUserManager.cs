@@ -102,7 +102,7 @@ namespace Rocky.Net
 
             var user = this.GetUser(credential);
             user.SignOut(deviceID);
-            if (user.Principal.Length == 0 && _users.TryRemove(credential, out user))
+            if (user.Principal.Count == 0 && _users.TryRemove(credential, out user))
             {
                 user.Dispose();
             }

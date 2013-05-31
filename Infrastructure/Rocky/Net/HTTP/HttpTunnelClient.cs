@@ -631,7 +631,7 @@ namespace Rocky.Net
                             if (sockEx.SocketErrorCode == SocketError.Interrupted)
                             {
 #if DEBUG
-                                Runtime.LogInfo(string.Format("Predictable interrupted exception: {0}", ex.Message));
+                                Runtime.LogInfo(string.Format("Predictable interrupted exception: {0}", sockEx.Message));
 #endif
                                 return;
                             }

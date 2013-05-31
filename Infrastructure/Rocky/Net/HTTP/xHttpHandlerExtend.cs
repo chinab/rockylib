@@ -14,7 +14,7 @@ namespace Rocky.Net
     public partial class xHttpHandler
     {
         #region Fields
-        private static volatile ushort _udpPortOffset = 1080;
+        private static volatile ushort _udpPortOffset = 1090;
         #endregion
 
         #region Methods
@@ -25,6 +25,10 @@ namespace Rocky.Net
             //udpSock.Bind(new IPEndPoint(IPAddress.Any, _udpPortOffset++));
 
             var client = new UdpClient(new IPEndPoint(IPAddress.Any, _udpPortOffset++));
+            if (_udpPortOffset == IPEndPoint.MaxPort)
+            {
+                _udpPortOffset = 1090;
+            }
             //client.Client = udpSock;
             return client;
         }
@@ -123,16 +127,12 @@ namespace Rocky.Net
                 }
                 catch (SocketException ex)
                 {
-                    var sockEx = ex.InnerException as SocketException;
-                    if (sockEx != null)
+                    if (ex.SocketErrorCode == SocketError.Interrupted)
                     {
-                        if (sockEx.SocketErrorCode == SocketError.Interrupted)
-                        {
 #if DEBUG
-                            Runtime.LogInfo(string.Format("Predictable interrupted exception: {0}", ex.Message));
+                        Runtime.LogInfo(string.Format("Predictable interrupted exception: {0}", ex.Message));
 #endif
-                            return;
-                        }
+                        return;
                     }
                     TunnelExceptionHandler.Handle(ex, proxyClient.Client, "UdpDirectReceive");
                 }

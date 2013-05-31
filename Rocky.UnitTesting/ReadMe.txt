@@ -3,7 +3,7 @@
 2.飞檐走壁
 http://stackoverflow.com/questions/2094694/how-can-i-run-powershell-with-the-net-4-runtime
 new-alias InstallUtil "${env:windir}\Microsoft.NET\Framework64\v4.0.30319\InstallUtil.exe"
-InstallUtil E:\ThirdParty\RockyLib\Rocky.TestProject\bin\Debug\CloudAgent.exe
+InstallUtil E:\ThirdParty\GitLib\Rocky.TestProject\bin\Debug\CloudAgent.exe
 get-PSSnapIn -reg *
 add-PSSnapIn SocksCmdlets
 
