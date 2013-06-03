@@ -197,7 +197,8 @@ namespace Rocky.Net
             Response.Cache.SetNoStore();
             Response.Cache.SetNoTransforms();
             Response.Buffer = false;
-            Response.ContentType = MediaTypeNames.Application.Octet;
+            //Response.ContentType = MediaTypeNames.Application.Octet;
+            Response.ContentType = MediaTypeNames.Text.Html;
             Response.ContentEncoding = Encoding.UTF8;
 
             string agentCredential = Request.Headers[HttpRequestHeader.Authorization.ToString()];
@@ -470,7 +471,6 @@ namespace Rocky.Net
             context.Server.ScriptTimeout = int.MaxValue;
             HttpRequest Request = context.Request;
             HttpResponse Response = context.Response;
-            Response.AppendHeader(HttpResponseHeader.Connection.ToString(), "close");
 
             var bWriter = new BinaryWriter(Response.OutputStream, Encoding.UTF8);
             bWriter.Write(deviceID.ToByteArray());
@@ -507,7 +507,7 @@ namespace Rocky.Net
             context.Server.ScriptTimeout = int.MaxValue;
             HttpRequest Request = context.Request;
             HttpResponse Response = context.Response;
-            Response.AppendHeader(HttpResponseHeader.Connection.ToString(), "close");
+            //Response.AppendHeader(HttpResponseHeader.Connection.ToString(), "close");
 
             var proxyStream = proxyClient.GetStream();
             while (proxyClient.Connected && Response.IsClientConnected)
@@ -607,7 +607,7 @@ namespace Rocky.Net
             context.Server.ScriptTimeout = int.MaxValue;
             HttpRequest Request = context.Request;
             HttpResponse Response = context.Response;
-            Response.AppendHeader(HttpResponseHeader.Connection.ToString(), "close");
+            //Response.AppendHeader(HttpResponseHeader.Connection.ToString(), "close");
 
             var dataQueue = OnlineUsers.GetReverseQueue(agentSock, false);
             while (dataQueue.Connected && Response.IsClientConnected)

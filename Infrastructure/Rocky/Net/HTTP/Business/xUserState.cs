@@ -55,11 +55,11 @@ namespace Rocky.Net
         /// </summary>
         public uint MaximumFlowRate { get; internal set; }
         /// <summary>
-        /// 客户端设备
+        /// 客户端设备,ToArray()SynchronizedCollection未标记可序列化
         /// </summary>
         public ICollection<DeviceIdentity> Principal
         {
-            get { return _principal; }
+            get { return _principal.ToArray(); }
         }
         public ICollection<TcpClient> Clients
         {

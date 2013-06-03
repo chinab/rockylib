@@ -73,7 +73,10 @@ namespace Rocky.Net
                 return _agentHost;
             }
         }
-        public Uri ServerUri { get; private set; }
+        /// <summary>
+        /// 服务端负载均衡
+        /// </summary>
+        public Uri[] ServerBalance { get; private set; }
         public NetworkCredential Credential { get; private set; }
         /// <summary>
         /// 反向连接客户端ID
@@ -91,23 +94,23 @@ namespace Rocky.Net
         #endregion
 
         #region Constructors
-        public HttpTunnelClient(ushort listenPort, Uri serverUri, NetworkCredential credential, IPEndPoint remoteEndPoint)
-            : this(listenPort, serverUri, credential, remoteEndPoint, null)
+        public HttpTunnelClient(ushort listenPort, Uri[] serverBalance, NetworkCredential credential, IPEndPoint remoteEndPoint)
+            : this(listenPort, serverBalance, credential, remoteEndPoint, null)
         {
 
         }
-        public HttpTunnelClient(ushort listenPort, Uri serverUri, NetworkCredential credential, SocksProxyType runType)
-            : this(listenPort, serverUri, credential, null, runType)
+        public HttpTunnelClient(ushort listenPort, Uri[] serverBalance, NetworkCredential credential, SocksProxyType runType)
+            : this(listenPort, serverBalance, credential, null, runType)
         {
 
         }
-        private HttpTunnelClient(ushort listenPort, Uri serverUri, NetworkCredential credential, IPEndPoint remoteEndPoint = null, SocksProxyType? runType = null)
+        private HttpTunnelClient(ushort listenPort, Uri[] serverBalance, NetworkCredential credential, IPEndPoint remoteEndPoint = null, SocksProxyType? runType = null)
         {
-            Contract.Requires(serverUri != null);
+            Contract.Requires(serverBalance != null);
             Contract.Requires(credential != null);
             Contract.Requires(!(remoteEndPoint == null && runType == null));
 
-            this.ServerUri = serverUri;
+            this.ServerBalance = serverBalance;
             this.Credential = credential;
             _remoteEndPoint = remoteEndPoint;
             _runType = runType;
@@ -276,7 +279,7 @@ namespace Rocky.Net
         /// <exception cref="Rocky.Net.TunnelStateMissingException"></exception>
         private HttpClient CreateTunnel(TunnelCommand cmd, TcpClient proxyClient)
         {
-            var tunnel = new HttpClient(this.ServerUri);
+            var tunnel = new HttpClient((Uri)xHttpServer.GetRandom(this.ServerBalance));
             tunnel.SendReceiveTimeout = xHttpHandler.Timeout * 1000;
             var cred = this.Credential;
             tunnel.Headers[HttpRequestHeader.Authorization] = CryptoManaged.MD5Hash(string.Format("{0}:{1}", cred.UserName, cred.Password));

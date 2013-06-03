@@ -94,7 +94,6 @@ namespace Rocky.Net
             context.Server.ScriptTimeout = int.MaxValue;
             HttpRequest Request = context.Request;
             HttpResponse Response = context.Response;
-            Response.AppendHeader(HttpResponseHeader.Connection.ToString(), "close");
 
             var bPack = new List<byte>();
             while (Response.IsClientConnected)

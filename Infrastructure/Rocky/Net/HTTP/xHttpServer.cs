@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Mime;
 using System.Text;
 using System.Web;
 
@@ -13,15 +14,25 @@ namespace Rocky.Net
     {
         #region Fields
         private const string ProcessName = "CassiniDev4-console.exe";
-        private static readonly string[] Server;
+        private static readonly string[] ServerList;
         #endregion
 
+        #region Constructors
         static xHttpServer()
         {
             var q = from t in (ConfigurationManager.AppSettings["Agent-Server"] ?? string.Empty).Split(',')
                     where !string.IsNullOrEmpty(t)
                     select t;
-            Server = q.ToArray();
+            ServerList = q.ToArray();
+        }
+        #endregion
+
+        #region Methods
+        internal static object GetRandom(Array set)
+        {
+            var rnd = new Random();
+            int which = rnd.Next(0, set.Length);
+            return set.GetValue(which);
         }
 
         /// <summary>
@@ -65,6 +76,7 @@ namespace Rocky.Net
             serverUrl = new Uri(result.Substring(8));
             Runtime.DisposeService.Register(typeof(xHttpServer), proc);
         }
+        #endregion
 
         public bool IsReusable
         {
@@ -73,15 +85,13 @@ namespace Rocky.Net
 
         public void ProcessRequest(HttpContext context)
         {
-            if (Server.Length == 0)
+            if (ServerList.Length == 0)
             {
                 context.Response.Close();
                 return;
             }
 
-            var rnd = new Random();
-            int i = rnd.Next(0, Server.Length);
-            context.Response.Write(Server[i]);
+            context.Response.Write(GetRandom(ServerList));
         }
     }
 }

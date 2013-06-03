@@ -14,20 +14,12 @@ namespace Rocky.TestProject
 {
     internal sealed class CloudAgentApp : IRawEntry
     {
-        private static string Domain;
         internal static CloudAgentApp Instance;
 
         internal HttpTunnelClient FirstClient { get; private set; }
 
         public CloudAgentApp()
         {
-            //服务端分配域名
-            var client = new HttpClient(new Uri("http://azure.xineworld.com/X.ashx"));
-            var res = client.GetResponse();
-            Domain = res.GetResponseText();
-            //Domain = "localhost:3463";
-            Console.Out.WriteInfo("连接服务器{0}...", Domain);
-
             Instance = this;
         }
 
@@ -98,15 +90,15 @@ namespace Rocky.TestProject
         public HttpTunnelClient CreateTunnelClient(ushort listenPort, SocksProxyType runType, IPEndPoint directTo, Guid? remoteID)
         {
             var config = CloudAgentConfig.AppConfig;
-            Uri serverUrl = this.GetServerUrl(config);
+            var serverBalance = this.GetServerBalance(config);
             HttpTunnelClient client;
             if (directTo == null)
             {
-                client = new HttpTunnelClient(listenPort, serverUrl, config.Credential, runType);
+                client = new HttpTunnelClient(listenPort, serverBalance, config.Credential, runType);
             }
             else
             {
-                client = new HttpTunnelClient(listenPort, serverUrl, config.Credential, directTo);
+                client = new HttpTunnelClient(listenPort, serverBalance, config.Credential, directTo);
             }
             client.ReverseRemoteID = remoteID;
             if (this.FirstClient == null)
@@ -116,29 +108,40 @@ namespace Rocky.TestProject
             return client;
         }
 
-        private Uri GetServerUrl(CloudAgentConfig config)
+        private Uri[] GetServerBalance(CloudAgentConfig config)
         {
-            Uri serverUrl;
-            //if (config.AsServerNode)
-            //{
-            //    //创建本地服务节点
-            //    xHttpServer.Start(@"C:\Packages\azure", out serverUrl);
-            //    Console.Out.WriteInfo("服务端节点{0}开启...", serverUrl);
-            //}
-            //else
-            //{
-            //默认服务端
-            if (config.EnableSsl)
+            string domain = "azure.xineworld.com";
+            //domain = "localhost:3463";
+            Console.Out.WriteInfo("连接服务器{0}...", domain);
+            var serverBalance = new List<Uri>();
+            if (config.AsServerNode)
             {
-                if (!this.CatchExec(() => CryptoManaged.TrustCert(Runtime.GetResourceStream("Rocky.TestProject.Resource.xine.pfx"), "xine"), "导入证书"))
-                {
-                    config.EnableSsl = false;
-                    Console.Out.WriteWarning("导入证书失败，将不启用加密通讯。");
-                }
+                //创建本地服务节点
+                Uri serverUrl;
+                xHttpServer.Start(@"C:\Packages\azure", out serverUrl);
+                Console.Out.WriteInfo("服务端节点{0}开启...", serverUrl);
+                serverBalance.Add(serverUrl);
             }
-            serverUrl = new Uri(string.Format("{0}://{1}/Go.ashx", config.EnableSsl ? Uri.UriSchemeHttps : Uri.UriSchemeHttp, Domain));
-            //}
-            return serverUrl;
+            else
+            {
+                if (config.EnableSsl)
+                {
+                    //默认服务端
+                    if (!this.CatchExec(() => CryptoManaged.TrustCert(Runtime.GetResourceStream("Rocky.TestProject.Resource.xine.pfx"), "xine"), "导入证书"))
+                    {
+                        config.EnableSsl = false;
+                        Console.Out.WriteWarning("导入证书失败，将不启用加密通讯。");
+                    }
+                }
+                //服务端分配域名
+                var client = new HttpClient(new Uri(string.Format("http://{0}/X.ashx", domain)));
+                var res = client.GetResponse();
+                var q = from t in res.GetResponseText().Split('#')
+                        where !string.IsNullOrEmpty(t)
+                        select new Uri(string.Format("{0}://{1}/Go.ashx", config.EnableSsl ? Uri.UriSchemeHttps : Uri.UriSchemeHttp, t));
+                serverBalance.AddRange(q);
+            }
+            return serverBalance.ToArray();
         }
 
         #region Methods
