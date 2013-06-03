@@ -197,8 +197,7 @@ namespace Rocky.Net
             Response.Cache.SetNoStore();
             Response.Cache.SetNoTransforms();
             Response.Buffer = false;
-            //Response.ContentType = MediaTypeNames.Application.Octet;
-            Response.ContentType = MediaTypeNames.Text.Html;
+            Response.ContentType = MediaTypeNames.Application.Octet;
             Response.ContentEncoding = Encoding.UTF8;
 
             string agentCredential = Request.Headers[HttpRequestHeader.Authorization.ToString()];
