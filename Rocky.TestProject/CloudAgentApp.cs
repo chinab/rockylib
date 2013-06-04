@@ -63,7 +63,6 @@ namespace Rocky.TestProject
                         Console.Out.WriteTip("隧道 {0}:{1} DirectTo={2} {3}\t开启...", client.AgentHost, tunnel.Item1, directTo, remoteMsg);
                     }
                 }
-                //MonitorChannel.Server(53);
             }
             catch (WebException ex)
             {
@@ -110,9 +109,6 @@ namespace Rocky.TestProject
 
         private Uri[] GetServerBalance(CloudAgentConfig config)
         {
-            string domain = "azure.xineworld.com";
-            //domain = "localhost:3463";
-            Console.Out.WriteInfo("连接服务器{0}...", domain);
             var serverBalance = new List<Uri>();
             if (config.AsServerNode)
             {
@@ -134,12 +130,15 @@ namespace Rocky.TestProject
                     }
                 }
                 //服务端分配域名
+                string domain = "azure.xineworld.com";
+                //domain = "localhost:3463";
                 var client = new HttpClient(new Uri(string.Format("http://{0}/X.ashx", domain)));
                 var res = client.GetResponse();
                 var q = from t in res.GetResponseText().Split('#')
                         where !string.IsNullOrEmpty(t)
                         select new Uri(string.Format("{0}://{1}/Go.ashx", config.EnableSsl ? Uri.UriSchemeHttps : Uri.UriSchemeHttp, t));
                 serverBalance.AddRange(q);
+                Console.Out.WriteInfo("连接服务器{0}...", q.First());
             }
             return serverBalance.ToArray();
         }

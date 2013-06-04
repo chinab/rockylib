@@ -77,14 +77,18 @@ namespace Rocky.Net
             }
             public bool HasRemoteEndPoint(IPEndPoint remoteEndPoint)
             {
-                var sb = new StringBuilder();
-                foreach (var ipe in _remoteEndPoints)
+                bool result = _remoteEndPoints.Contains(remoteEndPoint);
+                if (!result)
                 {
-                    sb.Append(ipe).Append("\t");
+                    var sb = new StringBuilder();
+                    foreach (var ipe in _remoteEndPoints)
+                    {
+                        sb.Append(ipe).Append("\t");
+                    }
+                    sb.Append("--").Append(remoteEndPoint);
+                    Runtime.LogInfo("Udp has: {0}", sb);
                 }
-                sb.Append("--").Append(remoteEndPoint);
-                Runtime.LogInfo("Has: {0}", sb);
-                return _remoteEndPoints.Contains(remoteEndPoint);
+                return result;
             }
 
             public void SetOnce()

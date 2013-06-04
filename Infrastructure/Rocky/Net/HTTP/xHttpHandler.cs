@@ -470,6 +470,7 @@ namespace Rocky.Net
             context.Server.ScriptTimeout = int.MaxValue;
             HttpRequest Request = context.Request;
             HttpResponse Response = context.Response;
+            Response.AppendHeader(HttpResponseHeader.Connection.ToString(), "close");
 
             var bWriter = new BinaryWriter(Response.OutputStream, Encoding.UTF8);
             bWriter.Write(deviceID.ToByteArray());
@@ -506,7 +507,8 @@ namespace Rocky.Net
             context.Server.ScriptTimeout = int.MaxValue;
             HttpRequest Request = context.Request;
             HttpResponse Response = context.Response;
-            //Response.AppendHeader(HttpResponseHeader.Connection.ToString(), "close");
+            //长连接必须关掉
+            Response.AppendHeader(HttpResponseHeader.Connection.ToString(), "close");
 
             var proxyStream = proxyClient.GetStream();
             while (proxyClient.Connected && Response.IsClientConnected)
@@ -606,7 +608,7 @@ namespace Rocky.Net
             context.Server.ScriptTimeout = int.MaxValue;
             HttpRequest Request = context.Request;
             HttpResponse Response = context.Response;
-            //Response.AppendHeader(HttpResponseHeader.Connection.ToString(), "close");
+            Response.AppendHeader(HttpResponseHeader.Connection.ToString(), "close");
 
             var dataQueue = OnlineUsers.GetReverseQueue(agentSock, false);
             while (dataQueue.Connected && Response.IsClientConnected)
