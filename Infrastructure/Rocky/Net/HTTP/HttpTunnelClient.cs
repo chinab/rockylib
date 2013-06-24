@@ -323,6 +323,7 @@ namespace Rocky.Net
         #region ControlMethods
         private void AcceptCallback(IAsyncResult ar)
         {
+            Runtime.LogInfo("app accept...");
             if (_listener == null)
             {
                 return;

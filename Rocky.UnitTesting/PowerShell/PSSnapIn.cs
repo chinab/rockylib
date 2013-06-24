@@ -5,7 +5,7 @@ using System.Linq;
 using System.Management.Automation;
 using System.Text;
 
-namespace Rocky.TestProject
+namespace Rocky.UnitTesting
 {
     [RunInstaller(true)]
     public class SocksCmdlets : PSSnapIn

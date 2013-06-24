@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,14 +8,14 @@ using System.Runtime.Serialization;
 namespace InfrastructureService.Model.User
 {
     /// <summary>
-    /// ±íÊ¾ÓÃ»§Éí·İĞÅÏ¢
+    /// è¡¨ç¤ºç”¨æˆ·èº«ä»½ä¿¡æ¯
     /// </summary>
     [DataContract]
     public sealed class SSOIdentity : IIdentity
     {
-        #region ÊµÏÖIIdentity½Ó¿Ú
+        #region å®ç°IIdentityæ¥å£
         /// <summary>
-        /// »ñÈ¡ÑéÖ¤ÀàĞÍ
+        /// è·å–éªŒè¯ç±»å‹
         /// </summary>
         public string AuthenticationType
         {
@@ -23,7 +23,7 @@ namespace InfrastructureService.Model.User
         }
 
         /// <summary>
-        /// ±êÃ÷ÓÃ»§ÊÇ·ñ¾­¹ıÑéÖ¤
+        /// æ ‡æ˜ç”¨æˆ·æ˜¯å¦ç»è¿‡éªŒè¯
         /// </summary>
         [DataMember]
         public bool IsAuthenticated { get; set; }
@@ -35,27 +35,27 @@ namespace InfrastructureService.Model.User
         #endregion
 
         /// <summary>
-        /// ÓÃ»§ID
+        /// ç”¨æˆ·ID
         /// </summary>
         [DataMember]
         public Guid UserID { get; set; }
         /// <summary>
-        /// µÇÂ¼Ãû
+        /// ç™»å½•å
         /// </summary>
         [DataMember]
         public string UserName { get; set; }
         /// <summary>
-        /// µÇÂ¼ÁîÅÆ
+        /// ç™»å½•ä»¤ç‰Œ
         /// </summary>
         [DataMember]
         public string Token { get; set; }
         /// <summary>
-        /// »á»°ID
+        /// ä¼šè¯ID
         /// </summary>
         [DataMember]
         public string SessionID { get; set; }
         /// <summary>
-        /// ÁîÅÆ°ä·¢Ê±¼ä
+        /// ä»¤ç‰Œé¢å‘æ—¶é—´
         /// </summary>
         [DataMember]
         public DateTime IssueDate { get; set; }

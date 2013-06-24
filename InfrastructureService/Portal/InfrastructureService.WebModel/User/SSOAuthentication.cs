@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
@@ -35,7 +35,7 @@ namespace InfrastructureService.WebModel
         }
 
         /// <summary>
-        /// ÉèÖÃµ±Ç°HTTPÉÏÏÂÎÄµÄÓÃ»§ĞÅÏ¢
+        /// è®¾ç½®å½“å‰HTTPä¸Šä¸‹æ–‡çš„ç”¨æˆ·ä¿¡æ¯
         /// </summary>
         /// <param name="identity"></param>
         public static void SetContextPrincipal(SSOIdentity identity)
@@ -150,7 +150,7 @@ namespace InfrastructureService.WebModel
             Response.AppendHeader("P3P", "CP=IDC DSP COR ADM DEVi TAIi PSA PSD IVAi IVDi CONi HIS OUR IND CNT");
 
             string sid = Request.Form[SSOHelper.SessionIDName], action, token;
-            //·şÎñÆ÷»Øµ÷
+            //æœåŠ¡å™¨å›è°ƒ
             if (!string.IsNullOrEmpty(sid))
             {
                 action = Request.Form[SSOHelper.ParamsName.Action];
@@ -162,7 +162,7 @@ namespace InfrastructureService.WebModel
                 Response.Write("1");
                 Response.End();
             }
-            //¿Í»§¶ËÍÆËÍ
+            //å®¢æˆ·ç«¯æ¨é€
             action = Request.QueryString[SSOHelper.ParamsName.Action] ?? (string)context.Session[SSOHelper.ParamsName.Action];
             token = Request.QueryString[SSOHelper.ParamsName.Token] ?? (string)context.Session[SSOHelper.ParamsName.Token];
             switch (action)

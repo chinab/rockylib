@@ -7,7 +7,7 @@ using System.Net.Sockets;
 using System.Text;
 using Rocky.Net;
 
-namespace Rocky.TestProject
+namespace Rocky.UnitTesting
 {
     [Cmdlet("Connect", "Socks")]
     public class SocksConnectCommand : PSCmdlet

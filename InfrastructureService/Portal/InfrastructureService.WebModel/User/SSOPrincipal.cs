@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Principal;
@@ -9,7 +9,7 @@ using InfrastructureService.WebModel.SSOService;
 namespace InfrastructureService.WebModel
 {
     /// <summary>
-    /// IPrincipalµÄÊµÏÖ
+    /// IPrincipalçš„å®žçŽ°
     /// </summary>
     public sealed class SSOPrincipal : IPrincipal
     {

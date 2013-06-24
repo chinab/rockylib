@@ -88,13 +88,20 @@ namespace Rocky.TestProject
             return GetConsoleWindow();
         }
 
+        public static string GetExecPath()
+        {
+            string shortcutPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Programs), string.Format(@"{0}\{1}.appref-ms", Application.CompanyName, Application.ProductName));
+            Console.Out.WriteInfo(shortcutPath);
+            return shortcutPath;
+        }
+
         /// <summary>
         /// 获取客户端发布版本号
         /// </summary>
         /// <returns>当前版本号</returns>
-        public static string GetVersiion()
+        public static string GetVersion()
         {
-            var version = string.Empty;
+            var version = "Unknow";
             if (!ApplicationDeployment.IsNetworkDeployed)
             {
                 return version;
@@ -183,7 +190,7 @@ namespace Rocky.TestProject
                 if (!administrativeMode)
                 {
                     var startInfo = new ProcessStartInfo();
-                    startInfo.FileName = Application.ExecutablePath;
+                    startInfo.FileName = GetExecPath();
                     startInfo.Verb = "runas";
                     try
                     {
@@ -270,12 +277,10 @@ namespace Rocky.TestProject
                     Process.Start("http://www.cnblogs.com/Googler/archive/2013/05/30/3109402.html");
                     break;
                 case "S":
-                    string shortcutPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Programs), string.Format(@"{0}\{1}.appref-ms", Application.CompanyName, Application.ProductName));
-                    Console.Out.WriteInfo(shortcutPath);
                     var reg = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
                     if (reg.GetValue(_notify.Text) == null)
                     {
-                        reg.SetValue(_notify.Text, shortcutPath);
+                        reg.SetValue(_notify.Text, GetExecPath());
                         Console.Out.WriteTip("开机启动 Ok.");
                     }
                     else

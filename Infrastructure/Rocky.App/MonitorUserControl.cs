@@ -1,4 +1,4 @@
-using System;
+锘縰sing System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -15,7 +15,7 @@ namespace Rocky.App
 {
     public partial class MonitorUserControl : UserControl
     {
-        #region Win32API方法包装
+        #region Win32API鏂规硶鍖呰
         [DllImport("user32.dll")]
         private static extern uint MapVirtualKey(uint uCode, uint uMapType);
         #endregion
@@ -47,7 +47,7 @@ namespace Rocky.App
         }
         #endregion
 
-        #region 屏幕
+        #region 灞忓箷
         public void UpdateDisplay()
         {
             lock (this)
@@ -66,7 +66,7 @@ namespace Rocky.App
         }
 
         /// <summary>
-        /// 绘制
+        /// 缁樺埗
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -85,7 +85,7 @@ namespace Rocky.App
         }
         #endregion
 
-        #region 鼠标
+        #region 榧犳爣
         private void MonitorUserControl_MouseMove(object sender, MouseEventArgs e)
         {
             if (!this.DoControl)
@@ -107,7 +107,7 @@ namespace Rocky.App
         }
         #endregion
 
-        #region 按键
+        #region 鎸夐敭
         private void MonitorUserControl_KeyDown(object sender, KeyEventArgs e)
         {
             e.Handled = true;
