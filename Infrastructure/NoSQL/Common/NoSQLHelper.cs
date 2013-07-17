@@ -5,9 +5,8 @@ using System.Text;
 using System.Configuration;
 using System.Net;
 using System.Collections.Concurrent;
-using Rocky;
-using Rocky.Data;
-using Rocky.Caching;
+using System.Data;
+using System.Caching;
 
 namespace NoSQL
 {
@@ -77,7 +76,7 @@ namespace NoSQL
             monitor.Error += (sender, e) =>
             {
                 var ex = e.GetException();
-                Runtime.LogError(ex, string.Format("{0}ChangeMonitor", typeof(TEntity).Name));
+                Hub.LogError(ex, string.Format("{0}ChangeMonitor", typeof(TEntity).Name));
             };
             monitor.Updated += (sender, e) =>
             {

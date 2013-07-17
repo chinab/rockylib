@@ -5,7 +5,7 @@ using System.Text;
 using System.Runtime.Caching;
 using System.Collections.ObjectModel;
 
-namespace Rocky.Caching
+namespace System.Caching
 {
     public class CacheChangeMonitor : CacheEntryChangeMonitor
     {

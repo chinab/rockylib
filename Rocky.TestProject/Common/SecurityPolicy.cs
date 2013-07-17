@@ -1,13 +1,10 @@
-﻿//#define Mono
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-#if !Mono
 using NetFwTypeLib;
-#endif
 
-namespace Rocky.TestProject
+namespace System.AgentHub
 {
     internal class SecurityPolicy
     {
@@ -39,7 +36,6 @@ namespace Rocky.TestProject
             }
         }
 
-#if !Mono
         /// <summary>
         /// 将应用程序添加到防火墙例外
         /// </summary>
@@ -68,6 +64,5 @@ namespace Rocky.TestProject
             app.ProcessImageFileName = execPath;
             mgr.LocalPolicy.CurrentProfile.AuthorizedApplications.Add(app);
         }
-#endif
     }
 }

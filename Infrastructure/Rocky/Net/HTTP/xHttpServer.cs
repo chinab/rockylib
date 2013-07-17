@@ -8,7 +8,7 @@ using System.Net.Mime;
 using System.Text;
 using System.Web;
 
-namespace Rocky.Net
+namespace System.Net
 {
     public class xHttpServer : IHttpHandler
     {
@@ -43,9 +43,9 @@ namespace Rocky.Net
         public static void Start(string applicationPath, out Uri serverUrl)
         {
             string resourceName = string.Format("Rocky.Resource.{0}", ProcessName),
-                filePath = Runtime.CombinePath(ProcessName);
-            Runtime.CreateFileFromResource(resourceName, filePath);
-            Runtime.CreateFileFromResource(resourceName + ".config", filePath + ".config");
+                filePath = Hub.CombinePath(ProcessName);
+            Hub.CreateFileFromResource(resourceName, filePath);
+            Hub.CreateFileFromResource(resourceName + ".config", filePath + ".config");
 
             string args = string.Format("/a:{0} /im:Any /pm:Specific /p:80 /t:0", applicationPath);
             var proc = Process.Start(new ProcessStartInfo(filePath, args)
@@ -74,7 +74,7 @@ namespace Rocky.Net
                 }
             }
             serverUrl = new Uri(result.Substring(8));
-            Runtime.DisposeService.Register(typeof(xHttpServer), proc);
+            Hub.DisposeService.Register(typeof(xHttpServer), proc);
         }
         #endregion
 

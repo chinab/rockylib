@@ -1,4 +1,4 @@
-﻿//
+//
 // This file causes a build-time exception when PostSharp is not included in the build process.
 // To avoid false errors, do not open the file in Visual Studio, and ignore any error real-time 
 // verifiers such as Resharper may report.

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Rocky.Caching
+namespace System.Caching
 {
     /// <summary>
     /// 分布式缓存异常

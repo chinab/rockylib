@@ -5,7 +5,7 @@ using System.Text;
 using System.IO;
 using System.Diagnostics.Contracts;
 
-namespace Rocky.Net
+namespace System.Net
 {
     [Serializable]
     public sealed class TransferConfig

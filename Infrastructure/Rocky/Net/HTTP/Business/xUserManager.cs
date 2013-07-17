@@ -6,7 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 
-namespace Rocky.Net
+namespace System.Net
 {
     internal sealed class xUserManager
     {

@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Rocky.DataStructure
+namespace System.DataStructure
 {
     /// <summary>
     /// The BinaryTreeNode class represents a node in a binary tree, or a binary search tree.

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Rocky.DataStructure
+namespace System.DataStructure
 {
     /// <summary>
     /// Provides the set of values by which a binary search tree can be enumerated.

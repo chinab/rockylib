@@ -5,7 +5,7 @@ using System.Text;
 using System.Collections;
 using System.Threading;
 
-namespace Rocky.Caching
+namespace System.Caching
 {
     public class LRUCache : Disposable
     {

@@ -1,10 +1,10 @@
-1.gacutil /if E:\ThirdParty\RockyLib\Rocky\bin\Release\Rocky.dll
-  gacutil /u Rocky
-2.http://www.alexa.com
-3.所谓性能优化，必须是建立在测试的基础之上，ACT Test是比较爽的测试工具，比Load Runner方便，比Web Stress直观，支持脚本编程和录制登陆到注销全过程。 
+1.http://www.alexa.com
+
+2.所谓性能优化，必须是建立在测试的基础之上，ACT Test是比较爽的测试工具，比Load Runner方便，比Web Stress直观，支持脚本编程和录制登陆到注销全过程。 
   所有优化都要进行对比测试，才是评判的数字依据。 
   所以，个人认为：不做压力测试，优化是可以做，但没有数据支持，是不严谨的。
-4.WCF证书验证:
+
+3.WCF证书验证:
 服务端：
 	makecert -n "CN=azure.xineworld.com" -pe -sr localmachine -ss My -a sha1 -r -sky exchange -sp "Microsoft RSA SChannel Cryptographic Provider" -sy 12
 	C:\Documents and Settings\All Users\Application Data\Microsoft\Crypto\RSA\MachineKeys
@@ -15,7 +15,7 @@
 	certmgr -add -r localmachine -s My -c -n azure.xineworld.com -s TrustedPeople
 	CertMgr.msc
 
-
+4.
 1) 安装Service: C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe D:\Delicious\WinServices\Delicious.WinServices.exe
 2) 卸载Service: C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe /u D:\Delicious\WinServices\Delicious.WinServices.exe
 3) 启动Service: net start "服务名称"

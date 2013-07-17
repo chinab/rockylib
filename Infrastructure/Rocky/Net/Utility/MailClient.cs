@@ -7,7 +7,7 @@ using System.Net.Mail;
 using System.Net.Mime;
 using System.IO;
 
-namespace Rocky.Net
+namespace System.Net
 {
     public class MailClient : IDisposable
     {

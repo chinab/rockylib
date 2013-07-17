@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // 有关程序集的常规信息通过下列属性集
 // 控制。更改这些属性值可修改
 // 与程序集关联的信息。
-[assembly: AssemblyTitle("Rocky.TestProject")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("AgentHub")]
+[assembly: AssemblyDescription("System.AgentHub")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("JeansMan Studio")]
 [assembly: AssemblyProduct("飞檐走壁")]
-[assembly: AssemblyCopyright("版权所有 (C) JeansMan(杰斯曼) Team 2008")]
+[assembly: AssemblyCopyright("版权所有 (C) JeansMan(杰斯曼) Team 2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -29,5 +29,5 @@ using System.Runtime.InteropServices;
 //      内部版本号
 //      修订号
 //
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("2.0.0.0")]
+[assembly: AssemblyFileVersion("2.0.0.0")]

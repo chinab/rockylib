@@ -6,7 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
-namespace Rocky.Net
+namespace System.Net
 {
     internal static class TunnelExceptionHandler
     {
@@ -15,10 +15,10 @@ namespace Rocky.Net
             var stateMissingEx = ex as TunnelStateMissingException;
             if (stateMissingEx != null)
             {
-                Runtime.LogInfo("{0} SockHandle={1} {2}", message, stateMissingEx.Client.Handle, stateMissingEx.Message);
+                Hub.LogInfo("{0} SockHandle={1} {2}", message, stateMissingEx.Client.Handle, stateMissingEx.Message);
                 return;
             }
-            Runtime.LogError(ex, message);
+            Hub.LogError(ex, message);
         }
 
         public static bool Handle(WebException ex, string message, TextWriter output = null)
@@ -43,7 +43,7 @@ namespace Rocky.Net
             }
             msg.AppendFormat("Status={0}\t", ex.Status);
             msg.Append(message);
-            Runtime.LogError(ex, msg.ToString());
+            Hub.LogError(ex, msg.ToString());
             return false;
         }
 
@@ -60,11 +60,11 @@ namespace Rocky.Net
                     case SocketError.ConnectionReset:
                     case SocketError.ConnectionAborted:
                         msg.Insert(0, "Exception disconnect ");
-                        Runtime.LogInfo(msg.ToString());
+                        Hub.LogInfo(msg.ToString());
                         return;
                 }
             }
-            Runtime.LogError(ex, message);
+            Hub.LogError(ex, message);
         }
 
         public static void Handle(SocketException ex, Socket client, string message)
@@ -79,10 +79,10 @@ namespace Rocky.Net
                 //打洞错误
                 case SocketError.ConnectionAborted:
                     msg.Insert(0, "Exception disconnect ");
-                    Runtime.LogInfo(msg.ToString());
+                    Hub.LogInfo(msg.ToString());
                     return;
             }
-            Runtime.LogError(ex, msg.ToString());
+            Hub.LogError(ex, msg.ToString());
         }
     }
 }

@@ -7,10 +7,8 @@ using System.Runtime.Caching;
 using System.IO;
 using System.Configuration;
 using System.Diagnostics;
-using Rocky;
-using Rocky.Net;
 
-namespace Rocky.Caching
+namespace System.Caching
 {
     /// <summary>
     /// 分布式缓存基类

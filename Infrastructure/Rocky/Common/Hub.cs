@@ -10,15 +10,15 @@ using System.Diagnostics;
 using System.Threading;
 using System.IO;
 
-namespace Rocky
+namespace System
 {
-    public sealed class Runtime : IServiceProvider, IDisposeService
+    public sealed class Hub : IServiceProvider, IDisposeService
     {
         #region Fields
         public const string DebugSymbal = "DEBUG";
         private static log4net.ILog DefaultLogger, ExceptionLogger;
         private static readonly ConcurrentDictionary<string, Assembly> _injectMapper;
-        private static Runtime _host;
+        private static Hub _host;
         #endregion
 
         #region Properties
@@ -37,13 +37,13 @@ namespace Rocky
         #endregion
 
         #region Constructor
-        static Runtime()
+        static Hub()
         {
             log4net.Config.XmlConfigurator.Configure();
             DefaultLogger = log4net.LogManager.GetLogger("DefaultLogger");
             ExceptionLogger = log4net.LogManager.GetLogger("ExceptionLogger");
             _injectMapper = new ConcurrentDictionary<string, Assembly>();
-            _host = new Runtime();
+            _host = new Hub();
             AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
             {
                 LogError((Exception)e.ExceptionObject, "Unhandled:{0}", sender);
@@ -189,7 +189,7 @@ namespace Rocky
                 throw new InvalidOperationException("checksum");
             }
             Type entryType = ass.GetType(string.Format("{0}.Program", ass.FullName), true);
-            var entry = (IRawEntry)Activator.CreateInstance(entryType);
+            var entry = (IHubEntry)Activator.CreateInstance(entryType);
             try
             {
                 entry.Main(arg);
@@ -270,7 +270,7 @@ namespace Rocky
         #region Instance
         private ConcurrentDictionary<Type, object> _container;
 
-        private Runtime()
+        private Hub()
         {
             _container = new ConcurrentDictionary<Type, object>();
             _container.TryAdd(typeof(IDisposeService), this);

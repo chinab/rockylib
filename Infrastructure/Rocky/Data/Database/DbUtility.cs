@@ -6,7 +6,7 @@ using System.Collections;
 using System.Data;
 using System.Data.OleDb;
 
-namespace Rocky.Data
+namespace System.Data
 {
     public static class DbUtility
     {

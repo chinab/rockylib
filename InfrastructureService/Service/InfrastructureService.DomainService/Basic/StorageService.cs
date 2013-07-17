@@ -4,12 +4,11 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Net;
 using InfrastructureService.Contract;
 using InfrastructureService.Model.Basic;
 using InfrastructureService.Repository.Basic;
 using Newtonsoft.Json;
-using Rocky;
-using Rocky.Net;
 
 namespace InfrastructureService.DomainService
 {
@@ -162,7 +161,7 @@ namespace InfrastructureService.DomainService
                 }
                 catch (Exception ex)
                 {
-                    Runtime.LogError(ex, "GetFileUrl");
+                    Hub.LogError(ex, "GetFileUrl");
 #if DEBUG
                     throw;
 #endif

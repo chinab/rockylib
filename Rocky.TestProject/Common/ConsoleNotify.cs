@@ -14,7 +14,7 @@ using System.Threading;
 using System.Windows.Forms;
 using Microsoft.Win32;
 
-namespace Rocky.TestProject
+namespace System.AgentHub
 {
     public class ConsoleNotify
     {
@@ -199,7 +199,7 @@ namespace Rocky.TestProject
                     }
                     catch (Exception ex)
                     {
-                        Runtime.LogError(ex, "administrativeMode");
+                        Hub.LogError(ex, "administrativeMode");
                     }
                 }
             }
@@ -207,7 +207,7 @@ namespace Rocky.TestProject
             _notify = new NotifyIcon()
             {
                 Visible = _visible,
-                Icon = new Icon(Runtime.GetResourceStream(string.Format("{0}.favicon.ico", typeof(ConsoleNotify).Namespace))),
+                Icon = new Icon(Hub.GetResourceStream(string.Format("{0}.favicon.ico", typeof(ConsoleNotify).Namespace))),
                 Text = notifyText,
                 ContextMenuStrip = new ContextMenuStrip() { RenderMode = ToolStripRenderMode.System }
             };
@@ -255,7 +255,7 @@ namespace Rocky.TestProject
                     Process.Start("Explorer.exe", "/select," + CloudAgentConfig.AppConfigPath);
                     break;
                 case "L":
-                    Process.Start("Explorer.exe", Runtime.CombinePath(@"logs\"));
+                    Process.Start("Explorer.exe", Hub.CombinePath(@"logs\"));
                     break;
                 case "D":
                     using (var pipeClient = new NamedPipeClientStream(SecurityPolicy.PipeName))
@@ -304,7 +304,7 @@ namespace Rocky.TestProject
         #endregion
 
         #region Methods
-        public void Run(IRawEntry entry, Form entryForm = null)
+        public void Run(IHubEntry entry, Form entryForm = null)
         {
             //ConsoleNotify.DisableCloseButton();
             _notify.ShowBalloonTip(3000, _notify.Text, string.Format("{0}已启动，单击托盘图标可以最小化！", _notify.Text), ToolTipIcon.Info);

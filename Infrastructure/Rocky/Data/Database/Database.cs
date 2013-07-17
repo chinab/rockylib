@@ -9,7 +9,7 @@ using System.Diagnostics;
 using System.Runtime.Caching;
 using System.Runtime.CompilerServices;
 
-namespace Rocky.Data
+namespace System.Data
 {
     public class Database : IRequiresFactory
     {

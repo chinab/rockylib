@@ -10,7 +10,7 @@ using System.Net;
 using System.Net.Mime;
 using E = System.Environment;
 
-namespace Rocky.Net
+namespace System.Net
 {
     public partial class HttpClient
     {

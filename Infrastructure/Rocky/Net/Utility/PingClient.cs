@@ -8,7 +8,7 @@ using System.Net.Sockets;
 using System.Net.NetworkInformation;
 using System.Diagnostics;
 
-namespace Rocky.Net
+namespace System.Net
 {
     public class PingClient
     {

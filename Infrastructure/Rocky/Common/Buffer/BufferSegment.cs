@@ -9,7 +9,7 @@ using System.Threading;
 using System.IO;
 using B = System.ArraySegment<byte>;
 
-namespace Rocky
+namespace System
 {
     public sealed class BufferSegment
     {

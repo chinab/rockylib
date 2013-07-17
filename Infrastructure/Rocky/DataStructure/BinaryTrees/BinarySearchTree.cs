@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 #endregion
 
-namespace Rocky.DataStructure
+namespace System.DataStructure
 {
     /// <summary>
     /// Represents a binary search tree.  A binary search tree is a binary tree whose nodes are arranged

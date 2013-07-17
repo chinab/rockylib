@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Rocky;
-using Rocky.Net;
+using System.Net;
 using InfrastructureService.Common;
 using InfrastructureService.Model.Basic;
 using InfrastructureService.Repository.DataAccess;
@@ -15,7 +14,7 @@ namespace InfrastructureService.Repository.Basic
         #region Methods
         public static string RootPath
         {
-            get { return Runtime.CombinePath(@"Storage\"); }
+            get { return Hub.CombinePath(@"Storage\"); }
         }
         public static System.Net.IPAddress LocalIP
         {

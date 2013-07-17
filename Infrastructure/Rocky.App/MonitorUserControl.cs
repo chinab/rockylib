@@ -9,7 +9,6 @@ using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
-using Rocky.Net;
 
 namespace Rocky.App
 {

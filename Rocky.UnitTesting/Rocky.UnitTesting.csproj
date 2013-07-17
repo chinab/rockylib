@@ -79,7 +79,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="RuntimeTest.cs" />
+    <Compile Include="HubTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Infrastructure\NoSQL\NoSQL.csproj">

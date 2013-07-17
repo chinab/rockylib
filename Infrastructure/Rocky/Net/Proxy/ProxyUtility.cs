@@ -6,7 +6,7 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Rocky.Net
+namespace System.Net
 {
     public static class ProxyUtility
     {

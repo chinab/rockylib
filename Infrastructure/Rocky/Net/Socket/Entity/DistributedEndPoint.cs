@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Net;
 
-namespace Rocky.Net
+namespace System.Net
 {
     /// <summary>
     /// 分布式终结点

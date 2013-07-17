@@ -5,7 +5,7 @@ using System.Text;
 using System.Diagnostics.Contracts;
 using System.Threading;
 
-namespace Rocky
+namespace System
 {
     public sealed class JobTimer : IDisposable
     {
@@ -38,7 +38,7 @@ namespace Rocky
             }
             this.Period = period;
 
-            Runtime.DisposeService.Register(this.GetType(), this);
+            Hub.DisposeService.Register(this.GetType(), this);
         }
         public JobTimer(Action<object> job, DateTime dueTime)
             : this(job, dueTime, TimeSpan.FromMilliseconds(Timeout.Infinite))
@@ -61,7 +61,7 @@ namespace Rocky
                 }
                 catch (Exception ex)
                 {
-                    Runtime.LogError(ex, "JobTimer");
+                    Hub.LogError(ex, "JobTimer");
                 }
                 finally
                 {
@@ -111,7 +111,7 @@ namespace Rocky
                 }
                 _job = null;
 
-                Runtime.DisposeService.Free(this.GetType(), this);
+                Hub.DisposeService.Free(this.GetType(), this);
             }
         }
         #endregion

@@ -4,11 +4,10 @@ using System.Data.Objects.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Net;
 using InfrastructureService.Common;
 using InfrastructureService.Model.Message;
 using InfrastructureService.Repository.DataAccess;
-using Rocky;
-using Rocky.Net;
 
 namespace InfrastructureService.Repository.Message
 {
@@ -106,7 +105,7 @@ namespace InfrastructureService.Repository.Message
                 }
                 else if (e.Error != null)
                 {
-                    Runtime.LogError(e.Error, "SendEmail");
+                    Hub.LogError(e.Error, "SendEmail");
                     msg.Status = (int)MessageStatusKind.Error;
                 }
                 else

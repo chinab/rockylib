@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Threading;
 
-namespace Rocky.Net
+namespace System.Net
 {
     public sealed class TransferProgress
     {

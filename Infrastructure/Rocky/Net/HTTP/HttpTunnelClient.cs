@@ -9,7 +9,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 
-namespace Rocky.Net
+namespace System.Net
 {
     /// <summary>
     /// http://blog.csdn.net/laotse/article/details/6296573
@@ -239,7 +239,7 @@ namespace Rocky.Net
                 }
                 catch (SocketException ex)
                 {
-                    Runtime.LogError(ex, "ReverseListen");
+                    Hub.LogError(ex, "ReverseListen");
                 }
             });
         }
@@ -259,7 +259,7 @@ namespace Rocky.Net
             _output.WriteLine("{0} {1}", DateTime.Now.ToString("HH:mm:ss"), msg);
             if (ex != null)
             {
-                Runtime.LogError(ex, "TunnelClient");
+                Hub.LogError(ex, "TunnelClient");
             }
         }
         private void OutWrite(string format, params object[] args)
@@ -323,7 +323,7 @@ namespace Rocky.Net
         #region ControlMethods
         private void AcceptCallback(IAsyncResult ar)
         {
-            Runtime.LogInfo("app accept...");
+            Hub.LogInfo("app accept...");
             if (_listener == null)
             {
                 return;
@@ -347,7 +347,7 @@ namespace Rocky.Net
                                 request.ParsePack(buffer);
                                 if (request.Command == Socks4Command.Bind)
                                 {
-                                    Runtime.LogInfo("{0} {1}协议错误: Bind命令暂不支持", proxySock.LocalEndPoint, _runType);
+                                    Hub.LogInfo("{0} {1}协议错误: Bind命令暂不支持", proxySock.LocalEndPoint, _runType);
                                     goto default;
                                 }
                                 var resIpe = new IPEndPoint(request.RemoteIP, request.RemotePort);
@@ -392,7 +392,7 @@ namespace Rocky.Net
                                 switch (request.Command)
                                 {
                                     case Socks5Command.TcpBind:
-                                        Runtime.LogInfo("{0} {1}协议错误: Bind命令暂不支持", proxySock.LocalEndPoint, _runType);
+                                        Hub.LogInfo("{0} {1}协议错误: Bind命令暂不支持", proxySock.LocalEndPoint, _runType);
                                         goto default;
                                     case Socks5Command.UdpAssociate:
                                         //客户端预备开放的Udp端口
@@ -425,7 +425,7 @@ namespace Rocky.Net
                 catch (Exception ex)
                 {
                     this.OutWrite("{0} {1}协议错误: {2}", proxySock.LocalEndPoint, _runType, ex.Message);
-                    Runtime.LogError(ex, "代理协议错误");
+                    Hub.LogError(ex, "代理协议错误");
                     proxyClient.Close();
                     return;
                 }
@@ -635,7 +635,7 @@ namespace Rocky.Net
                             if (sockEx.SocketErrorCode == SocketError.Interrupted)
                             {
 #if DEBUG
-                                Runtime.LogInfo(string.Format("Predictable interrupted exception: {0}", sockEx.Message));
+                                Hub.LogInfo(string.Format("Predictable interrupted exception: {0}", sockEx.Message));
 #endif
                                 return;
                             }

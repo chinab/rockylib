@@ -5,7 +5,7 @@ using System.Text;
 using System.Diagnostics.Contracts;
 using System.Text.RegularExpressions;
 
-namespace Rocky
+namespace System
 {
     public static class StringHelper
     {

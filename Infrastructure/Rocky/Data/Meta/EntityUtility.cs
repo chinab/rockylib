@@ -5,7 +5,7 @@ using System.Text;
 using System.Data.Common;
 using System.Reflection;
 
-namespace Rocky.Data
+namespace System.Data
 {
     public static class EntityUtility
     {

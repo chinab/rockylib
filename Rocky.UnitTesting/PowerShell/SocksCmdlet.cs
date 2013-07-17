@@ -5,7 +5,6 @@ using System.Management.Automation;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using Rocky.Net;
 
 namespace Rocky.UnitTesting
 {

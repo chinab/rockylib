@@ -6,7 +6,7 @@ using System.Diagnostics.Contracts;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 
-namespace Rocky
+namespace System
 {
     public static class Serializer
     {

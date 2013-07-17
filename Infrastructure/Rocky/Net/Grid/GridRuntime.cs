@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Rocky.Net
+namespace System.Net
 {
     /// <summary>
     /// http://en.wikipedia.org/wiki/Grid_computing

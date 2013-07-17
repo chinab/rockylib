@@ -107,7 +107,7 @@ namespace InfrastructureService.WebModel
                 }
                 catch (Exception ex)
                 {
-                    Runtime.LogError(ex, "AuthenticateRequest");
+                    Hub.LogError(ex, "AuthenticateRequest");
 #if DEBUG
                     throw;
 #endif

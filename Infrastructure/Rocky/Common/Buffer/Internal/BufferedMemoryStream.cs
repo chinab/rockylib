@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using B = System.ArraySegment<byte>;
 
-namespace Rocky
+namespace System
 {
     internal sealed class BufferedMemoryStream : MemoryStream
     {

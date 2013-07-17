@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Data;
 using InfrastructureService.Common;
 using InfrastructureService.Model.Basic;
-using Rocky;
-using Rocky.Data;
 
 namespace InfrastructureService.Repository.Basic
 {

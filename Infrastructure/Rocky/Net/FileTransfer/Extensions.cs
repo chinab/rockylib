@@ -4,7 +4,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
 
-namespace Rocky.Net
+namespace System.Net
 {
     public static partial class Extensions
     {

@@ -9,7 +9,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 
-namespace Rocky.Net
+namespace System.Net
 {
     /// <summary>
     /// socks5扩展
@@ -86,7 +86,7 @@ namespace Rocky.Net
                         sb.Append(ipe).Append("\t");
                     }
                     sb.Append("--").Append(remoteEndPoint);
-                    Runtime.LogInfo("Udp has: {0}", sb);
+                    Hub.LogInfo("Udp has: {0}", sb);
                 }
                 return result;
             }
@@ -221,13 +221,13 @@ namespace Rocky.Net
                         if (data.IsNullOrEmpty() || !(data[0] == 0 && data[1] == 0 && data[2] == 0))
                         {
                             this.OutWrite("Udp Send Discard {0} {1}bytes.", localIpe, data == null ? -1 : data.Length);
-                            Runtime.LogInfo("Udp Send Discard 非法数据包.");
+                            Hub.LogInfo("Udp Send Discard 非法数据包.");
                             continue;
                         }
                         else if (!currentState.LocalEndPoint.Equals(localIpe))
                         {
                             this.OutWrite("Udp Send Discard {0} {1}bytes.", localIpe, data == null ? -1 : data.Length);
-                            Runtime.LogInfo("Udp Send Discard 非法本地端点.");
+                            Hub.LogInfo("Udp Send Discard 非法本地端点.");
                             continue;
                         }
 
@@ -271,7 +271,7 @@ namespace Rocky.Net
                     catch (ObjectDisposedException ex)
                     {
 #if DEBUG
-                        Runtime.LogInfo(string.Format("Predictable objectDisposed exception: {0}", ex.StackTrace));
+                        Hub.LogInfo(string.Format("Predictable objectDisposed exception: {0}", ex.StackTrace));
 #endif
                     }
                     catch (WebException ex)
@@ -286,7 +286,7 @@ namespace Rocky.Net
                         if (ex.SocketErrorCode == SocketError.Interrupted)
                         {
 #if DEBUG
-                            Runtime.LogInfo(string.Format("Predictable interrupted exception: {0}", ex.Message));
+                            Hub.LogInfo(string.Format("Predictable interrupted exception: {0}", ex.Message));
 #endif
                             return;
                         }
@@ -336,7 +336,7 @@ namespace Rocky.Net
                             if (!currentState.HasRemoteEndPoint(remoteIpe))
                             {
                                 this.OutWrite("Udp Receive Discard {0} {1}bytes.", remoteIpe, read);
-                                Runtime.LogInfo("Udp Receive Discard 非法远程端点.");
+                                Hub.LogInfo("Udp Receive Discard 非法远程端点.");
                                 continue;
                             }
 
@@ -351,7 +351,7 @@ namespace Rocky.Net
                         catch (ObjectDisposedException ex)
                         {
 #if DEBUG
-                            Runtime.LogInfo(string.Format("Predictable objectDisposed exception: {0}", ex.StackTrace));
+                            Hub.LogInfo(string.Format("Predictable objectDisposed exception: {0}", ex.StackTrace));
 #endif
                             return;
                         }

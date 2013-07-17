@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using B = System.ArraySegment<byte>;
 
-namespace Rocky
+namespace System
 {
     public static partial class Extensions
     {

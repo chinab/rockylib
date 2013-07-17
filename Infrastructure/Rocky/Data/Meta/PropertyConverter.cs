@@ -6,7 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace Rocky.Data
+namespace System.Data
 {
     public class PropertyConverter : IPropertyConvertible
     {

@@ -7,7 +7,7 @@ using System.Drawing.Imaging;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 
-namespace Rocky
+namespace System
 {
     public static class GDIHelper
     {

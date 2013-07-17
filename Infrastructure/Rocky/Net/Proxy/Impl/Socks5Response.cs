@@ -6,7 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
-namespace Rocky.Net
+namespace System.Net
 {
     internal sealed class Socks5Response : ISocksRFC
     {

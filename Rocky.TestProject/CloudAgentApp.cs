@@ -1,5 +1,4 @@
-﻿//#define Mono
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics.Contracts;
@@ -8,11 +7,10 @@ using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
-using Rocky.Net;
 
-namespace Rocky.TestProject
+namespace System.AgentHub
 {
-    internal sealed class CloudAgentApp : IRawEntry
+    internal sealed class CloudAgentApp : IHubEntry
     {
         internal static CloudAgentApp Instance;
 
@@ -25,10 +23,8 @@ namespace Rocky.TestProject
 
         public void Main(object arg)
         {
-#if !Mono
-            this.CatchExec(() => SecurityPolicy.App2Fw("CloudAgent", Runtime.CombinePath("CloudAgent.exe")), "防火墙例外");
-#endif
-            if (!this.CatchExec(() => CryptoManaged.TrustCert(Runtime.GetResourceStream("Rocky.TestProject.Resource.CA.crt")), "导入Http证书"))
+            this.CatchExec(() => SecurityPolicy.App2Fw("CloudAgent", Hub.CombinePath("CloudAgent.exe")), "防火墙例外");
+            if (!this.CatchExec(() => CryptoManaged.TrustCert(Hub.GetResourceStream("System.AgentHub.Resource.CA.crt")), "导入Http证书"))
             {
                 Console.Out.WriteWarning("导入Http证书失败。");
             }
@@ -71,7 +67,7 @@ namespace Rocky.TestProject
             catch (Exception ex)
             {
                 Console.Out.WriteError(ex.Message);
-                Runtime.LogError(ex, "CloudAgent");
+                Hub.LogError(ex, "CloudAgent");
             }
             finally
             {
@@ -123,7 +119,7 @@ namespace Rocky.TestProject
                 if (config.EnableSsl)
                 {
                     //默认服务端
-                    if (!this.CatchExec(() => CryptoManaged.TrustCert(Runtime.GetResourceStream("Rocky.TestProject.Resource.xine.pfx"), "xine"), "导入证书"))
+                    if (!this.CatchExec(() => CryptoManaged.TrustCert(Hub.GetResourceStream("System.AgentHub.Resource.xine.pfx"), "xine"), "导入证书"))
                     {
                         config.EnableSsl = false;
                         Console.Out.WriteWarning("导入证书失败，将不启用加密通讯。");
@@ -153,7 +149,7 @@ namespace Rocky.TestProject
             }
             catch (Exception ex)
             {
-                Runtime.LogError(ex, string.Format("CatchExec: {0}", msg));
+                Hub.LogError(ex, string.Format("CatchExec: {0}", msg));
             }
             return false;
         }
@@ -184,14 +180,14 @@ namespace Rocky.TestProject
         static CloudAgentConfig()
         {
             AppConfigPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\JeansMan Studio\CloudAgent.config";
-            Runtime.CreateDirectory(AppConfigPath);
+            Hub.CreateDirectory(AppConfigPath);
             if (!File.Exists(AppConfigPath))
             {
-                Runtime.CreateFileFromResource("Rocky.TestProject.CloudAgent.config", AppConfigPath, "CloudAgent.exe");
+                Hub.CreateFileFromResource("System.AgentHub.CloudAgent.config", AppConfigPath, "CloudAgent.exe");
             }
         }
 
-        private static string GetValue(Configuration exe, string key)
+        private static string GetValue(System.Configuration.Configuration exe, string key)
         {
             var item = exe.AppSettings.Settings[key];
             if (item == null || string.IsNullOrEmpty(item.Value))
@@ -201,7 +197,7 @@ namespace Rocky.TestProject
             return item.Value;
         }
 
-        private static NetworkCredential GetCredential(Configuration exe, string key)
+        private static NetworkCredential GetCredential(System.Configuration.Configuration exe, string key)
         {
             var sCred = GetValue(exe, key);
             if (string.IsNullOrEmpty(sCred))
@@ -212,7 +208,7 @@ namespace Rocky.TestProject
             return new NetworkCredential(aCred[0], aCred[1]);
         }
 
-        private static Tuple<ushort, string>[] GetTunnelList(Configuration exe, string key)
+        private static Tuple<ushort, string>[] GetTunnelList(System.Configuration.Configuration exe, string key)
         {
             var sList = GetValue(exe, key);
             if (string.IsNullOrEmpty(sList))

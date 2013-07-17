@@ -8,8 +8,8 @@
     <ProjectGuid>{0433CAC5-BAAA-4E73-8F68-A7CCB1F6C9BF}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Rocky</RootNamespace>
-    <AssemblyName>Rocky</AssemblyName>
+    <RootNamespace>System</RootNamespace>
+    <AssemblyName>SysHub</AssemblyName>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>3.5</OldToolsVersion>
@@ -149,7 +149,6 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data.Linq" />
-    <Reference Include="System.Data.OracleClient" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Runtime.Remoting" />
@@ -238,7 +237,7 @@
     <Compile Include="Net\HTTP\Extensions.cs" />
     <Compile Include="Net\HTTP\TunnelStateMissingException.cs" />
     <Compile Include="Net\HTTP\Entity\TunnelCommand.cs" />
-    <Compile Include="Common\IRawEntry.cs" />
+    <Compile Include="Common\IHubEntry.cs" />
     <Compile Include="Net\HTTP\HttpTunnelClientExtend.cs" />
     <Compile Include="Net\HTTP\TunnelExceptionHandler.cs" />
     <Compile Include="Net\HTTP\xHttpHandler.cs" />
@@ -303,7 +302,7 @@
     <Compile Include="Common\Security\CryptoManaged.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Common\Runtime.cs">
+    <Compile Include="Common\Hub.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

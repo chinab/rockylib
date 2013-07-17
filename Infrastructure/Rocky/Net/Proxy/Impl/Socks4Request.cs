@@ -5,7 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 
-namespace Rocky.Net
+namespace System.Net
 {
     /// <summary>
     /// http://en.wikipedia.org/wiki/SOCKS

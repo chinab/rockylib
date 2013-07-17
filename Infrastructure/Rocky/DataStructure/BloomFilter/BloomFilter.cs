@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Collections;
 
-namespace Rocky.DataStructure
+namespace System.DataStructure
 {
     public sealed class BloomFilter<T>
     {

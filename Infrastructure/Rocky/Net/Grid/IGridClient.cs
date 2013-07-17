@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Rocky.Net
+namespace System.Net
 {
     public interface IGridClient
     {

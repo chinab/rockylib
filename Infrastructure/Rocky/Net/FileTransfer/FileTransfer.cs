@@ -18,7 +18,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Rocky.Net
+namespace System.Net
 {
     public sealed class FileTransfer : Disposable
     {
@@ -108,7 +108,7 @@ namespace Rocky.Net
                 throw new ApplicationException("已启动监听");
             }
 
-            Runtime.CreateDirectory(_savePath = savePath);
+            Hub.CreateDirectory(_savePath = savePath);
             var localIpe = new IPEndPoint(IPAddress.Any, port);
             //最多支持16线程
             _listener = SocketHelper.CreateListener(localIpe, 16);
@@ -123,7 +123,7 @@ namespace Rocky.Net
             _listener.BeginAccept(this.AcceptCallback, null);
 
             Socket controlClient = _listener.EndAccept(ar);
-            Runtime.LogInfo("TunnelTest 双工通讯: {0}.", controlClient.RemoteEndPoint);
+            Hub.LogInfo("TunnelTest 双工通讯: {0}.", controlClient.RemoteEndPoint);
 
             TransferConfig config;
             controlClient.Receive(out config);
@@ -173,7 +173,7 @@ namespace Rocky.Net
                     fValue = BitConverter.ToInt64(bufferInfo, i * perPairCount);
                     tValue = BitConverter.ToInt64(bufferInfo, i * perPairCount + PerLongSize);
                     chunkGroup[i].Initialize(tempFilePath, i * avgSize, i == j ? avgSize + oddSize : avgSize, fValue, tValue);
-                    Runtime.LogDebug("[ReceiveBreakpoint] {0} Read{1}:{2}/{3}.", remoteIpe, i, fValue, tValue);
+                    Hub.LogDebug("[ReceiveBreakpoint] {0} Read{1}:{2}/{3}.", remoteIpe, i, fValue, tValue);
                 }
                 controlClient.Send(bufferInfo);
             }
@@ -198,7 +198,7 @@ namespace Rocky.Net
                     chunkGroup[i].ReportProgress(out fValue, out tValue);
                     Buffer.BlockCopy(BitConverter.GetBytes(fValue), 0, bufferInfo, i * perPairCount, 8);
                     Buffer.BlockCopy(BitConverter.GetBytes(tValue), 0, bufferInfo, i * perPairCount + PerLongSize, 8);
-                    Runtime.LogDebug("[ReceiveBreakpoint] {0} Write{1}:{2}/{3}.", remoteIpe, i, fValue, tValue);
+                    Hub.LogDebug("[ReceiveBreakpoint] {0} Write{1}:{2}/{3}.", remoteIpe, i, fValue, tValue);
                 }
                 pointStream.Position = 0L;
                 pointStream.Write(bufferInfo, 0, count);
@@ -271,7 +271,7 @@ namespace Rocky.Net
                     fValue = BitConverter.ToInt64(bufferInfo, i * perPairCount);
                     tValue = BitConverter.ToInt64(bufferInfo, i * perPairCount + PerLongSize);
                     chunkGroup[i].Initialize(config.FilePath, i * avgSize, i == j ? avgSize + oddSize : avgSize, fValue, tValue);
-                    Runtime.LogDebug("[SendBreakpoint] {0} {1}:{2}/{3}.", remoteIpe, i, fValue, tValue);
+                    Hub.LogDebug("[SendBreakpoint] {0} {1}:{2}/{3}.", remoteIpe, i, fValue, tValue);
                 }
             }
             #endregion

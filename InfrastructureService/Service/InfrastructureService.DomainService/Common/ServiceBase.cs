@@ -7,7 +7,6 @@ using System.ServiceModel.Description;
 using System.ServiceModel.Dispatcher;
 using System.Text;
 using InfrastructureService.Common;
-using Rocky;
 
 namespace InfrastructureService.DomainService
 {
@@ -15,7 +14,7 @@ namespace InfrastructureService.DomainService
     {
         public bool HandleError(Exception error)
         {
-            Runtime.LogError(error, "ServiceBase");
+            Hub.LogError(error, "ServiceBase");
             return false;
         }
 

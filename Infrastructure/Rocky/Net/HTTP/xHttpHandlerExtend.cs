@@ -9,7 +9,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Web;
 
-namespace Rocky.Net
+namespace System.Net
 {
     public partial class xHttpHandler
     {
@@ -71,12 +71,12 @@ namespace Rocky.Net
                 var reader = new BinaryReader(inStream);
                 proxyClient.Send(reader.ReadBytes(length), length, remoteIpe);
                 succeed = true;
-                Runtime.LogInfo("UdpDirectSend to {0} {1}bytes.", remoteIpe, length);
+                Hub.LogInfo("UdpDirectSend to {0} {1}bytes.", remoteIpe, length);
             }
             catch (ObjectDisposedException ex)
             {
 #if DEBUG
-                Runtime.LogInfo(string.Format("Predictable objectDisposed exception: {0}", ex.StackTrace));
+                Hub.LogInfo(string.Format("Predictable objectDisposed exception: {0}", ex.StackTrace));
 #endif
             }
             catch (SocketException ex)
@@ -113,12 +113,12 @@ namespace Rocky.Net
                     byte[] bData = bPack.ToArray();
                     Response.OutputStream.Write(bData, 0, bData.Length);
                     Response.Flush();
-                    Runtime.LogInfo("UdpDirectReceive from {0} {1}bytes.", remoteIpe, data.Length);
+                    Hub.LogInfo("UdpDirectReceive from {0} {1}bytes.", remoteIpe, data.Length);
                 }
                 catch (ObjectDisposedException ex)
                 {
 #if DEBUG
-                    Runtime.LogInfo(string.Format("Predictable objectDisposed exception: {0}", ex.StackTrace));
+                    Hub.LogInfo(string.Format("Predictable objectDisposed exception: {0}", ex.StackTrace));
 #endif
                 }
                 catch (IOException ex)
@@ -130,7 +130,7 @@ namespace Rocky.Net
                     if (ex.SocketErrorCode == SocketError.Interrupted)
                     {
 #if DEBUG
-                        Runtime.LogInfo(string.Format("Predictable interrupted exception: {0}", ex.Message));
+                        Hub.LogInfo(string.Format("Predictable interrupted exception: {0}", ex.Message));
 #endif
                         return;
                     }

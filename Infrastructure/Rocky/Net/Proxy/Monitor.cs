@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 
-namespace Rocky.Net
+namespace System.Net
 {
     public class Monitor : MarshalByRefObject
     {

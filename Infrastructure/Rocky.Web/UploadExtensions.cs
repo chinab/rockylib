@@ -9,7 +9,7 @@ using System.Text;
 using System.Drawing;
 using System.Drawing.Imaging;
 using Jillzhang.GifUtility;
-using Rocky.Net;
+using System.Net;
 
 namespace Rocky.Web
 {
@@ -58,7 +58,7 @@ namespace Rocky.Web
                 vrtualFilePath = GetFilePath(postedFile, ref mode, savePath);
                 HttpContext context = HttpContext.Current;
                 string physicalFilePath = context.Server.MapPath(vrtualFilePath);
-                Runtime.CreateDirectory(physicalFilePath);
+                Hub.CreateDirectory(physicalFilePath);
                 File.WriteAllBytes(physicalFilePath, buffer);
             }
             return vrtualFilePath;
@@ -163,7 +163,7 @@ namespace Rocky.Web
                     break;
             }
             HttpContext context = HttpContext.Current;
-            Runtime.CreateDirectory(context.Server.MapPath(sb.ToString()));
+            Hub.CreateDirectory(context.Server.MapPath(sb.ToString()));
             return sb.Append(prefixName).Append(StringHelper.NowDateString).Append(Path.GetExtension(postedFile.FileName)).ToString();
         }
         #endregion

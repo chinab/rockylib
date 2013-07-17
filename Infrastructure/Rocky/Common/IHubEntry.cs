@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Rocky
+namespace System
 {
-    public interface IRawEntry
+    public interface IHubEntry
     {
         void Main(object arg);
     }

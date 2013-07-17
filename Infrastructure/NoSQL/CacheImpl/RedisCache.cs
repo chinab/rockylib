@@ -4,8 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Net;
 using System.Runtime.Caching;
-using Rocky;
-using Rocky.Caching;
+using System.Caching;
 using ServiceStack.Redis;
 using ServiceStack.Redis.Support;
 

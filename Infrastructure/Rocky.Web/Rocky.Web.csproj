@@ -119,10 +119,6 @@
     <Compile Include="Rewrite\FormRewriterControlAdapter.cs" />
     <Compile Include="VerifyCode.cs" />
     <Compile Include="UploadExtensions.cs" />
-    <Compile Include="Controls\ArticlePager.cs">
-    </Compile>
-    <Compile Include="Controls\WebPager\PageJump.cs" />
-    <Compile Include="Controls\WebPager\WebPager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="HttpUtils.cs" />
     <Compile Include="PageUtils.cs" />

@@ -7,7 +7,7 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
-namespace Rocky
+namespace System
 {
     public sealed class CryptoManaged : Disposable
     {

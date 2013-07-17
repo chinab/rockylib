@@ -7,7 +7,7 @@ using System.Data.Common;
 using System.Collections;
 using System.Collections.Specialized;
 
-namespace Rocky.Data
+namespace System.Data
 {
     public sealed class DbScope : Disposable
     {
@@ -137,7 +137,7 @@ namespace Rocky.Data
                 _transactionScope = new TransactionScope(TransactionScopeOption.Required);
             }
         }
-        public void BeginTransaction(IsolationLevel level, TimeSpan timeout)
+        public void BeginTransaction(System.Transactions.IsolationLevel level, TimeSpan timeout)
         {
             base.CheckDisposed();
             if (_transactionScope == null)

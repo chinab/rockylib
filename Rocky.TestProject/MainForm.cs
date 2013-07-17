@@ -10,11 +10,10 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Windows.Forms;
-using Rocky.Net;
 using SharpCompress.Archive;
 using SharpCompress.Common;
 
-namespace Rocky.TestProject
+namespace System.AgentHub
 {
     public partial class MainForm : Form
     {
@@ -226,7 +225,7 @@ namespace Rocky.TestProject
         void _trans_Completed(object sender, TransferEventArgs e)
         {
             string path = Path.Combine(_trans.DirectoryPath, e.Config.Checksum + Path.GetExtension(e.Config.FileName));
-            Runtime.LogInfo(path);
+            Hub.LogInfo(path);
         }
         void button2_Click(object sender, EventArgs e)
         {
@@ -247,12 +246,12 @@ namespace Rocky.TestProject
 
         private void RunProxifier()
         {
-            string zipPath = Runtime.CombinePath("Proxifier PE.7z"), exePath = Runtime.CombinePath("Proxifier.exe");
-            if (Runtime.CreateFileFromResource("Rocky.TestProject.Resource.Proxifier PE.7z", zipPath) || !File.Exists(exePath))
+            string zipPath = Hub.CombinePath("Proxifier PE.7z"), exePath = Hub.CombinePath("Proxifier.exe");
+            if (Hub.CreateFileFromResource("System.AgentHub.Resource.Proxifier PE.7z", zipPath) || !File.Exists(exePath))
             {
                 var archive = ArchiveFactory.Open(zipPath);
                 int i = 0, count = archive.Entries.Count();
-                string destPath = Runtime.CombinePath(string.Empty);
+                string destPath = Hub.CombinePath(string.Empty);
                 this.ShowForm(true);
                 foreach (var entry in archive.Entries)
                 {

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
-using Rocky.Net;
+using System.Net;
 
 namespace Rocky.App
 {
@@ -48,7 +48,7 @@ namespace Rocky.App
                     catch (Exception ex)
                     {
                         MessageBox.Show(ex.Message, string.Empty, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        Runtime.LogError(ex, "MonitorClient");
+                        Hub.LogError(ex, "MonitorClient");
                     }
                     Cursor = Cursors.Arrow;
                 }

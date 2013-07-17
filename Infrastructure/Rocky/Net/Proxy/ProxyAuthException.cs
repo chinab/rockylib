@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 
-namespace Rocky.Net
+namespace System.Net
 {
     /// <summary>
     /// Proxy authentication failure.

@@ -16,7 +16,7 @@ using System.Configuration;
 using System.Runtime.Caching;
 using System.IO;
 
-namespace Rocky.Data
+namespace System.Data
 {
     /// <summary>
     /// 配置映射
@@ -95,7 +95,7 @@ namespace Rocky.Data
                 }
                 catch (Exception ex)
                 {
-                    Runtime.LogError(ex, string.Format("ChangeMonitor:{0}", ex.Message));
+                    Hub.LogError(ex, string.Format("ChangeMonitor:{0}", ex.Message));
                 }
                 _cache.Add(key, sql, policy);
             }

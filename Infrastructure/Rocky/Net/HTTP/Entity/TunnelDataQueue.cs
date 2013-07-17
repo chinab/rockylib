@@ -7,7 +7,7 @@ using System.Net;
 using System.Text;
 using System.Threading;
 
-namespace Rocky.Net
+namespace System.Net
 {
     public class TunnelDataQueue : Disposable
     {

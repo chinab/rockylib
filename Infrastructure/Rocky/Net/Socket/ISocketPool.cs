@@ -6,7 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
-namespace Rocky.Net
+namespace System.Net
 {
     [ContractClass(typeof(ISocketPoolContract))]
     public interface ISocketPool : IDisposable

@@ -7,7 +7,7 @@ using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
 
-namespace Rocky.Net
+namespace System.Net
 {
     internal class SocketPool : Disposable, ISocketPool
     {

@@ -6,7 +6,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 
-namespace Rocky.Net
+namespace System.Net
 {
     internal sealed class ReceiveChunkModel : IChunkModel
     {
@@ -71,7 +71,7 @@ namespace Rocky.Net
                 {
                     _writer.Flush();
                     _bytesReceived += recv;
-                    Runtime.LogDebug("[ReceiveChunk{0}] {1} {2}/{3}.", Thread.CurrentThread.ManagedThreadId,
+                    Hub.LogDebug("[ReceiveChunk{0}] {1} {2}/{3}.", Thread.CurrentThread.ManagedThreadId,
                         remoteIpe, _bytesReceived, _receiveLength);
                     return _sock.Connected;
                 });

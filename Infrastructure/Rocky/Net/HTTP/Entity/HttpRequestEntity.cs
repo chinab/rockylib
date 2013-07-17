@@ -6,7 +6,7 @@ using System.Diagnostics.Contracts;
 using System.Collections.Specialized;
 using System.Net;
 
-namespace Rocky.Net
+namespace System.Net
 {
     public sealed class HttpRequestEntity
     {

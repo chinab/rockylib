@@ -5,7 +5,7 @@ using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Tcp;
 using System.Net;
 
-namespace Rocky.Net
+namespace System.Net
 {
     public static class MonitorChannel
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Diagnostics;
 
-namespace Rocky
+namespace System
 {
     public abstract class Disposable : IDisposable
     {

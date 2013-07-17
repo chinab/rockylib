@@ -9,7 +9,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
-namespace Rocky.Net
+namespace System.Net
 {
     public static partial class Extensions
     {

@@ -82,7 +82,7 @@ namespace Rocky.Web
                         }
                         catch (Exception ex)
                         {
-                            Runtime.LogError(ex, "CookieSafety");
+                            Hub.LogError(ex, "CookieSafety");
                             col = new SessionStateItemCollection();
                         }
                     }
@@ -135,7 +135,7 @@ namespace Rocky.Web
             {
                 url += "[referer=" + referer + "]";
             }
-            Runtime.LogDebug("{0},{1}\t{2}\t{3}\t{4}", HttpUtils.RemoteIP, context.Request.UserAgent,
+            Hub.LogDebug("{0},{1}\t{2}\t{3}\t{4}", HttpUtils.RemoteIP, context.Request.UserAgent,
                 context.Request.HttpMethod, url, message);
         }
         public static void AppendLog(Exception ex)
@@ -149,7 +149,7 @@ namespace Rocky.Web
             {
                 msg.AppendFormat("[referer={0}]", referer);
             }
-            Runtime.LogError(ex, msg.ToString());
+            Hub.LogError(ex, msg.ToString());
         }
 
         public static void ResponseNoCache()

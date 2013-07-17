@@ -7,7 +7,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Runtime.Caching;
 
-namespace Rocky.Net
+namespace System.Net
 {
     /// <summary>
     /// 全局类
@@ -50,7 +50,7 @@ namespace Rocky.Net
                 }
                 catch (SocketException ex)
                 {
-                    Runtime.LogError(ex, "解析{0}时遇到错误", hostNameOrAddress);
+                    Hub.LogError(ex, "解析{0}时遇到错误", hostNameOrAddress);
                     throw;
                 }
             }

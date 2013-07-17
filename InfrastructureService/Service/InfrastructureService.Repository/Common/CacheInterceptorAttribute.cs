@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading;
 using Newtonsoft.Json;
 using PostSharp.Aspects;
-using Rocky;
 
 namespace InfrastructureService.Repository
 {

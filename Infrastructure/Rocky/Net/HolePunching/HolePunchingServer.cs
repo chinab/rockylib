@@ -6,7 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
-namespace Rocky.Net
+namespace System.Net
 {
     public class HolePunchingServer : Disposable
     {
@@ -58,7 +58,7 @@ namespace Rocky.Net
             var client = (Socket)state;
             var remoteIpe = (IPEndPoint)client.RemoteEndPoint;
 #if DEBUG
-            Runtime.LogInfo("Registration for: " + remoteIpe);
+            Hub.LogInfo("Registration for: " + remoteIpe);
 #endif
             _registered.TryAdd(remoteIpe, client);
             try
@@ -83,7 +83,7 @@ namespace Rocky.Net
                                 return;
                             }
 #if DEBUG
-                            Runtime.LogInfo(remoteIpe + " requested parameters of: " + requestedIpe);
+                            Hub.LogInfo(remoteIpe + " requested parameters of: " + requestedIpe);
 #endif
                             model.Command = HolePunchingCommand.ConnectClient;
 
@@ -103,7 +103,7 @@ namespace Rocky.Net
             finally
             {
 #if DEBUG
-                Runtime.LogInfo("Unregistration for: " + remoteIpe);
+                Hub.LogInfo("Unregistration for: " + remoteIpe);
 #endif
                 Socket dummy;
                 _registered.TryRemove(remoteIpe, out dummy);

@@ -7,7 +7,7 @@ using System.IO;
 using System.Net.Mime;
 using System.Web;
 
-namespace Rocky.Net
+namespace System.Net
 {
     public sealed class HttpFile : HttpPostedFileBase
     {

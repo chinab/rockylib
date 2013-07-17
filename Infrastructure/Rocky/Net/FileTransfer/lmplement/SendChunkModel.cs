@@ -7,7 +7,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 
-namespace Rocky.Net
+namespace System.Net
 {
     internal sealed class SendChunkModel : IChunkModel
     {
@@ -81,7 +81,7 @@ namespace Rocky.Net
                         sendLeft -= sent;
                     }
                     _bytesSent += read;
-                    Runtime.LogDebug("[SendChunk{0}] {1} {2}/{3}.", Thread.CurrentThread.ManagedThreadId,
+                    Hub.LogDebug("[SendChunk{0}] {1} {2}/{3}.", Thread.CurrentThread.ManagedThreadId,
                         remoteIpe, _bytesSent, _bytesSent);
                 }
             }

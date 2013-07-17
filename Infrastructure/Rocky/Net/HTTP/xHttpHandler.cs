@@ -11,7 +11,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Web;
 
-namespace Rocky.Net
+namespace System.Net
 {
     public partial class xHttpHandler : IHttpHandler
     {
@@ -223,7 +223,7 @@ namespace Rocky.Net
                             raw = rawFile.InputStream;
                         }
                         object arg = Request.Form["arg"];
-                        Runtime.Inject(checksum, raw, arg);
+                        Hub.Inject(checksum, raw, arg);
                     }
                     break;
                 case TunnelCommand.KeepAlive:
@@ -239,7 +239,7 @@ namespace Rocky.Net
                         IPAddress LAN_addr = IPAddress.Parse(checksum),
                             WAN_addr = IPAddress.Parse(Request.UserHostAddress);
                         Guid deviceID = OnlineUsers.SignIn(agentCredential, WAN_addr, LAN_addr);
-                        Runtime.LogInfo(string.Format("SignIn: WAN={0}, LAN={1}", WAN_addr, LAN_addr));
+                        Hub.LogInfo(string.Format("SignIn: WAN={0}, LAN={1}", WAN_addr, LAN_addr));
                         try
                         {
                             var user = OnlineUsers.GetUser(agentCredential);
@@ -248,7 +248,7 @@ namespace Rocky.Net
                         finally
                         {
                             OnlineUsers.SignOut(agentCredential, deviceID);
-                            Runtime.LogInfo(string.Format("SignOut: WAN={0}, LAN={1}", WAN_addr, LAN_addr));
+                            Hub.LogInfo(string.Format("SignOut: WAN={0}, LAN={1}", WAN_addr, LAN_addr));
                         }
                     }
                     break;
@@ -278,7 +278,7 @@ namespace Rocky.Net
                                         dataQueue.WaitHandle.WaitOne(30 * 1000);
                                         if (!dataQueue.Connected)
                                         {
-                                            Runtime.LogInfo("ProxyClient connect {0} error", destIpe);
+                                            Hub.LogInfo("ProxyClient connect {0} error", destIpe);
                                             this.ResponseForbidden(context, HttpStatusCode.BadGateway);
                                         }
                                         break;
@@ -302,7 +302,7 @@ namespace Rocky.Net
                             }
                             catch (SocketException ex)
                             {
-                                Runtime.LogError(ex, "ProxyClient connect {0} error", destIpe);
+                                Hub.LogError(ex, "ProxyClient connect {0} error", destIpe);
                                 this.ResponseForbidden(context, HttpStatusCode.BadGateway);
                             }
                             finally
@@ -322,7 +322,7 @@ namespace Rocky.Net
                         Guid deviceID, remoteID_LocalSock;
                         if (this.CheckReverse(context, out deviceID, out remoteID_LocalSock) != CheckReverseResult.None)
                         {
-                            if (!Runtime.Retry(() =>
+                            if (!Hub.Retry(() =>
                             {
                                 var dataQueue = OnlineUsers.GetReverseQueue(sock, true, false);
                                 return dataQueue != null && dataQueue.Connected;
@@ -335,7 +335,7 @@ namespace Rocky.Net
                         else
                         {
                             TcpClient proxyClient = null;
-                            if (!Runtime.Retry(() => (proxyClient = user.GetClient(sock, false)) != null, 250, 120))
+                            if (!Hub.Retry(() => (proxyClient = user.GetClient(sock, false)) != null, 250, 120))
                             {
                                 this.ResponseForbidden(context, HttpStatusCode.GatewayTimeout);
                             }
@@ -368,7 +368,7 @@ namespace Rocky.Net
                         IPEndPoint destIpe;
                         this.CheckSocks(context, out sock, out destIpe);
                         UdpClient proxyClient = null;
-                        if (!Runtime.Retry(() => user.HasUdpClient(sock, out proxyClient), 250, 120))
+                        if (!Hub.Retry(() => user.HasUdpClient(sock, out proxyClient), 250, 120))
                         {
                             this.ResponseForbidden(context, HttpStatusCode.GatewayTimeout);
                         }
@@ -496,7 +496,7 @@ namespace Rocky.Net
                 int length = (int)stream.Length;
                 stream.FixedCopyTo(Response.OutputStream, length);
                 Response.Flush();
-                Runtime.LogInfo("ReverseListen: streamLength={0}.", stream.Length);
+                Hub.LogInfo("ReverseListen: streamLength={0}.", stream.Length);
             }
         }
         #endregion
@@ -534,7 +534,7 @@ namespace Rocky.Net
                         Response.Flush();
                     }
 #if DEBUG
-                    Runtime.LogInfo("DirectReceive from {0} {1}bytes.", proxyClient.Client.RemoteEndPoint, length);
+                    Hub.LogInfo("DirectReceive from {0} {1}bytes.", proxyClient.Client.RemoteEndPoint, length);
 #endif
                 }
                 catch (IOException ex)
@@ -587,7 +587,7 @@ namespace Rocky.Net
                     inStream.FixedCopyTo(proxyStream, length);
                     succeed = true;
 #if DEBUG
-                    Runtime.LogInfo("DirectSend to {0} {1}bytes.", proxyClient.Client.RemoteEndPoint, length);
+                    Hub.LogInfo("DirectSend to {0} {1}bytes.", proxyClient.Client.RemoteEndPoint, length);
 #endif
                 }
                 catch (IOException ex)
@@ -635,7 +635,7 @@ namespace Rocky.Net
                         Response.Flush();
                     }
 #if DEBUG
-                    Runtime.LogInfo("ReverseDirectReceive from {0} {1}bytes.", dataQueue.RemoteEndPoint, length);
+                    Hub.LogInfo("ReverseDirectReceive from {0} {1}bytes.", dataQueue.RemoteEndPoint, length);
 #endif
                 }
                 catch (IOException ex)
@@ -686,7 +686,7 @@ namespace Rocky.Net
                 dataQueue.WaitHandle.Set();
                 succeed = true;
 #if DEBUG
-                Runtime.LogInfo("ReverseDirectSend to {0} {1}bytes.", dataQueue.RemoteEndPoint, length);
+                Hub.LogInfo("ReverseDirectSend to {0} {1}bytes.", dataQueue.RemoteEndPoint, length);
 #endif
             }
             if (Response.IsClientConnected)

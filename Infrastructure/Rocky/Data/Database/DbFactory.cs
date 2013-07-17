@@ -5,7 +5,7 @@ using System.Text;
 using System.Configuration;
 using System.Data.Common;
 
-namespace Rocky.Data
+namespace System.Data
 {
     public sealed class DbFactory : IRequiresFactory
     {
@@ -52,10 +52,6 @@ namespace Rocky.Data
                     break;
                 case "System.Data.SqlClient":
                     providerName = DbProviderName.SQLServer;
-                    succeed = true;
-                    break;
-                case "System.Data.OracleClient":
-                    providerName = DbProviderName.Oracle;
                     succeed = true;
                     break;
             }
@@ -140,14 +136,12 @@ namespace Rocky.Data
                     _parameterNamePrefix = SqlClientParameterNamePrefix;
                     providerInvariantName = "System.Data.SqlClient";
                     break;
-                case DbProviderName.Oracle:
-                    _parameterNamePrefix = OracleClientParameterNamePrefix;
-                    providerInvariantName = "System.Data.OracleClient";
-                    break;
                 case DbProviderName.OleDb:
                     _parameterNamePrefix = OleDbParameterNamePrefix;
                     providerInvariantName = "System.Data.OleDb";
                     break;
+                default:
+                    throw new NotSupportedException(_providerName.ToString());
             }
             if (providerInvariantName == null)
             {

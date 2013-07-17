@@ -7,7 +7,7 @@ using System.Threading;
 using System.Runtime.InteropServices;
 using System.IO;
 
-namespace Rocky.TestProject
+namespace System.AgentHub
 {
     public static class CodeTimer
     {

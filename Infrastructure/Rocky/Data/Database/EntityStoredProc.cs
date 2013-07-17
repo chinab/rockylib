@@ -6,7 +6,7 @@ using System.Data;
 using System.Data.Common;
 using System.Reflection;
 
-namespace Rocky.Data
+namespace System.Data
 {
     /// <summary>
     /// 作   者：wangxiaoming

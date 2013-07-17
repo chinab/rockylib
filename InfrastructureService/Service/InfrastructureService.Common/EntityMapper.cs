@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using EmitMapper;
 using EmitMapper.MappingConfiguration;
-using Rocky;
 
 namespace InfrastructureService.Common
 {

@@ -6,11 +6,10 @@ using System.Runtime.Caching;
 using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.Text;
+using System.Net;
 using InfrastructureService.Contract;
 using InfrastructureService.Model.User;
 using InfrastructureService.Repository.User;
-using Rocky;
-using Rocky.Net;
 
 namespace InfrastructureService.DomainService
 {
@@ -62,7 +61,7 @@ namespace InfrastructureService.DomainService
                     client.Form["_SID"] = id.SessionID;
                     client.Form["Action"] = Convert.ToUInt32(isOut).ToString();
                     client.Form["Token"] = id.Token;
-                    Runtime.Retry(() =>
+                    Hub.Retry(() =>
                     {
                         try
                         {
@@ -71,7 +70,7 @@ namespace InfrastructureService.DomainService
                         }
                         catch (System.Net.WebException ex)
                         {
-                            Runtime.LogError(ex, "SSOServiceNotify");
+                            Hub.LogError(ex, "SSOServiceNotify");
                             return false;
                         }
                     }, 3);

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
-namespace Rocky.TestProject
+namespace System.AgentHub
 {
     class Program
     {
@@ -14,17 +14,17 @@ namespace Rocky.TestProject
         static void Main(string[] args)
         {
             SecurityPolicy.Check();
-            bool isTunnelClient = false;
+            bool isTunnelClient = true;
             try
             {
-                if (bool.TryParse(ConfigurationManager.AppSettings["TunnelClient"], out isTunnelClient) && isTunnelClient)
+                if (isTunnelClient)
                 {
                     string name = "飞檐走壁", ver = ConsoleNotify.GetVersion();
                     Console.Title = string.Format("{0} {1} - 专注网络通讯", name, ver);
                     Console.Out.WriteInfo(@"{0} Agent [Version {1}]
 Copyright (c) 2012 JeansMan Studio。
 ", name, ver);
-                    Runtime.LogInfo("app started...");
+                    Hub.LogInfo("AgentHub started...");
                     //Mutex如不在这里，则不会生效
                     bool createNew;
                     var mutex = new Mutex(false, typeof(Program).FullName, out createNew);
@@ -45,7 +45,7 @@ Copyright (c) 2012 JeansMan Studio。
             }
             catch (Exception ex)
             {
-                Runtime.LogError(ex, Console.Title);
+                Hub.LogError(ex, Console.Title);
                 Console.Out.WriteError(ex.Message);
             }
             finally

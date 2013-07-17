@@ -7,7 +7,7 @@ using System.Collections.ObjectModel;
 using System.Data.Linq.Mapping;
 using System.Reflection;
 
-namespace Rocky.Data
+namespace System.Data
 {
     public sealed class MetaTable : IMapping
     {

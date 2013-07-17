@@ -5,7 +5,6 @@ using System.Web;
 using System.Web.Security;
 using System.Web.SessionState;
 using InfrastructureService.DomainService;
-using Rocky;
 
 namespace InfrastructureService.AppService
 {
@@ -26,7 +25,7 @@ namespace InfrastructureService.AppService
         protected void Application_Error(object sender, EventArgs e)
         {
             var ex = Server.GetLastError();
-            Runtime.LogError(ex, "Global");
+            Hub.LogError(ex, "Global");
             Server.ClearError();
             var app = (HttpApplication)sender;
             app.Response.Clear();

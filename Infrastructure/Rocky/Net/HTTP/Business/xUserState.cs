@@ -9,7 +9,7 @@ using System.Runtime.Caching;
 using System.Text;
 using System.Threading;
 
-namespace Rocky.Net
+namespace System.Net
 {
     public sealed class xUserState : Disposable
     {
@@ -123,7 +123,7 @@ namespace Rocky.Net
                 else
                 {
                     identity.WaitHandle.Set();
-                    Runtime.LogInfo("SignIn: 该设备已登录");
+                    Hub.LogInfo("SignIn: 该设备已登录");
                     Thread.Sleep(2000);
                 }
                 return identity.ID;
@@ -224,7 +224,7 @@ namespace Rocky.Net
             device.ListenState.AgentSock = agentSock;
             device.ListenState.AgentDirect = agentDirect;
             device.WaitHandle.Set();
-            Runtime.LogInfo("PushReverseListen {0} {1}", agentSock, agentDirect);
+            Hub.LogInfo("PushReverseListen {0} {1}", agentSock, agentDirect);
         }
 
         internal ReverseListenState PopReverseListen(Guid deviceID)
@@ -247,7 +247,7 @@ namespace Rocky.Net
             {
                 if (isSet)
                 {
-                    Runtime.LogInfo("PopReverseListen: {0} {1}", device.ListenState.AgentSock, device.ListenState.AgentDirect);
+                    Hub.LogInfo("PopReverseListen: {0} {1}", device.ListenState.AgentSock, device.ListenState.AgentDirect);
                     device.ListenState.AgentSock = Guid.Empty;
                 }
             }

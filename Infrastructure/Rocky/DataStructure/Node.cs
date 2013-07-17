@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Rocky.DataStructure
+namespace System.DataStructure
 {
     /// <summary>
     /// The Node&lt;T&gt; class represents the base concept of a Node for a tree or graph. 

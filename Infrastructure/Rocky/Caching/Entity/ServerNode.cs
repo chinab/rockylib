@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Net;
 
-namespace Rocky.Caching
+namespace System.Caching
 {
     /// <summary>
     /// 服务节点

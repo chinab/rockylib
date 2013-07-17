@@ -5,7 +5,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 
-namespace Rocky.Net
+namespace System.Net
 {
     [ContractClass(typeof(ISocksRFCContract))]
     public interface ISocksRFC

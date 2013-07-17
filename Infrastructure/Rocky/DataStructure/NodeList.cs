@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 
-namespace Rocky.DataStructure
+namespace System.DataStructure
 {
     /// <summary>
     /// Represents a collection of Node&lt;T&gt; instances.

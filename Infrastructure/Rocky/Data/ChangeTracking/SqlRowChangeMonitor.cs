@@ -9,7 +9,7 @@ using System.Data.SqlClient;
 using System.IO;
 using System.ComponentModel;
 
-namespace Rocky.Data
+namespace System.Data
 {
     public sealed class SqlRowChangeMonitor : Component, INotifyPropertyChanged
     {
@@ -189,7 +189,7 @@ AND ct.SYS_CHANGE_VERSION <= {2}";
                 {
                     string pkWhere = CreateSqlWhere(buffer, tableModel);
                     cmd.CommandText = string.Format(Sql_InsertTracking, tableModel.MappedName, pkWhere, _currentVersion, lastVersion);
-                    Runtime.LogDebug("Sql_InsertTracking:{0}.", cmd.CommandText);
+                    Hub.LogDebug("Sql_InsertTracking:{0}.", cmd.CommandText);
                     var e = new SqlRowChangedEventArgs(tableModel, SqlRowChangedTypes.Inserted, cmd);
                     while (e.DataReader.Read())
                     {
@@ -212,7 +212,7 @@ AND ct.SYS_CHANGE_VERSION <= {2}";
                         }
                     }
                     cmd.CommandText = string.Format(Sql_UpdateTracking, tableModel.MappedName, pkWhere, _currentVersion, lastVersion, buffer.ToString());
-                    Runtime.LogDebug("Sql_UpdateTracking:{0}.", cmd.CommandText);
+                    Hub.LogDebug("Sql_UpdateTracking:{0}.", cmd.CommandText);
                     var e = new SqlRowChangedEventArgs(tableModel, SqlRowChangedTypes.Updated, cmd);
                     while (e.DataReader.Read())
                     {
@@ -228,7 +228,7 @@ AND ct.SYS_CHANGE_VERSION <= {2}";
                     buffer.Length = 0;
                     buffer.AppendJoin(",", tableModel.PrimaryKey.Select(t => t.MappedName));
                     cmd.CommandText = string.Format(Sql_DeleteTracking, tableModel.MappedName, _currentVersion, lastVersion, buffer.ToString());
-                    Runtime.LogDebug("Sql_DeleteTracking:{0}.", cmd.CommandText);
+                    Hub.LogDebug("Sql_DeleteTracking:{0}.", cmd.CommandText);
                     var e = new SqlRowChangedEventArgs(tableModel, SqlRowChangedTypes.Deleted, cmd);
                     while (e.DataReader.Read())
                     {

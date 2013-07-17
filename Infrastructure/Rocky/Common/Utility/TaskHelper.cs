@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Rocky
+namespace System
 {
     public static class TaskHelper
     {
@@ -20,7 +20,7 @@ namespace Rocky
         static void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
         {
             e.SetObserved();
-            Runtime.LogError(e.Exception, "UnobservedTaskException");
+            Hub.LogError(e.Exception, "UnobservedTaskException");
         }
 
         public static Task ObservedException(this Task task)
@@ -35,7 +35,7 @@ namespace Rocky
                 var aggException = t.Exception.Flatten();
                 foreach (var ex in aggException.InnerExceptions)
                 {
-                    Runtime.LogError(ex, "UnobservedTaskException");
+                    Hub.LogError(ex, "UnobservedTaskException");
                 }
             }, TaskContinuationOptions.OnlyOnFaulted);
         }

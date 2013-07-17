@@ -7,7 +7,7 @@ using System.Reflection;
 using System.ComponentModel;
 using System.Runtime.Serialization;
 
-namespace Rocky
+namespace System
 {
     public static partial class Extensions
     {

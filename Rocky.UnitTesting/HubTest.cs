@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Rocky.Data;
+using System.Data;
 
 namespace Rocky.UnitTesting.Net
 {
     [TestClass]
-    public class RuntimeTest
+    public class HubTest
     {
         [TestMethod]
         public void Test0x()
@@ -27,9 +27,9 @@ namespace Rocky.UnitTesting.Net
         [TestMethod]
         public void TestLambda()
         {
-            var method = typeof(RuntimeTest).GetMethod("add");
-            var func = Runtime.Lambda<Func<RuntimeTest, int, int, int>>(method);
-            int result = func(new RuntimeTest(), 1, 1);
+            var method = typeof(HubTest).GetMethod("add");
+            var func = Hub.Lambda<Func<HubTest, int, int, int>>(method);
+            int result = func(new HubTest(), 1, 1);
             Assert.AreEqual(2, result);
         }
         public int add(int a, int b)

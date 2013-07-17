@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using PostSharp.Aspects;
-using Rocky;
 
 namespace InfrastructureService.Repository
 {
@@ -23,7 +22,7 @@ namespace InfrastructureService.Repository
             {
                 methodArgs = ex.Message;
             }
-            Runtime.LogDebug("PreProceed_{0}:{1}", args.Method.Name, methodArgs);
+            Hub.LogDebug("PreProceed_{0}:{1}", args.Method.Name, methodArgs);
             base.OnEntry(args);
         }
 
@@ -38,7 +37,7 @@ namespace InfrastructureService.Repository
             {
                 methodArgs = ex.Message;
             }
-            Runtime.LogDebug("PostProceed_{0}:{1}", args.Method.Name, methodArgs);
+            Hub.LogDebug("PostProceed_{0}:{1}", args.Method.Name, methodArgs);
             base.OnExit(args);
         }
 
@@ -69,11 +68,11 @@ namespace InfrastructureService.Repository
                 }
                 Array.Resize(ref array, 4);
                 array[3] = msg;
-                Runtime.LogError(args.Exception, "PerformError_{0}:{1}\t{2}\r\n{3}", array);
+                Hub.LogError(args.Exception, "PerformError_{0}:{1}\t{2}\r\n{3}", array);
             }
             else
             {
-                Runtime.LogError(args.Exception, "PerformError_{0}:{1}\t{2}", array);
+                Hub.LogError(args.Exception, "PerformError_{0}:{1}\t{2}", array);
             }
             base.OnException(args);
         }

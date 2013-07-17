@@ -7,8 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using Rocky;
-using Rocky.Net;
+using System.Net;
 
 namespace Rocky.App
 {

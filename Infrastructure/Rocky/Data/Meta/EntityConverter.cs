@@ -7,7 +7,7 @@ using System.Collections;
 using System.Reflection;
 using System.Reflection.Emit;
 
-namespace Rocky.Data
+namespace System.Data
 {
     #region EntityConverter
     public static class EntityConverter<T>
