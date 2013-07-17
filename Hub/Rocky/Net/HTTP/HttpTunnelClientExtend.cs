@@ -125,7 +125,7 @@ namespace System.Net
         /// <param name="controlClient"></param>
         /// <param name="clientPort"></param>
         /// <param name="localIpe"></param>
-        /// <exception cref="Rocky.Net.TunnelStateMissingException"></exception>
+        /// <exception cref="System.Net.TunnelStateMissingException"></exception>
         private void PushUdpClient(TcpClient controlClient, int clientPort, out IPEndPoint serverIpe)
         {
             Contract.Requires(_runType != null && controlClient.Connected);
@@ -181,7 +181,7 @@ namespace System.Net
         /// </summary>
         /// <param name="controlClient"></param>
         /// <returns></returns>
-        /// <exception cref="Rocky.Net.TunnelStateMissingException"></exception>
+        /// <exception cref="System.Net.TunnelStateMissingException"></exception>
         private UdpClientState GetUdpClientState(TcpClient controlClient)
         {
             UdpClientState state;

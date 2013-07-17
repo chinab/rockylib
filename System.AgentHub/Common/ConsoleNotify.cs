@@ -101,7 +101,7 @@ namespace System.AgentHub
         /// <returns>当前版本号</returns>
         public static string GetVersion()
         {
-            var version = "Unknow";
+            var version = string.Empty;
             if (!ApplicationDeployment.IsNetworkDeployed)
             {
                 return version;
@@ -190,7 +190,8 @@ namespace System.AgentHub
                 if (!administrativeMode)
                 {
                     var startInfo = new ProcessStartInfo();
-                    startInfo.FileName = GetExecPath();
+                    //startInfo.FileName = GetExecPath();
+                    startInfo.FileName = Application.ExecutablePath;
                     startInfo.Verb = "runas";
                     try
                     {
@@ -252,7 +253,7 @@ namespace System.AgentHub
             switch (e.ClickedItem.Name)
             {
                 case "C":
-                    Process.Start("Explorer.exe", "/select," + CloudAgentConfig.AppConfigPath);
+                    Process.Start("Explorer.exe", "/select," + AgentHubConfig.AppConfigPath);
                     break;
                 case "L":
                     Process.Start("Explorer.exe", Hub.CombinePath(@"logs\"));

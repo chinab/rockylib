@@ -19,7 +19,7 @@ namespace System.Net
         /// 解析数据包覆盖当前值并验证当前数据包
         /// </summary>
         /// <param name="pPack"></param>
-        /// <exception cref="Rocky.Net.ProxyAuthException"></exception>
+        /// <exception cref="System.Net.ProxyAuthException"></exception>
         void ParsePack(byte[] pPack);
     }
 

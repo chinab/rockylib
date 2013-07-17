@@ -42,7 +42,7 @@ namespace System.Net
         /// <param name="serverUrl"></param>
         public static void Start(string applicationPath, out Uri serverUrl)
         {
-            string resourceName = string.Format("Rocky.Resource.{0}", ProcessName),
+            string resourceName = string.Format("System.Resource.{0}", ProcessName),
                 filePath = Hub.CombinePath(ProcessName);
             Hub.CreateFileFromResource(resourceName, filePath);
             Hub.CreateFileFromResource(resourceName + ".config", filePath + ".config");

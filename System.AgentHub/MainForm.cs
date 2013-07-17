@@ -124,7 +124,7 @@ namespace System.AgentHub
 
         private void ShowList()
         {
-            _deviceIdentitys = CloudAgentApp.Instance.GetDeviceIdentity().ToArray();
+            _deviceIdentitys = AgentHubApp.Instance.GetDeviceIdentity().ToArray();
             lb_user.Items.Clear();
             lb_user.Items.Add("-我的设备-");
             for (int i = 0; i < _deviceIdentitys.Length; )
@@ -153,11 +153,13 @@ namespace System.AgentHub
                 return;
             }
             var item = _deviceIdentitys[lb_user.SelectedIndex - 1];
-            //if (item.Item2 == CloudAgentApp.Instance.FirstClient.ClientID)
-            //{
-            //    this.AppendLog("请选择非当前设备的其它设备ID");
-            //    return;
-            //}
+#if DEBUG
+            if (item.Item2 == AgentHubApp.Instance.FirstClient.ClientID)
+            {
+                this.AppendLog("请选择非当前设备的其它设备ID");
+                return;
+            }
+#endif
             ushort port;
             if (!ushort.TryParse(textBox1.Text, out port))
             {
@@ -172,13 +174,13 @@ namespace System.AgentHub
                 IPEndPoint directTo = null;
                 if (Enum.TryParse(comboBox1.Text, out runMode))
                 {
-                    client = CloudAgentApp.Instance.CreateTunnelClient(port, runMode, directTo, item.Item2);
+                    client = AgentHubApp.Instance.CreateTunnelClient(port, runMode, directTo, item.Item2);
                     this.AppendLog("反向隧道 {0}:{1} ReverseTo={2}\t开启...", port, runMode, item.Item1);
                 }
                 else
                 {
                     directTo = Net.SocketHelper.ParseEndPoint(comboBox1.Text.Replace("DirectTo=", string.Empty));
-                    client = CloudAgentApp.Instance.CreateTunnelClient(port, runMode, directTo, item.Item2);
+                    client = AgentHubApp.Instance.CreateTunnelClient(port, runMode, directTo, item.Item2);
                     this.AppendLog("反向隧道 {0}:{1} ReverseTo={2}\t开启...", port, directTo, item.Item1);
                 }
                 textBox1.Text = (port + 1).ToString();

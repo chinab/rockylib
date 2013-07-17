@@ -10,28 +10,28 @@ using System.Text;
 
 namespace System.AgentHub
 {
-    internal sealed class CloudAgentApp : IHubEntry
+    internal sealed class AgentHubApp : IHubEntry
     {
-        internal static CloudAgentApp Instance;
+        internal static AgentHubApp Instance;
 
         internal HttpTunnelClient FirstClient { get; private set; }
 
-        public CloudAgentApp()
+        public AgentHubApp()
         {
             Instance = this;
         }
 
         public void Main(object arg)
         {
-            this.CatchExec(() => SecurityPolicy.App2Fw("CloudAgent", Hub.CombinePath("CloudAgent.exe")), "防火墙例外");
+            this.CatchExec(() => SecurityPolicy.App2Fw("AgentHub", Hub.CombinePath("AgentHub.exe")), "防火墙例外");
             if (!this.CatchExec(() => CryptoManaged.TrustCert(Hub.GetResourceStream("System.AgentHub.Resource.CA.crt")), "导入Http证书"))
             {
                 Console.Out.WriteWarning("导入Http证书失败。");
             }
             try
             {
-                var config = CloudAgentConfig.AppConfig;
-                Console.Out.WriteInfo("加载配置{0}成功...", CloudAgentConfig.AppConfigPath);
+                var config = AgentHubConfig.AppConfig;
+                Console.Out.WriteInfo("加载配置{0}成功...", AgentHubConfig.AppConfigPath);
                 //创建隧道客户端
                 foreach (var tunnel in config.TunnelList)
                 {
@@ -67,7 +67,7 @@ namespace System.AgentHub
             catch (Exception ex)
             {
                 Console.Out.WriteError(ex.Message);
-                Hub.LogError(ex, "CloudAgent");
+                Hub.LogError(ex, "AgentHub");
             }
             finally
             {
@@ -84,7 +84,7 @@ namespace System.AgentHub
 
         public HttpTunnelClient CreateTunnelClient(ushort listenPort, SocksProxyType runType, IPEndPoint directTo, Guid? remoteID)
         {
-            var config = CloudAgentConfig.AppConfig;
+            var config = AgentHubConfig.AppConfig;
             var serverBalance = this.GetServerBalance(config);
             HttpTunnelClient client;
             if (directTo == null)
@@ -103,7 +103,7 @@ namespace System.AgentHub
             return client;
         }
 
-        private Uri[] GetServerBalance(CloudAgentConfig config)
+        private Uri[] GetServerBalance(AgentHubConfig config)
         {
             var serverBalance = new List<Uri>();
             if (config.AsServerNode)
@@ -128,7 +128,7 @@ namespace System.AgentHub
                 //服务端分配域名
                 string domain = "azure.xineworld.com";
                 //domain = "localhost:3463";
-                var client = new HttpClient(new Uri(string.Format("http://{0}/X.ashx", domain)));
+                var client = new HttpClient(new Uri(string.Format("http://{0}/Let.ashx", domain)));
                 var res = client.GetResponse();
                 var q = from t in res.GetResponseText().Split('#')
                         where !string.IsNullOrEmpty(t)
@@ -156,11 +156,11 @@ namespace System.AgentHub
         #endregion
     }
 
-    #region CloudAgentConfig
-    public struct CloudAgentConfig
+    #region AgentHubConfig
+    public struct AgentHubConfig
     {
         public static readonly string AppConfigPath;
-        public static CloudAgentConfig AppConfig
+        public static AgentHubConfig AppConfig
         {
             get
             {
@@ -168,7 +168,7 @@ namespace System.AgentHub
                 {
                     ExeConfigFilename = AppConfigPath
                 }, ConfigurationUserLevel.None);
-                var config = new CloudAgentConfig();
+                var config = new AgentHubConfig();
                 config.AsServerNode = Convert.ToBoolean(GetValue(exe, "AsServerNode"));
                 config.EnableSsl = Convert.ToBoolean(GetValue(exe, "EnableSsl"));
                 config.Credential = GetCredential(exe, "Credential");
@@ -177,13 +177,13 @@ namespace System.AgentHub
             }
         }
 
-        static CloudAgentConfig()
+        static AgentHubConfig()
         {
-            AppConfigPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\JeansMan Studio\CloudAgent.config";
+            AppConfigPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\JeansMan Studio\AgentHub.config";
             Hub.CreateDirectory(AppConfigPath);
             if (!File.Exists(AppConfigPath))
             {
-                Hub.CreateFileFromResource("System.AgentHub.CloudAgent.config", AppConfigPath, "CloudAgent.exe");
+                Hub.CreateFileFromResource("System.AgentHub.AgentHub.config", AppConfigPath, "AgentHub.exe");
             }
         }
 

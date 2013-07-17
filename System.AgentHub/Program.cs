@@ -24,12 +24,11 @@ namespace System.AgentHub
                     Console.Out.WriteInfo(@"{0} Agent [Version {1}]
 Copyright (c) 2012 JeansMan Studio。
 ", name, ver);
-                    Hub.LogInfo("AgentHub started...");
                     //Mutex如不在这里，则不会生效
                     bool createNew;
                     var mutex = new Mutex(false, typeof(Program).FullName, out createNew);
                     var console = new ConsoleNotify(name, createNew, true);
-                    console.Run(new CloudAgentApp(), new MainForm());
+                    console.Run(new AgentHubApp(), new MainForm());
                     return;
                 }
 
