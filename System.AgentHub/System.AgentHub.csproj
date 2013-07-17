@@ -123,7 +123,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Infrastructure\Rocky\Rocky.csproj">
+    <ProjectReference Include="..\Hub\Rocky\Rocky.csproj">
       <Project>{0433CAC5-BAAA-4E73-8F68-A7CCB1F6C9BF}</Project>
       <Name>Rocky</Name>
     </ProjectReference>
