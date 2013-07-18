@@ -38,11 +38,5 @@ namespace Rocky.App
             var win = new FileEncodeForm();
             win.Show();
         }
-
-        private void gMailGToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var win = new GmailForm();
-            win.Show();
-        }
     }
 }

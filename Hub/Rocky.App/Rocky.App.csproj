@@ -88,19 +88,10 @@
     <Compile Include="FileEncode\FileEncodeForm.Designer.cs">
       <DependentUpon>FileEncodeForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GmailForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GmailForm.Designer.cs">
-      <DependentUpon>GmailForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="FileEncode\IdentifyEncoding.cs" />
     <EmbeddedResource Include="ConnectionStringForm.resx">
       <DependentUpon>ConnectionStringForm.cs</DependentUpon>
       <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="GmailForm.resx">
-      <DependentUpon>GmailForm.cs</DependentUpon>
     </EmbeddedResource>
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>

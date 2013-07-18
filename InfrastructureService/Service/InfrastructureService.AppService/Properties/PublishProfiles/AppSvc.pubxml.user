@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+This file is used by the publish/package process of your Web project. You can customize the behavior of this process
+by editing this MSBuild file. In order to learn more about this please visit http://go.microsoft.com/fwlink/?LinkID=208121. 
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <LastUsedBuildConfiguration>Release</LastUsedBuildConfiguration>
+    <LastUsedPlatform>Any CPU</LastUsedPlatform>
+    <TimeStampOfAssociatedLegacyPublishXmlFile />
+  </PropertyGroup>
+  <ItemGroup>
+    <File Include="bin/EmitMapper.dll">
+      <publishTime>07/17/2013 16:23:35</publishTime>
+    </File>
+    <File Include="bin/EntityFramework.dll">
+      <publishTime>07/17/2013 16:23:39</publishTime>
+    </File>
+    <File Include="bin/EntityFramework.Extended.dll">
+      <publishTime>07/17/2013 16:23:40</publishTime>
+    </File>
+    <File Include="bin/InfrastructureService.AppService.dll">
+      <publishTime>07/18/2013 09:57:06</publishTime>
+    </File>
+    <File Include="bin/InfrastructureService.Common.dll">
+      <publishTime>07/18/2013 09:56:55</publishTime>
+    </File>
+    <File Include="bin/InfrastructureService.Contract.dll">
+      <publishTime>07/18/2013 09:56:56</publishTime>
+    </File>
+    <File Include="bin/InfrastructureService.DomainService.dll">
+      <publishTime>07/18/2013 09:57:06</publishTime>
+    </File>
+    <File Include="bin/InfrastructureService.Model.dll">
+      <publishTime>07/18/2013 09:56:54</publishTime>
+    </File>
+    <File Include="bin/InfrastructureService.Repository.dll">
+      <publishTime>07/18/2013 09:57:05</publishTime>
+    </File>
+    <File Include="bin/log4net.dll">
+      <publishTime>07/17/2013 16:15:52</publishTime>
+    </File>
+    <File Include="bin/Microsoft.Practices.EnterpriseLibrary.Common.dll">
+      <publishTime>07/17/2013 16:23:40</publishTime>
+    </File>
+    <File Include="bin/Microsoft.Practices.EnterpriseLibrary.Validation.dll">
+      <publishTime>07/17/2013 16:23:40</publishTime>
+    </File>
+    <File Include="bin/Microsoft.Practices.ServiceLocation.dll">
+      <publishTime>07/17/2013 16:23:40</publishTime>
+    </File>
+    <File Include="bin/Microsoft.Practices.Unity.Configuration.dll">
+      <publishTime>07/17/2013 16:23:40</publishTime>
+    </File>
+    <File Include="bin/Microsoft.Practices.Unity.dll">
+      <publishTime>07/17/2013 16:23:40</publishTime>
+    </File>
+    <File Include="bin/Microsoft.Practices.Unity.Interception.dll">
+      <publishTime>07/17/2013 16:23:40</publishTime>
+    </File>
+    <File Include="bin/Newtonsoft.Json.dll">
+      <publishTime>07/17/2013 16:23:35</publishTime>
+    </File>
+    <File Include="bin/PostSharp.dll">
+      <publishTime>07/17/2013 16:24:28</publishTime>
+    </File>
+    <File Include="bin/SharpICTCLAS.dll">
+      <publishTime>07/17/2013 19:06:54</publishTime>
+    </File>
+    <File Include="bin/System.Hub.dll">
+      <publishTime>07/18/2013 09:56:52</publishTime>
+    </File>
+    <File Include="bin/zh-Hans/EntityFramework.resources.dll">
+      <publishTime>07/17/2013 16:17:18</publishTime>
+    </File>
+    <File Include="Global.asax">
+      <publishTime>07/17/2013 16:08:27</publishTime>
+    </File>
+    <File Include="Storage/Web.config">
+      <publishTime>07/17/2013 16:08:27</publishTime>
+    </File>
+    <File Include="Web.config">
+      <publishTime>07/18/2013 09:57:07</publishTime>
+    </File>
+  </ItemGroup>
+</Project>

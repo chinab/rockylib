@@ -186,7 +186,7 @@ namespace System.Net
 
         public void ParsePack(byte[] bPack)
         {
-            if (bPack[0] != 0x04 || bPack[1] != 0x01 || bPack[1] != 0x02)
+            if (bPack[0] != 0x04 && (bPack[1] != 0x01 || bPack[1] != 0x02))
             {
                 throw new ProxyAuthException(403, "Only Socks4/4a request are supported");
             }

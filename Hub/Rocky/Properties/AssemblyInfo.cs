@@ -6,10 +6,10 @@ using System.Runtime.InteropServices;
 // 控制。更改这些属性值可修改
 // 与程序集关联的信息。
 [assembly: AssemblyTitle("Rocky")]
-[assembly: AssemblyDescription("Free Net Hub")]
+[assembly: AssemblyDescription("System Net Hub")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("JeansMan Team")]
-[assembly: AssemblyProduct("Rocky")]
+[assembly: AssemblyProduct("System.Hub")]
 [assembly: AssemblyCopyright("Copyright © JeansMan(杰斯曼) Team 2008")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -31,8 +31,8 @@ using System.Runtime.InteropServices;
 //
 // 可以指定所有这些值，也可以使用“修订号”和“内部版本号”的默认值，
 // 方法是按如下所示使用“*”:
-[assembly: AssemblyVersion("3.1.0.0")]
-[assembly: AssemblyFileVersion("3.1.0.1")]
+[assembly: AssemblyVersion("3.2.0.0")]
+[assembly: AssemblyFileVersion("3.2.0.0")]
 /*
  * 详见项目 - 属性 - 签名
  * Visual Studio 命令提示
