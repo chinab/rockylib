@@ -201,7 +201,7 @@ namespace InfrastructureService.WebModel
                 var context = CheckHttp();
                 host = context.Request.ServerVariables["HTTP_HOST"];
             }
-            return CryptoManaged.MD5Hash(string.Format("^{0}@{1}$", id, host));
+            return CryptoManaged.MD5Hex(string.Format("^{0}@{1}$", id, host));
         }
 
         /// <summary>

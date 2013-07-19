@@ -44,7 +44,7 @@ namespace InfrastructureService.Repository
 
         public override void OnEntry(MethodExecutionArgs args)
         {
-            string hashKey = args.Arguments.Count > 0 ? CryptoManaged.MD5Hash(JsonConvert.SerializeObject(args.Arguments, Formatting.None)) : string.Empty;
+            string hashKey = args.Arguments.Count > 0 ? CryptoManaged.MD5Hex(JsonConvert.SerializeObject(args.Arguments, Formatting.None)) : string.Empty;
             string key = string.Format("{0}.{1}{2}", args.Method.DeclaringType.Name, args.Method.Name, hashKey);
             object result = Cache[key];
             if (result != null)

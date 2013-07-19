@@ -34,7 +34,7 @@ namespace Rocky.App
         private void button1_Click(object sender, EventArgs e)
         {
             builder.ConnectionString = textBox1.Text;
-            builder.CryptoKeys = new string[] { CryptoManaged.MD5Hash("Rocky.TBox"), CryptoManaged.MD5Hash(CryptoManaged.NewSalt) };
+            builder.CryptoKeys = new string[] { CryptoManaged.MD5Hex("Rocky.TBox"), CryptoManaged.NewSalt };
             textBox2.Text = builder.ToString();
         }
     }

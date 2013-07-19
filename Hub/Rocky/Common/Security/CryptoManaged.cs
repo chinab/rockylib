@@ -18,34 +18,51 @@ namespace System
             {
                 byte[] data = new byte[32];
                 new Random().NextBytes(data);
-                return MD5Hash(new MemoryStream(data));
+                return MD5Hex(new MemoryStream(data));
             }
         }
 
-        public static string MD5Hash(string input)
+        public static string MD5Hex(string input)
         {
             Contract.Requires(input != null);
 
             byte[] data = Encoding.UTF8.GetBytes(input);
-            return MD5Hash(new MemoryStream(data));
+            return MD5Hex(new MemoryStream(data));
         }
-        public static string MD5Hash(Stream input)
+        public static string MD5Hex(Stream input)
         {
             Contract.Requires(input != null);
 
             var sb = new StringBuilder(32);
             using (var hasher = new MD5CryptoServiceProvider())
             {
-                byte[] data = hasher.ComputeHash(input);
-                for (int i = 0; i < data.Length; i++)
+                byte[] val = hasher.ComputeHash(input);
+                for (int i = 0; i < val.Length; i++)
                 {
-                    sb.Append(data[i].ToString("x2"));
+                    sb.Append(val[i].ToString("x2"));
                 }
             }
             return sb.ToString();
         }
 
-        public static string MD5HashFile(string filePath)
+        public static Guid MD5Hash(string input)
+        {
+            Contract.Requires(input != null);
+
+            byte[] data = Encoding.UTF8.GetBytes(input);
+            return MD5Hash(new MemoryStream(data));
+        }
+        public static Guid MD5Hash(Stream input)
+        {
+            Contract.Requires(input != null);
+
+            using (var hasher = new MD5CryptoServiceProvider())
+            {
+                byte[] val = hasher.ComputeHash(input);
+                return new Guid(val);
+            }
+        }
+        public static Guid MD5HashFile(string filePath)
         {
             Contract.Requires(filePath != null);
 

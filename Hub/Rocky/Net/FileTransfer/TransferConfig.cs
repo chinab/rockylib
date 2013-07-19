@@ -18,7 +18,7 @@ namespace System.Net
 
         #region Properties
         public long FileLength { get; private set; }
-        public string Checksum { get; private set; }
+        public Guid Checksum { get; private set; }
         public ushort ChunkCount { get; private set; }
         public string FileName { get; set; }
         public object State { get; set; }

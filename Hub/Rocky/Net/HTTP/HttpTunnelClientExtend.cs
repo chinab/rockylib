@@ -253,7 +253,7 @@ namespace System.Net
                         tunnel.Headers[xHttpHandler.AgentDirect] = destIpe;
                         var outStream = new MemoryStream(data, offset, data.Length - offset);
 #if DEBUG
-                        tunnel.Form[xHttpHandler.AgentChecksum] = CryptoManaged.MD5Hash(outStream);
+                        tunnel.Form[xHttpHandler.AgentChecksum] = CryptoManaged.MD5Hash(outStream).ToString();
                         outStream.Position = 0L;
 #endif
                         tunnel.Files.Add(new HttpFile(xHttpHandler.AgentDirect, xHttpHandler.AgentDirect, outStream));

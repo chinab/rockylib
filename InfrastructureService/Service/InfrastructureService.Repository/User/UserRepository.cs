@@ -37,7 +37,7 @@ namespace InfrastructureService.Repository.User
         public void SignUp(SignUpParameter param)
         {
             string orgPwd = param.Password;
-            param.Password = CryptoManaged.MD5Hash(param.Password);
+            param.Password = CryptoManaged.MD5Hex(param.Password);
             using (var scope = DbScope.Create())
             using (var context = base.CreateUserContext())
             {
@@ -92,7 +92,7 @@ namespace InfrastructureService.Repository.User
         {
             if (param.Password.Length < 32)
             {
-                param.Password = CryptoManaged.MD5Hash(param.Password);
+                param.Password = CryptoManaged.MD5Hex(param.Password);
             }
 
             using (var context = base.CreateUserContext())
@@ -244,7 +244,7 @@ namespace InfrastructureService.Repository.User
                         goto signIn;
                     }
 
-                    param.Password = CryptoManaged.MD5Hash(param.Password);
+                    param.Password = CryptoManaged.MD5Hex(param.Password);
                     var q2 = from t in context.Accounts
                              where t.AppID == param.AppID
                              && t.UserName == param.UserName && t.Password == param.Password
@@ -551,7 +551,7 @@ namespace InfrastructureService.Repository.User
                 {
                     scope.BeginTransaction();
 
-                    param.NewPassword = CryptoManaged.MD5Hash(param.NewPassword);
+                    param.NewPassword = CryptoManaged.MD5Hex(param.NewPassword);
                     context.Accounts.Update(t => t.RowID == id.UserID, t => new Account() { Password = param.NewPassword });
                     if (emailAuth != null)
                     {

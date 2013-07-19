@@ -17,7 +17,7 @@ namespace InfrastructureService.Repository.Site
         #region User
         internal string HexPassword(string password)
         {
-            return CryptoManaged.MD5Hash(password);
+            return CryptoManaged.MD5Hex(password);
         }
 
         public void SaveAdmin(AdminEntity param)

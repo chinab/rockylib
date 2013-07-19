@@ -14,13 +14,13 @@ namespace NoSQL
         {
             if (longKey.Length > 32)
             {
-                longKey = CryptoManaged.MD5Hash(longKey);
+                longKey = CryptoManaged.MD5Hex(longKey);
             }
         }
 
         public virtual string GenerateKey(object value)
         {
-            string key = CryptoManaged.MD5Hash(Serializer.Serialize(value));
+            string key = CryptoManaged.MD5Hex(Serializer.Serialize(value));
             if (this.AutoHash)
             {
                 this.HashKey(ref key);

@@ -282,7 +282,7 @@ namespace System.Net
             var tunnel = new HttpClient((Uri)xHttpServer.GetRandom(this.ServerBalance));
             tunnel.SendReceiveTimeout = xHttpHandler.Timeout * 1000;
             var cred = this.Credential;
-            tunnel.Headers[HttpRequestHeader.Authorization] = CryptoManaged.MD5Hash(string.Format("{0}:{1}", cred.UserName, cred.Password));
+            tunnel.Headers[HttpRequestHeader.Authorization] = CryptoManaged.MD5Hex(string.Format("{0}:{1}", cred.UserName, cred.Password));
             if (proxyClient != null)
             {
                 var state = this.GetClientState(proxyClient);
@@ -606,7 +606,7 @@ namespace System.Net
                             tunnel.Headers[xHttpHandler.AgentReverse] = localAgentSock.Value.ToString("N");
                         }
 #if DEBUG
-                        tunnel.Form[xHttpHandler.AgentChecksum] = CryptoManaged.MD5Hash(outStream);
+                        tunnel.Form[xHttpHandler.AgentChecksum] = CryptoManaged.MD5Hash(outStream).ToString();
                         outStream.Position = 0L;
 #endif
                         tunnel.Files.Add(new HttpFile(xHttpHandler.AgentDirect, xHttpHandler.AgentDirect, outStream));

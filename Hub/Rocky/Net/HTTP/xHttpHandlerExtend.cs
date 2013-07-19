@@ -48,15 +48,15 @@ namespace System.Net
             }
             Stream inStream = httpFile.InputStream;
 #if DEBUG
-            string checksum = Request.Form[AgentChecksum];
-            if (string.IsNullOrEmpty(checksum))
+            Guid checksum;
+            if (!Guid.TryParse(Request.Form[AgentChecksum], out checksum))
             {
                 this.ResponseForbidden(context);
             }
             var mem = new MemoryStream();
             inStream.FixedCopyTo(mem, httpFile.ContentLength);
             mem.Position = 0L;
-            string checkKey = CryptoManaged.MD5Hash(mem);
+            Guid checkKey = CryptoManaged.MD5Hash(mem);
             if (checksum != checkKey)
             {
                 this.ResponseForbidden(context);

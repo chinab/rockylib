@@ -26,7 +26,7 @@ namespace System.AgentHub
             _isSend = true;
             var config = new TransferConfig(filePath);
             labName.Text = config.FileName;
-            labChecksum.Text = config.Checksum;
+            labChecksum.Text = config.Checksum.ToString();
             labprog.Text = string.Format("0KB/s 0/{0}", config.FileLength);
             var remoteIpe = new IPEndPoint(addr, MainForm.TransferPort);
             _trans = new FileTransfer();

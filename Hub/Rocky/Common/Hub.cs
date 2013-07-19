@@ -17,7 +17,7 @@ namespace System
         #region Fields
         public const string DebugSymbal = "DEBUG";
         private static log4net.ILog DefaultLogger, ExceptionLogger;
-        private static readonly ConcurrentDictionary<string, Assembly> _injectMapper;
+        private static readonly ConcurrentDictionary<Guid, Assembly> _injectMapper;
         private static Hub _host;
         #endregion
 
@@ -42,7 +42,7 @@ namespace System
             log4net.Config.XmlConfigurator.Configure();
             DefaultLogger = log4net.LogManager.GetLogger("DefaultLogger");
             ExceptionLogger = log4net.LogManager.GetLogger("ExceptionLogger");
-            _injectMapper = new ConcurrentDictionary<string, Assembly>();
+            _injectMapper = new ConcurrentDictionary<Guid, Assembly>();
             _host = new Hub();
             AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
             {
@@ -167,16 +167,16 @@ namespace System
             return lambdaExpression.Compile();
         }
 
-        public static Assembly Inject(string checksum, Stream rawStream = null, object arg = null)
+        public static Assembly Inject(Guid checksum, Stream rawStream = null, object arg = null)
         {
-            Contract.Requires(!string.IsNullOrEmpty(checksum));
+            Contract.Requires(checksum != Guid.Empty);
 
             if (rawStream != null)
             {
                 var raw = new MemoryStream();
                 rawStream.FixedCopyTo(raw);
                 raw.Position = 0L;
-                string checksumNew = CryptoManaged.MD5Hash(raw);
+                Guid checksumNew = CryptoManaged.MD5Hash(raw);
                 if (checksum != checksumNew)
                 {
                     throw new InvalidOperationException("checksum");
@@ -249,7 +249,7 @@ namespace System
             var file = new FileInfo(filePath);
             if (file.Exists)
             {
-                string checksum = CryptoManaged.MD5Hash(stream);
+                Guid checksum = CryptoManaged.MD5Hash(stream);
                 stream.Position = 0L;
                 using (var fileStream = file.OpenRead())
                 {

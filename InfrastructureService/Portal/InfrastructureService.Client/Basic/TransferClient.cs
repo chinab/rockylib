@@ -42,7 +42,7 @@ namespace InfrastructureService.Client
         #endregion
 
         #region Methods
-        public string Send(string fileName, byte[] fileData)
+        public Guid Send(string fileName, byte[] fileData)
         {
             using (var svc = new StorageServiceClient())
             {
@@ -56,7 +56,7 @@ namespace InfrastructureService.Client
             return CryptoManaged.MD5Hash(new MemoryStream(fileData));
         }
 
-        public string SendLarge(string filePath)
+        public Guid SendLarge(string filePath)
         {
             StorageConfig sConfig;
             using (var svc = new StorageServiceClient())

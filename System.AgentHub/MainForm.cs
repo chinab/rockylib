@@ -153,7 +153,7 @@ namespace System.AgentHub
                 return;
             }
             var item = _deviceIdentitys[lb_user.SelectedIndex - 1];
-#if DEBUG
+#if !DEBUG
             if (item.Item2 == AgentHubApp.Instance.FirstClient.ClientID)
             {
                 this.AppendLog("请选择非当前设备的其它设备ID");

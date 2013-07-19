@@ -68,7 +68,7 @@ namespace InfrastructureService.DomainService
             var header = JsonConvert.DeserializeObject<JsonHeader>(e.Config.State.ToString());
             string sourceFilePath = string.Format(@"{0}{1}\{2}{3}", StorageRepository.RootPath, trans.DirectoryPath, header.FileKey, Path.GetExtension(e.Config.FileName));
 
-            if (header.FileKey != CryptoManaged.MD5HashFile(sourceFilePath))
+            if (header.FileKey != CryptoManaged.MD5HashFile(sourceFilePath).ToString())
             {
                 File.Delete(sourceFilePath);
                 return;
@@ -94,7 +94,7 @@ namespace InfrastructureService.DomainService
             });
         }
 
-        private static bool TryGetPath(SaveFileParameter param, out string checksum, out string path)
+        private static bool TryGetPath(SaveFileParameter param, out Guid checksum, out string path)
         {
             checksum = CryptoManaged.MD5Hash(new MemoryStream(param.FileData));
             path = string.Format(@"{0}{1}\{2}{3}", StorageRepository.RootPath, param.AppID.ToString("N"), checksum, Path.GetExtension(param.FileName));
@@ -122,14 +122,15 @@ namespace InfrastructureService.DomainService
 
         public void SaveFile(SaveFileParameter param)
         {
-            string checksum, path;
+            Guid checksum;
+            string path;
             if (!TryGetPath(param, out checksum, out path))
             {
                 return;
             }
             File.WriteAllBytes(path, param.FileData);
             var repository = new StorageRepository();
-            repository.SaveFile(checksum, param.FileName, path);
+            repository.SaveFile(checksum.ToString(), param.FileName, path);
         }
 
         public QueryFileResult QueryFile(QueryFileParameter param)

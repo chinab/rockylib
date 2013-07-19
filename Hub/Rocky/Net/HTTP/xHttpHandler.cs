@@ -50,7 +50,7 @@ namespace System.Net
             CryptoKey = ConfigurationManager.AppSettings["Agent-CryptoKey"];
             var q2 = from t in (ConfigurationManager.AppSettings["Agent-Credentials"] ?? string.Empty).Split(',')
                      where !string.IsNullOrEmpty(t)
-                     select CryptoManaged.MD5Hash(t);
+                     select CryptoManaged.MD5Hex(t);
             OnlineUsers = new xUserManager(q2.ToArray());
         }
         #endregion
@@ -154,7 +154,7 @@ namespace System.Net
                 Response.StatusCode = 400;  //Bad Request
                 Response.End();
             }
-            string rangeFilename = CryptoManaged.MD5Hash(httpFile.FileName + httpFile.ContentLength);
+            string rangeFilename = CryptoManaged.MD5Hex(httpFile.FileName + httpFile.ContentLength);
             var file = new FileInfo(Path.Combine(Path.GetDirectoryName(savePath), rangeFilename));
             Response.AddHeader("Content-Length", (file.Exists ? file.Length : 0L).ToString());
             long offset;
@@ -211,8 +211,8 @@ namespace System.Net
             {
                 case TunnelCommand.xInject:
                     {
-                        string checksum = Request.Form["checksum"];
-                        if (string.IsNullOrEmpty(checksum))
+                        Guid checksum;
+                        if (!Guid.TryParse(Request.Form["checksum"], out checksum))
                         {
                             this.ResponseForbidden(context);
                         }
@@ -561,15 +561,15 @@ namespace System.Net
             }
             Stream inStream = httpFile.InputStream;
 #if DEBUG
-            string checksum = Request.Form[AgentChecksum];
-            if (string.IsNullOrEmpty(checksum))
+            Guid checksum;
+            if (!Guid.TryParse(Request.Form[AgentChecksum], out checksum))
             {
                 this.ResponseForbidden(context);
             }
             var mem = new MemoryStream();
             inStream.FixedCopyTo(mem, httpFile.ContentLength);
             mem.Position = 0L;
-            string checkKey = CryptoManaged.MD5Hash(mem);
+            Guid checkKey = CryptoManaged.MD5Hash(mem);
             if (checksum != checkKey)
             {
                 this.ResponseForbidden(context);
@@ -658,15 +658,15 @@ namespace System.Net
             }
             Stream inStream = httpFile.InputStream;
 #if DEBUG
-            string checksum = Request.Form[AgentChecksum];
-            if (string.IsNullOrEmpty(checksum))
+            Guid checksum;
+            if (!Guid.TryParse(Request.Form[AgentChecksum], out checksum))
             {
                 this.ResponseForbidden(context);
             }
             var mem = new MemoryStream();
             inStream.FixedCopyTo(mem, httpFile.ContentLength);
             mem.Position = 0L;
-            string checkKey = CryptoManaged.MD5Hash(mem);
+            Guid checkKey = CryptoManaged.MD5Hash(mem);
             if (checksum != checkKey)
             {
                 this.ResponseForbidden(context);
