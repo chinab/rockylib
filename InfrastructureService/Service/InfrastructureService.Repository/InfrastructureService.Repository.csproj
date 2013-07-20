@@ -211,9 +211,9 @@
     <Compile Include="User\Utility.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Hub\Rocky\Rocky.csproj">
+    <ProjectReference Include="..\..\..\Hub\System.Hub\System.Hub.csproj">
       <Project>{0433cac5-baaa-4e73-8f68-a7ccb1f6c9bf}</Project>
-      <Name>Rocky</Name>
+      <Name>System.Hub</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Contract\InfrastructureService.Model\InfrastructureService.Model.csproj">
       <Project>{b0e28dc0-8937-4274-9a6b-b3f8506276d3}</Project>

@@ -323,7 +323,6 @@ namespace System.Net
         #region ControlMethods
         private void AcceptCallback(IAsyncResult ar)
         {
-            Hub.LogInfo("AgentHub accept...");
             if (_listener == null)
             {
                 return;

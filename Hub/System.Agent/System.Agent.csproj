@@ -8,8 +8,8 @@
     <ProjectGuid>{F9900CCF-1978-4B88-B619-240271EB5F96}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>System.AgentHub</RootNamespace>
-    <AssemblyName>AgentHub</AssemblyName>
+    <RootNamespace>System.Agent</RootNamespace>
+    <AssemblyName>Agent</AssemblyName>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>3.5</OldToolsVersion>
@@ -33,10 +33,9 @@
     <InstallUrl>http://publish.xineworld.com/CloudAgent/</InstallUrl>
     <ProductName>飞檐走壁</ProductName>
     <PublisherName>JeansMan Studio</PublisherName>
-    <SuiteName>Grid Net</SuiteName>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
-    <ApplicationRevision>75</ApplicationRevision>
+    <ApplicationRevision>78</ApplicationRevision>
     <ApplicationVersion>1.0.1.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -106,7 +105,7 @@
     <Compile Include="Common\CodeTimer.cs" />
     <Compile Include="Common\ConsoleNotify.cs" />
     <Compile Include="Common\SecurityPolicy.cs" />
-    <Compile Include="AgentHubApp.cs" />
+    <Compile Include="AgentApp.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -123,9 +122,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Hub\Rocky\Rocky.csproj">
+    <ProjectReference Include="..\System.Hub\System.Hub.csproj">
       <Project>{0433CAC5-BAAA-4E73-8F68-A7CCB1F6C9BF}</Project>
-      <Name>Rocky</Name>
+      <Name>System.Hub</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -183,6 +182,7 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

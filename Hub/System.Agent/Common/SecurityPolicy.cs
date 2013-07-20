@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using NetFwTypeLib;
 
-namespace System.AgentHub
+namespace System.Agent
 {
     internal class SecurityPolicy
     {

@@ -19,3 +19,8 @@
 1) 安装Service: C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe D:\Delicious\WinServices\Delicious.WinServices.exe
 2) 卸载Service: C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe /u D:\Delicious\WinServices\Delicious.WinServices.exe
 3) 启动Service: net start "服务名称"
+
+5. 
+  a. Https反向连接获取问题；
+  b. Git项目网站生成；
+  c. 硬盘分区格式化、30秒自动锁屏、远程操控；

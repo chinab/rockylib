@@ -9,6 +9,9 @@ using System.IO;
 
 namespace System.Net
 {
+    /// <summary>
+    /// 请使用SSL，注意网络拦截
+    /// </summary>
     public class MailClient : IDisposable
     {
         #region NestedTypes
@@ -62,11 +65,11 @@ namespace System.Net
             {
                 case SystemMail.Gmail:
                     this.Config("smtp.gmail.com", 587, true, "ilovehaley.kid@gmail.com", pwd);
-                    this.SetFrom("ilovehaley.kid@gmail.com", "TGrid");
+                    this.SetFrom("ilovehaley.kid@gmail.com", "System");
                     break;
                 case SystemMail.Yahoo:
                     this.Config("smtp.mail.yahoo.com", 25, false, "wxm395115323", pwd);
-                    this.SetFrom("wxm395115323@yahoo.com.cn", "TGrid");
+                    this.SetFrom("wxm395115323@yahoo.com.cn", "System");
                     break;
             }
         }

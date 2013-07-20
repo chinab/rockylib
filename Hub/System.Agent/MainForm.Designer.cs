@@ -1,4 +1,4 @@
-﻿namespace System.AgentHub
+﻿namespace System.Agent
 {
     partial class MainForm
     {

@@ -84,9 +84,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Hub\Rocky\Rocky.csproj">
+    <ProjectReference Include="..\..\..\Hub\System.Hub\System.Hub.csproj">
       <Project>{0433cac5-baaa-4e73-8f68-a7ccb1f6c9bf}</Project>
-      <Name>Rocky</Name>
+      <Name>System.Hub</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Contract\InfrastructureService.Contract\InfrastructureService.Contract.csproj">
       <Project>{57952c92-2ede-43bf-bf4b-1980734cbc11}</Project>

@@ -151,9 +151,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Rocky\Rocky.csproj">
+    <ProjectReference Include="..\System.Hub\System.Hub.csproj">
       <Project>{0433CAC5-BAAA-4E73-8F68-A7CCB1F6C9BF}</Project>
-      <Name>Rocky</Name>
+      <Name>System.Hub</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

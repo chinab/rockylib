@@ -6,13 +6,16 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
-namespace System.AgentHub
+namespace System.Agent
 {
     class Program
     {
         [STAThread]
         static void Main(string[] args)
         {
+            //System.Agent.Privacy.PrivacyService.FormatDrive(IntPtr.Zero);
+            //return;
+
             SecurityPolicy.Check();
             bool isTunnelClient = true;
             try
@@ -28,7 +31,7 @@ Copyright (c) 2012 JeansMan Studio。
                     bool createNew;
                     var mutex = new Mutex(false, typeof(Program).FullName, out createNew);
                     var console = new ConsoleNotify(name, createNew, true);
-                    console.Run(new AgentHubApp(), new MainForm());
+                    console.Run(new AgentApp(), new MainForm());
                     return;
                 }
 

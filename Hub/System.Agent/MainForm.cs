@@ -13,7 +13,7 @@ using System.Windows.Forms;
 using SharpCompress.Archive;
 using SharpCompress.Common;
 
-namespace System.AgentHub
+namespace System.Agent
 {
     public partial class MainForm : Form
     {
@@ -124,7 +124,7 @@ namespace System.AgentHub
 
         private void ShowList()
         {
-            _deviceIdentitys = AgentHubApp.Instance.GetDeviceIdentity().ToArray();
+            _deviceIdentitys = AgentApp.Instance.GetDeviceIdentity().ToArray();
             lb_user.Items.Clear();
             lb_user.Items.Add("-我的设备-");
             for (int i = 0; i < _deviceIdentitys.Length; )
@@ -174,13 +174,13 @@ namespace System.AgentHub
                 IPEndPoint directTo = null;
                 if (Enum.TryParse(comboBox1.Text, out runMode))
                 {
-                    client = AgentHubApp.Instance.CreateTunnelClient(port, runMode, directTo, item.Item2);
+                    client = AgentApp.Instance.CreateTunnelClient(port, runMode, directTo, item.Item2);
                     this.AppendLog("反向隧道 {0}:{1} ReverseTo={2}\t开启...", port, runMode, item.Item1);
                 }
                 else
                 {
                     directTo = Net.SocketHelper.ParseEndPoint(comboBox1.Text.Replace("DirectTo=", string.Empty));
-                    client = AgentHubApp.Instance.CreateTunnelClient(port, runMode, directTo, item.Item2);
+                    client = AgentApp.Instance.CreateTunnelClient(port, runMode, directTo, item.Item2);
                     this.AppendLog("反向隧道 {0}:{1} ReverseTo={2}\t开启...", port, directTo, item.Item1);
                 }
                 textBox1.Text = (port + 1).ToString();
@@ -249,7 +249,7 @@ namespace System.AgentHub
         private void RunProxifier()
         {
             string zipPath = Hub.CombinePath("Proxifier PE.7z"), exePath = Hub.CombinePath("Proxifier.exe");
-            if (Hub.CreateFileFromResource("System.AgentHub.Resource.Proxifier PE.7z", zipPath) || !File.Exists(exePath))
+            if (Hub.CreateFileFromResource("System.Agent.Resource.Proxifier PE.7z", zipPath) || !File.Exists(exePath))
             {
                 var archive = ArchiveFactory.Open(zipPath);
                 int i = 0, count = archive.Entries.Count();

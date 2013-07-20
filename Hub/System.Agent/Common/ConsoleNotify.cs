@@ -14,7 +14,7 @@ using System.Threading;
 using System.Windows.Forms;
 using Microsoft.Win32;
 
-namespace System.AgentHub
+namespace System.Agent
 {
     public class ConsoleNotify
     {

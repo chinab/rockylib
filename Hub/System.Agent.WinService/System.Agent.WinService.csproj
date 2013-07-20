@@ -4,17 +4,17 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{50947FDC-D95A-43C6-AECA-558D01ED8595}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{3BAFFA43-0BE5-428D-9199-8A4A50512088}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>InfrastructureService.Common</RootNamespace>
-    <AssemblyName>InfrastructureService.Common</AssemblyName>
+    <RootNamespace>System.Agent.WinService</RootNamespace>
+    <AssemblyName>System.Agent.WinService</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\</SolutionDir>
-    <RestorePackages>true</RestorePackages>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -24,6 +24,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -32,37 +33,63 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EmitMapper">
-      <HintPath>..\..\..\packages\EmitMapper.1.0.0\lib\EmitMapper.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
+    <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DomainException.cs" />
-    <Compile Include="EntityMapper.cs" />
-    <Compile Include="AppFaultDetail.cs" />
-    <Compile Include="PinyinUtility.cs" />
+    <Compile Include="Privacy\Hook.cs" />
+    <Compile Include="Privacy\LockScreen.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Privacy\LockScreen.designer.cs">
+      <DependentUpon>LockScreen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Privacy\PrivacyService.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Privacy\PrivacyService.Designer.cs">
+      <DependentUpon>PrivacyService.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ProjectInstaller.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ProjectInstaller.Designer.cs">
+      <DependentUpon>ProjectInstaller.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Privacy\Protocol.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Hub\System.Hub\System.Hub.csproj">
+    <EmbeddedResource Include="Privacy\LockScreen.resx">
+      <DependentUpon>LockScreen.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Privacy\PrivacyService.resx">
+      <DependentUpon>PrivacyService.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProjectInstaller.resx">
+      <DependentUpon>ProjectInstaller.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\System.Hub\System.Hub.csproj">
       <Project>{0433cac5-baaa-4e73-8f68-a7ccb1f6c9bf}</Project>
       <Name>System.Hub</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

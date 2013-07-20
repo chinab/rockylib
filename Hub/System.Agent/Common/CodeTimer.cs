@@ -7,7 +7,7 @@ using System.Threading;
 using System.Runtime.InteropServices;
 using System.IO;
 
-namespace System.AgentHub
+namespace System.Agent
 {
     public static class CodeTimer
     {

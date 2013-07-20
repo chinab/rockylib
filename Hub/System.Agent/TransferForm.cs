@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
-namespace System.AgentHub
+namespace System.Agent
 {
     public partial class TransferForm : Form
     {

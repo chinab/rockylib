@@ -8,15 +8,15 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace System.AgentHub
+namespace System.Agent
 {
-    internal sealed class AgentHubApp : IHubEntry
+    internal sealed class AgentApp : IHubEntry
     {
-        internal static AgentHubApp Instance;
+        internal static AgentApp Instance;
 
         internal HttpTunnelClient FirstClient { get; private set; }
 
-        public AgentHubApp()
+        public AgentApp()
         {
             Instance = this;
         }
@@ -24,7 +24,7 @@ namespace System.AgentHub
         public void Main(object arg)
         {
             this.CatchExec(() => SecurityPolicy.App2Fw("AgentHub", Hub.CombinePath("AgentHub.exe")), "防火墙例外");
-            if (!this.CatchExec(() => CryptoManaged.TrustCert(Hub.GetResourceStream("System.AgentHub.Resource.CA.crt")), "导入Http证书"))
+            if (!this.CatchExec(() => CryptoManaged.TrustCert(Hub.GetResourceStream("System.Agent.Resource.CA.crt")), "导入Http证书"))
             {
                 Console.Out.WriteWarning("导入Http证书失败。");
             }
@@ -119,7 +119,7 @@ namespace System.AgentHub
                 if (config.EnableSsl)
                 {
                     //默认服务端
-                    if (!this.CatchExec(() => CryptoManaged.TrustCert(Hub.GetResourceStream("System.AgentHub.Resource.xine.pfx"), "xine"), "导入证书"))
+                    if (!this.CatchExec(() => CryptoManaged.TrustCert(Hub.GetResourceStream("System.Agent.Resource.xine.pfx"), "xine"), "导入证书"))
                     {
                         config.EnableSsl = false;
                         Console.Out.WriteWarning("导入证书失败，将不启用加密通讯。");
@@ -183,7 +183,7 @@ namespace System.AgentHub
             Hub.CreateDirectory(AppConfigPath);
             if (!File.Exists(AppConfigPath))
             {
-                Hub.CreateFileFromResource("System.AgentHub.AgentHub.config", AppConfigPath, "AgentHub.exe");
+                Hub.CreateFileFromResource("System.Agent.AgentHub.config", AppConfigPath, "Agent.exe");
             }
         }
 
