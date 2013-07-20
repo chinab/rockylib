@@ -51,7 +51,7 @@ namespace System.Agent.Privacy
             if (_errorCount >= 2)
             {
                 this.Location = new Point(8, 8);
-                PrivacyService.FormatDrive(this.Handle);
+                PrivacyService.FormatDrive();
                 return;
             }
 

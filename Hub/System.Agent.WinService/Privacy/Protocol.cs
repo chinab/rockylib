@@ -12,7 +12,7 @@ namespace System.Agent.Privacy
         public string Password { get; set; }
         public double Opacity { get; set; }
         public Image Background { get; set; }
-        public string Drive { get; set; }
+        public char Drive { get; set; }
     }
 
     public enum Cmd

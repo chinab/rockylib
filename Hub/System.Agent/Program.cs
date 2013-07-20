@@ -13,9 +13,6 @@ namespace System.Agent
         [STAThread]
         static void Main(string[] args)
         {
-            //System.Agent.Privacy.PrivacyService.FormatDrive(IntPtr.Zero);
-            //return;
-
             SecurityPolicy.Check();
             bool isTunnelClient = true;
             try

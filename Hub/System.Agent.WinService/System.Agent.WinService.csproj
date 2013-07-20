@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Privacy\PrivacyHelper.cs" />
     <Compile Include="Privacy\Hook.cs" />
     <Compile Include="Privacy\LockScreen.cs">
       <SubType>Form</SubType>

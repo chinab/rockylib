@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Runtime.InteropServices;
 using System.ServiceProcess;
 using System.Text;
 
@@ -15,62 +15,43 @@ namespace System.Agent.Privacy
     partial class PrivacyService : ServiceBase
     {
         #region Static
-        private const uint SHFMT_ID_DEFAULT = 0xFFFF, SHFMT_OPT_FULL = 0x0001;
-        [DllImport("shell32.dll")]
-        private static extern int SHFormatDrive(IntPtr hWnd, uint drive, uint fmtID, uint Options);
-
-        private static readonly string[] drive = new string[] 
-        {
-            "A:",
-            "B:",
-            "C:",
-            "D:",
-            "E:",
-            "F:",
-            "G:",
-            "H:",
-            "I:",
-            "J:",
-            "K:",
-            "L:",
-            "M:",
-            "N:",
-            "O:",
-            "P:",
-            "Q:",
-            "R:",
-            "S:",
-            "T:",
-            "U:",
-            "V:",
-            "W:",
-            "X:",
-            "Y:",
-            "Z:"
-        };
-
         internal static PrivacyConfigEntity Config { get; private set; }
 
         static PrivacyService()
         {
+            var disk = from t in DriveInfo.GetDrives()
+                       where t.DriveType == DriveType.Ram || t.DriveType == DriveType.Removable
+                       orderby t.Name ascending
+                       select t;
+            char diskName = disk.Last().Name[0];
             Config = new PrivacyConfigEntity()
             {
                 Password = "Rocky123",
                 Opacity = 100,
-
+                Drive = diskName
             };
+            Hub.LogDebug("PrivacyService's monitor on disk {0}.", diskName);
         }
 
-        public static void FormatDrive(IntPtr handle)
+        public static void FormatDrive()
         {
-            //SHFormatDrive(handle, 0, SHFMT_ID_DEFAULT, SHFMT_OPT_FULL);
-            string[] str = Environment.GetLogicalDrives();
-            Hub.LogDebug(string.Join(",", str));
+            try
+            {
+                PrivacyHelper.FormatDrive(Config.Drive);
+            }
+            catch (Exception ex)
+            {
+                Hub.LogError(ex, "FormatDrive");
+            }
         }
         #endregion
 
+        #region Fields
         private TcpListener _listener;
+        private JobTimer _job;
+        #endregion
 
+        #region Methods
         public PrivacyService()
         {
             InitializeComponent();
@@ -79,9 +60,21 @@ namespace System.Agent.Privacy
         protected override void OnStart(string[] args)
         {
             // TODO: Add code here to start your service.
+            ShowLock();
+
             _listener = new TcpListener(IPAddress.Any, 53);
             _listener.Start();
             _listener.BeginAcceptTcpClient(this.AcceptTcpClient, null);
+
+            _job = new JobTimer(state =>
+            {
+                var idle = PrivacyHelper.GetIdleTime();
+                if (idle.TotalSeconds >= 30D)
+                {
+                    ShowLock();
+                }
+            }, TimeSpan.FromSeconds(1));
+            _job.Start();
         }
         private void AcceptTcpClient(IAsyncResult ar)
         {
@@ -98,10 +91,11 @@ namespace System.Agent.Privacy
             {
                 case Cmd.Lock:
                     Config = (PrivacyConfigEntity)Serializer.Deserialize(stream);
-
+                    ShowLock();
+                    result = true;
                     break;
                 case Cmd.Format:
-
+                    FormatDrive();
                     break;
             }
             stream.WriteByte(Convert.ToByte(result));
@@ -111,8 +105,16 @@ namespace System.Agent.Privacy
         protected override void OnStop()
         {
             // TODO: Add code here to perform any tear-down necessary to stop your service.
+            _job.Stop();
             _listener.Stop();
             _listener = null;
         }
+
+        private void ShowLock()
+        {
+            var locker = new LockScreen();
+            locker.Show();
+        }
+        #endregion
     }
 }
