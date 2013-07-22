@@ -17,10 +17,12 @@ namespace System.Agent.Privacy
     /// </summary>
     public partial class LockScreen : Form
     {
+        #region Fields
         private bool _canClose;
         private Hook _hook;
         private JobTimer _job;
         private volatile ushort _errorCount;
+        #endregion
 
         public LockScreen()
         {
@@ -30,13 +32,15 @@ namespace System.Agent.Privacy
         private void Form1_Load(object sender, EventArgs e)
         {
             this.Hide();
+
+
             base.Opacity = PrivacyService.Config.Opacity / 100;
             base.BackgroundImage = PrivacyService.Config.Background;
             this.Show();
             _hook = new Hook();
             _hook.KeyDown += _hook_KeyDown;
             _hook.Install();
-            _job = new JobTimer(this.Check, TimeSpan.FromMilliseconds(40));
+            _job = new JobTimer(this.Check, TimeSpan.FromMilliseconds(100));
             _job.Start();
         }
         void _hook_KeyDown(object sender, KeyEventArgs e)
@@ -55,21 +59,21 @@ namespace System.Agent.Privacy
                 return;
             }
 
-            var q = from t in Process.GetProcesses()
-                    where t.ProcessName.Equals("taskmgr", StringComparison.OrdinalIgnoreCase)
-                    select t;
-            var p1 = q.SingleOrDefault();
-            if (p1 != null)
-            {
-                try
-                {
-                    p1.Kill();
-                }
-                catch (Exception ex)
-                {
-                    Hub.LogError(ex, "LockScreen.Kill");
-                }
-            }
+            //var q = from t in Process.GetProcesses()
+            //        where t.ProcessName.Equals("taskmgr", StringComparison.OrdinalIgnoreCase)
+            //        select t;
+            //var p1 = q.SingleOrDefault();
+            //if (p1 != null)
+            //{
+            //    try
+            //    {
+            //        p1.Kill();
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        Hub.LogError(ex, "LockScreen.Kill");
+            //    }
+            //}
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
@@ -114,5 +118,13 @@ namespace System.Agent.Privacy
                 button1.Enabled = true;
             }
         }
+
+        #region Protocol
+        internal PrivacyConfigEntity Config
+        {
+            get { }
+            set { } 
+        }
+        #endregion
     }
 }

@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security;
+using System.Security.Principal;
 using System.Text;
 
 namespace System.Agent.Privacy
@@ -90,5 +93,156 @@ namespace System.Agent.Privacy
             formatProcess.WaitForExit();
         }
         #endregion
+    }
+
+    [SuppressUnmanagedCodeSecurity]
+    class NativeMethods
+    {
+        [StructLayout(LayoutKind.Sequential)]
+        public struct STARTUPINFO
+        {
+            public Int32 cb;
+            public string lpReserved;
+            public string lpDesktop;
+            public string lpTitle;
+            public Int32 dwX;
+            public Int32 dwY;
+            public Int32 dwXSize;
+            public Int32 dwXCountChars;
+            public Int32 dwYCountChars;
+            public Int32 dwFillAttribute;
+            public Int32 dwFlags;
+            public Int16 wShowWindow;
+            public Int16 cbReserved2;
+            public IntPtr lpReserved2;
+            public IntPtr hStdInput;
+            public IntPtr hStdOutput;
+            public IntPtr hStdError;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct PROCESS_INFORMATION
+        {
+            public IntPtr hProcess;
+            public IntPtr hThread;
+            public Int32 dwProcessID;
+            public Int32 dwThreadID;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct SECURITY_ATTRIBUTES
+        {
+            public Int32 Length;
+            public IntPtr lpSecurityDescriptor;
+            public bool bInheritHandle;
+        }
+
+        public enum SECURITY_IMPERSONATION_LEVEL
+        {
+            SecurityAnonymous,
+            SecurityIdentification,
+            SecurityImpersonation,
+            SecurityDelegation
+        }
+
+        public enum TOKEN_TYPE
+        {
+            TokenPrimary = 1,
+            TokenImpersonation
+        }
+
+        public const int GENERIC_ALL_ACCESS = 0x10000000;
+        public const int CREATE_NO_WINDOW = 0x08000000;
+
+        [
+           DllImport("kernel32.dll",
+              EntryPoint = "CloseHandle", SetLastError = true,
+              CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)
+        ]
+        public static extern bool CloseHandle(IntPtr handle);
+
+        [
+           DllImport("advapi32.dll",
+              EntryPoint = "CreateProcessAsUser", SetLastError = true,
+              CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)
+        ]
+        public static extern bool
+           CreateProcessAsUser(IntPtr hToken, string lpApplicationName, string lpCommandLine,
+                               ref SECURITY_ATTRIBUTES lpProcessAttributes, ref SECURITY_ATTRIBUTES lpThreadAttributes,
+                               bool bInheritHandle, Int32 dwCreationFlags, IntPtr lpEnvrionment,
+                               string lpCurrentDirectory, ref STARTUPINFO lpStartupInfo,
+                               ref PROCESS_INFORMATION lpProcessInformation);
+
+        [
+           DllImport("advapi32.dll",
+              EntryPoint = "DuplicateTokenEx")
+        ]
+        public static extern bool
+           DuplicateTokenEx(IntPtr hExistingToken, Int32 dwDesiredAccess,
+                            ref SECURITY_ATTRIBUTES lpThreadAttributes,
+                            Int32 ImpersonationLevel, Int32 dwTokenType,
+                            ref IntPtr phNewToken);
+
+
+
+        public static Process CreateProcessAsUser(string filename, string args)
+        {
+            var hToken = WindowsIdentity.GetCurrent().Token;
+            var hDupedToken = IntPtr.Zero;
+
+            var pi = new PROCESS_INFORMATION();
+            var sa = new SECURITY_ATTRIBUTES();
+            sa.Length = Marshal.SizeOf(sa);
+
+            try
+            {
+                if (!DuplicateTokenEx(
+                        hToken,
+                        GENERIC_ALL_ACCESS,
+                        ref sa,
+                        (int)SECURITY_IMPERSONATION_LEVEL.SecurityIdentification,
+                        (int)TOKEN_TYPE.TokenPrimary,
+                        ref hDupedToken
+                    ))
+                    throw new Win32Exception(Marshal.GetLastWin32Error());
+
+                var si = new STARTUPINFO();
+                si.cb = Marshal.SizeOf(si);
+                si.lpDesktop = "";
+
+                var path = Path.GetFullPath(filename);
+                var dir = Path.GetDirectoryName(path);
+
+                // Revert to self to create the entire process; not doing this might
+                // require that the currently impersonated user has "Replace a process
+                // level token" rights - we only want our service account to need
+                // that right.
+                using (var ctx = WindowsIdentity.Impersonate(IntPtr.Zero))
+                {
+                    //UInt32 dwSessionId = 0;  // set it to session 0
+                    //SetTokenInformation(hDupedToken, TokenInformationClass.TokenSessionId, ref dwSessionId, (UInt32)IntPtr.Size);
+                    if (!CreateProcessAsUser(
+                                            hDupedToken,
+                                            path,
+                                            string.Format("\"{0}\" {1}", filename.Replace("\"", "\"\""), args),
+                                            ref sa, ref sa,
+                                            false, 0, IntPtr.Zero,
+                                            dir, ref si, ref pi
+                                    ))
+                        throw new Win32Exception(Marshal.GetLastWin32Error());
+                }
+
+                return Process.GetProcessById(pi.dwProcessID);
+            }
+            finally
+            {
+                if (pi.hProcess != IntPtr.Zero)
+                    CloseHandle(pi.hProcess);
+                if (pi.hThread != IntPtr.Zero)
+                    CloseHandle(pi.hThread);
+                if (hDupedToken != IntPtr.Zero)
+                    CloseHandle(hDupedToken);
+            }
+        }
     }
 }

@@ -37,6 +37,7 @@
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -47,36 +48,27 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Privacy\PrivacyHelper.cs" />
-    <Compile Include="Privacy\Hook.cs" />
-    <Compile Include="Privacy\LockScreen.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Privacy\LockScreen.designer.cs">
-      <DependentUpon>LockScreen.cs</DependentUpon>
-    </Compile>
     <Compile Include="Privacy\PrivacyService.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Privacy\PrivacyService.Designer.cs">
       <DependentUpon>PrivacyService.cs</DependentUpon>
     </Compile>
+    <Compile Include="Privacy\ProcessStarter.cs" />
+    <Compile Include="Privacy\Protocol.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="ProjectInstaller.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="ProjectInstaller.Designer.cs">
       <DependentUpon>ProjectInstaller.cs</DependentUpon>
     </Compile>
-    <Compile Include="Privacy\Protocol.cs" />
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Privacy\LockScreen.resx">
-      <DependentUpon>LockScreen.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Privacy\PrivacyService.resx">
       <DependentUpon>PrivacyService.cs</DependentUpon>
     </EmbeddedResource>

@@ -40,6 +40,7 @@ namespace System.Net
             context.Server.ScriptTimeout = Timeout;
             HttpRequest Request = context.Request;
             HttpResponse Response = context.Response;
+            Response.AppendHeader(HttpResponseHeader.Connection.ToString(), "keep-alive");
 
             var httpFile = Request.Files[AgentDirect];
             if (httpFile == null)

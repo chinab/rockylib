@@ -20,22 +20,22 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>07/17/2013 16:23:40</publishTime>
     </File>
     <File Include="bin/InfrastructureService.AppService.dll">
-      <publishTime>07/19/2013 09:13:16</publishTime>
+      <publishTime>07/22/2013 17:38:31</publishTime>
     </File>
     <File Include="bin/InfrastructureService.Common.dll">
-      <publishTime>07/20/2013 19:34:12</publishTime>
+      <publishTime>07/22/2013 17:38:26</publishTime>
     </File>
     <File Include="bin/InfrastructureService.Contract.dll">
-      <publishTime>07/20/2013 19:34:12</publishTime>
+      <publishTime>07/22/2013 17:38:26</publishTime>
     </File>
     <File Include="bin/InfrastructureService.DomainService.dll">
-      <publishTime>07/20/2013 19:34:16</publishTime>
+      <publishTime>07/22/2013 17:38:30</publishTime>
     </File>
     <File Include="bin/InfrastructureService.Model.dll">
-      <publishTime>07/20/2013 19:34:12</publishTime>
+      <publishTime>07/22/2013 17:38:26</publishTime>
     </File>
     <File Include="bin/InfrastructureService.Repository.dll">
-      <publishTime>07/20/2013 19:34:15</publishTime>
+      <publishTime>07/22/2013 17:38:29</publishTime>
     </File>
     <File Include="bin/log4net.dll">
       <publishTime>07/17/2013 16:15:52</publishTime>
@@ -65,10 +65,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>07/17/2013 16:24:28</publishTime>
     </File>
     <File Include="bin/SharpICTCLAS.dll">
-      <publishTime>07/19/2013 10:37:30</publishTime>
+      <publishTime>07/22/2013 16:36:55</publishTime>
     </File>
     <File Include="bin/System.Hub.dll">
-      <publishTime>07/20/2013 19:34:10</publishTime>
+      <publishTime>07/22/2013 17:38:25</publishTime>
     </File>
     <File Include="bin/zh-Hans/EntityFramework.resources.dll">
       <publishTime>07/17/2013 16:17:18</publishTime>

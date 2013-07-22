@@ -1,4 +1,4 @@
-﻿namespace System.Agent
+﻿namespace System.Agent.WinService
 {
     partial class ProjectInstaller
     {
@@ -39,7 +39,8 @@
             // 
             // serviceInstaller1
             // 
-            this.serviceInstaller1.Description = "PrivacyService, protect your PC.";
+            this.serviceInstaller1.Description = "We\'re very committed to protecting both publisher and end-user privacy.";
+            this.serviceInstaller1.DisplayName = "Privacy Service";
             this.serviceInstaller1.ServiceName = "PrivacyService";
             this.serviceInstaller1.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             // 

@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
-using System.Collections.Specialized;
 using System.IO;
+using System.Linq;
 using System.Net;
-using System.Net.Mime;
+using System.Reflection;
+using System.Text;
 using E = System.Environment;
 
 namespace System.Net
@@ -191,6 +191,12 @@ namespace System.Net
         #region VirtualMethods
         protected virtual HttpWebResponse GetResponse(string httpMethod)
         {
+            if (_request.KeepAlive)
+            {
+                var sp = _request.ServicePoint;
+                var prop = sp.GetType().GetProperty("HttpBehaviour", BindingFlags.NonPublic | BindingFlags.Instance);
+                prop.SetValue(sp, (byte)0, null);
+            }
             if (httpMethod == null)
             {
                 _request.Method = _entity.HasValue ? WebRequestMethods.Http.Post : WebRequestMethods.Http.Get;
@@ -264,6 +270,7 @@ namespace System.Net
                     }
                 }
             }
+
             var response = (HttpWebResponse)_request.GetResponse();
             _referer = response.ResponseUri.AbsoluteUri;
             if (this.KeepCookie)

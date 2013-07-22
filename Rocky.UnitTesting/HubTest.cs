@@ -3,7 +3,7 @@ using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Data;
 
-namespace Rocky.UnitTesting.Net
+namespace Rocky.UnitTesting
 {
     [TestClass]
     public class HubTest

@@ -16,11 +16,12 @@
 	CertMgr.msc
 
 4.
-1) 安装Service: C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe D:\Delicious\WinServices\Delicious.WinServices.exe
-2) 卸载Service: C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe /u D:\Delicious\WinServices\Delicious.WinServices.exe
-3) 启动Service: net start "服务名称"
+  a. C:\Windows\Microsoft.NET\Framework64\v4.0.30319\InstallUtil.exe D:\Projects\GitLib\Hub\System.Agent.WinService\bin\Debug\System.Agent.WinService.exe
+  b. C:\Windows\Microsoft.NET\Framework64\v4.0.30319\InstallUtil.exe /u 'path'
+  c. 启动Service: net start "服务名称"
 
 5. 
   a. Https反向连接获取问题；
   b. Git项目网站生成；
-  c. 硬盘分区、远程操控；
+  c. Http Send 性能问题，DNS国内/外解析问题；
+  d. 远程操控；

@@ -23,7 +23,7 @@ namespace System.Agent
 
         public void Main(object arg)
         {
-            this.CatchExec(() => SecurityPolicy.App2Fw("AgentHub", Hub.CombinePath("AgentHub.exe")), "防火墙例外");
+            this.CatchExec(() => SecurityPolicy.App2Fw("Agent", Hub.CombinePath("Agent.exe")), "防火墙例外");
             if (!this.CatchExec(() => CryptoManaged.TrustCert(Hub.GetResourceStream("System.Agent.Resource.CA.crt")), "导入Http证书"))
             {
                 Console.Out.WriteWarning("导入Http证书失败。");
@@ -67,7 +67,7 @@ namespace System.Agent
             catch (Exception ex)
             {
                 Console.Out.WriteError(ex.Message);
-                Hub.LogError(ex, "AgentHub");
+                Hub.LogError(ex, "Agent");
             }
             finally
             {

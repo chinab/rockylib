@@ -5,8 +5,8 @@ using System.Runtime.InteropServices;
 // 有关程序集的常规信息通过下列属性集
 // 控制。更改这些属性值可修改
 // 与程序集关联的信息。
-[assembly: AssemblyTitle("AgentHub")]
-[assembly: AssemblyDescription("System.AgentHub")]
+[assembly: AssemblyTitle("Agent")]
+[assembly: AssemblyDescription("System.Agent")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("JeansMan Studio")]
 [assembly: AssemblyProduct("飞檐走壁")]

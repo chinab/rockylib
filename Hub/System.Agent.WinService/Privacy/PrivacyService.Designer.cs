@@ -32,8 +32,8 @@
             // PrivacyService
             // 
             this.CanHandlePowerEvent = true;
+            this.CanHandleSessionChangeEvent = true;
             this.CanShutdown = true;
-            this.CanStop = false;
             this.ServiceName = "PrivacyService";
 
         }

@@ -10,7 +10,6 @@ namespace System.Agent.Privacy
     public class PrivacyConfigEntity
     {
         public string Password { get; set; }
-        public double Opacity { get; set; }
         public Image Background { get; set; }
         public char Drive { get; set; }
     }
