@@ -4,10 +4,11 @@ using System.Text;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 using System.IO;
+using System.ComponentModel;
 
 namespace System.Agent.Privacy
 {
-    public class ProcessStarter : IDisposable
+    public class ProcessStarter
     {
         #region Import Section
         private static uint STANDARD_RIGHTS_REQUIRED = 0x000F0000;
@@ -130,9 +131,6 @@ namespace System.Agent.Privacy
         static extern bool CloseHandle(IntPtr handle);
 
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        static extern int GetLastError();
-
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         static extern int WaitForSingleObject(IntPtr token, uint timeInterval);
 
         [DllImport("wtsapi32.dll", CharSet = CharSet.Auto, SetLastError = true)]
@@ -148,23 +146,6 @@ namespace System.Agent.Privacy
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool DestroyEnvironmentBlock(IntPtr lpEnvironment);
         #endregion
-
-        public ProcessStarter()
-        {
-
-        }
-
-        public ProcessStarter(string processName, string fullExeName)
-        {
-            processName_ = processName;
-            processPath_ = fullExeName;
-        }
-        public ProcessStarter(string processName, string fullExeName, string arguments)
-        {
-            processName_ = processName;
-            processPath_ = fullExeName;
-            arguments_ = arguments;
-        }
 
         public static IntPtr GetCurrentUserToken()
         {
@@ -213,7 +194,24 @@ namespace System.Agent.Privacy
             return primaryToken;
         }
 
-        public void Run()
+        private PROCESS_INFORMATION _processInfo;
+
+        public string ProcessPath { get; set; }
+        public string ProcessName { get; set; }
+        public string Arguments { get; set; }
+
+        public ProcessStarter()
+        {
+
+        }
+        public ProcessStarter(string processPath, string fullExeName, string arguments = "")
+        {
+            ProcessPath = processPath;
+            ProcessName = fullExeName;
+            Arguments = arguments;
+        }
+
+        public Process Start()
         {
             IntPtr primaryToken = GetCurrentUserToken();
             if (primaryToken == IntPtr.Zero)
@@ -221,96 +219,52 @@ namespace System.Agent.Privacy
                 throw new SystemException("GetCurrentUserToken");
             }
             STARTUPINFO StartupInfo = new STARTUPINFO();
-            processInfo_ = new PROCESS_INFORMATION();
+            _processInfo = new PROCESS_INFORMATION();
             StartupInfo.cb = Marshal.SizeOf(StartupInfo);
 
             SECURITY_ATTRIBUTES Security1 = new SECURITY_ATTRIBUTES();
             SECURITY_ATTRIBUTES Security2 = new SECURITY_ATTRIBUTES();
 
-            string command = "\"" + processPath_ + "\"";
-            if ((arguments_ != null) && (arguments_.Length != 0))
+            string command = "\"" + ProcessPath + "\"";
+            if ((Arguments != null) && (Arguments.Length != 0))
             {
-                command += " " + arguments_;
+                command += " " + Arguments;
             }
 
             IntPtr lpEnvironment = IntPtr.Zero;
             bool resultEnv = CreateEnvironmentBlock(out lpEnvironment, primaryToken, false);
             if (resultEnv != true)
             {
-                int nError = GetLastError();
+                int nError = Marshal.GetLastWin32Error();
             }
 
-            CreateProcessAsUser(primaryToken, null, command, ref Security1, ref Security2, false, CREATE_NO_WINDOW | NORMAL_PRIORITY_CLASS | CREATE_UNICODE_ENVIRONMENT, lpEnvironment, null, ref StartupInfo, out processInfo_);
+            if (!CreateProcessAsUser(primaryToken, null, command, ref Security1, ref Security2, false, CREATE_NO_WINDOW | NORMAL_PRIORITY_CLASS | CREATE_UNICODE_ENVIRONMENT, lpEnvironment, null, ref StartupInfo, out _processInfo))
+            {
+                throw new Win32Exception(Marshal.GetLastWin32Error());
+            }
 
             DestroyEnvironmentBlock(lpEnvironment);
             CloseHandle(primaryToken);
-        }
 
-        public void Stop()
-        {
-            Process[] processes = Process.GetProcesses();
-            foreach (Process current in processes)
-            {
-                if (current.ProcessName == processName_)
-                {
-                    current.Kill();
-                }
-            }
+            return Process.GetProcessById(_processInfo.dwProcessId);
         }
 
         public int WaitForExit()
         {
-            WaitForSingleObject(processInfo_.hProcess, INFINITE);
-            int errorcode = GetLastError();
+            WaitForSingleObject(_processInfo.hProcess, INFINITE);
+            int errorcode = Marshal.GetLastWin32Error();
             return errorcode;
         }
 
-        #region IDisposable Members
-
-        public void Dispose()
+        public void Kill()
         {
-        }
-
-        #endregion
-
-        private string processPath_ = string.Empty;
-        private string processName_ = string.Empty;
-        private string arguments_ = string.Empty;
-        private PROCESS_INFORMATION processInfo_;
-
-        public string ProcessPath
-        {
-            get
+            Process[] processes = Process.GetProcesses();
+            foreach (Process current in processes)
             {
-                return processPath_;
-            }
-            set
-            {
-                processPath_ = value;
-            }
-        }
-
-        public string ProcessName
-        {
-            get
-            {
-                return processName_;
-            }
-            set
-            {
-                processName_ = value;
-            }
-        }
-
-        public string Arguments
-        {
-            get
-            {
-                return arguments_;
-            }
-            set
-            {
-                arguments_ = value;
+                if (current.ProcessName == ProcessName)
+                {
+                    current.Kill();
+                }
             }
         }
     }

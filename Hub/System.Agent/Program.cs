@@ -16,17 +16,23 @@ namespace System.Agent
             SecurityPolicy.Check();
             try
             {
+                LockEntry();
+                return;
                 short cmd;
                 if (args.Length > 0 && short.TryParse(args[0], out cmd))
                 {
                     switch (cmd)
                     {
                         case 1:
-
+                            LockEntry();
+                            break;
+                        default:
+                            Hub.LogDebug("Unknow Cmd: {0}.", cmd);
                             break;
                     }
                     return;
                 }
+                TunnelEntry();
 
             test:
                 Console.Out.WriteInfo("Start test...");
@@ -55,7 +61,7 @@ namespace System.Agent
             //mgr.Linq2CacheWithSqlChangeMonitor();
         }
 
-        private void TunnelEntry()
+        private static void TunnelEntry()
         {
             string name = "飞檐走壁", ver = ConsoleNotify.GetVersion();
             Console.Title = string.Format("{0} {1} - 专注网络通讯", name, ver);
@@ -69,6 +75,11 @@ Copyright (c) 2012 JeansMan Studio。
             console.Run(new AgentApp(), new MainForm());
         }
 
-
+        private static void LockEntry()
+        {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new System.Agent.Privacy.IdleForm());
+        }
     }
 }

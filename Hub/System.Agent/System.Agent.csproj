@@ -102,6 +102,7 @@
     <Reference Include="System.Configuration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AgentHubConfig.cs" />
     <Compile Include="Common\CodeTimer.cs" />
     <Compile Include="Common\ConsoleNotify.cs" />
     <Compile Include="Common\SecurityPolicy.cs" />
@@ -113,13 +114,19 @@
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Plug-ins\Privacy\Hook.cs" />
+    <Compile Include="Plug-ins\Privacy\IdleForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Plug-ins\Privacy\IdleForm.Designer.cs">
+      <DependentUpon>IdleForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Plug-ins\Privacy\LockScreen.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Plug-ins\Privacy\LockScreen.designer.cs">
       <DependentUpon>LockScreen.cs</DependentUpon>
     </Compile>
-    <Compile Include="Plug-ins\Privacy\Protocol.cs" />
+    <Compile Include="Plug-ins\Privacy\ProtocolClient.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TransferForm.cs">
@@ -130,6 +137,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\System.Agent.Protocol\System.Agent.Protocol.csproj">
+      <Project>{05a3159a-92d4-4422-abff-143a709cc11d}</Project>
+      <Name>System.Agent.Protocol</Name>
+    </ProjectReference>
     <ProjectReference Include="..\System.Hub\System.Hub.csproj">
       <Project>{0433CAC5-BAAA-4E73-8F68-A7CCB1F6C9BF}</Project>
       <Name>System.Hub</Name>
@@ -158,6 +169,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Plug-ins\Privacy\IdleForm.resx">
+      <DependentUpon>IdleForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Plug-ins\Privacy\LockScreen.resx">
       <DependentUpon>LockScreen.cs</DependentUpon>
     </EmbeddedResource>
