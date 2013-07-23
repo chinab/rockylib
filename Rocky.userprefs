@@ -4,23 +4,17 @@
     <Pads>
       <Pad Id="ProjectPad">
         <State expanded="True">
-          <Node name="04 Test" expanded="True">
-            <Node name="Rocky.TestProject" expanded="True">
-              <Node name="Common" expanded="True">
-                <Node name="ConsoleNotify.cs" selected="True" />
+          <Node name="02 Hub" expanded="True">
+            <Node name="System.Agent.WinService" expanded="True">
+              <Node name="Privacy" expanded="True">
+                <Node name="PrivacyService.cs" selected="True" />
               </Node>
             </Node>
           </Node>
         </State>
       </Pad>
       <Pad Id="ClassPad">
-        <State expanded="True" selected="True">
-          <Node name="02 Infrastructure" expanded="True">
-            <Node name="NoSQL" expanded="True">
-              <Node name="NoSQL" expanded="True" />
-            </Node>
-          </Node>
-        </State>
+        <State expanded="True" selected="True" />
       </Pad>
     </Pads>
   </MonoDevelop.Ide.Workbench>

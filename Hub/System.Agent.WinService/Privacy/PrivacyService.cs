@@ -73,14 +73,23 @@ namespace System.Agent.Privacy
                         try
                         {
                             var config = PrivacyHelper.Config;
-                            PrivacyHelper.FormatDrive(config.Drive);
-                        }
+							if(	System.Threading.Monitor.TryEnter(config))
+							{
+								try
+							{
+                            	PrivacyHelper.FormatDrive(config.Drive);
+							}
+							finally{
+								System.Threading.Monitor.Exit(config);
+							}
+							}
+						}
                         catch (Exception ex)
                         {
                             Hub.LogError(ex, "FormatDrive");
                         }
                         break;
-                }
+				}
             }
         }
 
