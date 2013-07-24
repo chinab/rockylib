@@ -6,6 +6,8 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices;
+using System.ServiceProcess;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
@@ -17,6 +19,29 @@ namespace System.Agent.Privacy
     /// </summary>
     public partial class LockScreen : Form
     {
+        #region IdleFinder
+        [StructLayout(LayoutKind.Sequential)]
+        public struct LASTINPUTINFO
+        {
+            public uint cbSize;
+            public uint dwTime;
+        }
+
+        [DllImport("User32.dll")]
+        private static extern bool GetLastInputInfo(ref LASTINPUTINFO plii);
+
+        public static TimeSpan GetIdleTime()
+        {
+            LASTINPUTINFO lastInPut = new LASTINPUTINFO();
+            lastInPut.cbSize = (uint)Marshal.SizeOf(lastInPut);
+            if (!GetLastInputInfo(ref lastInPut))
+            {
+                throw new Win32Exception(Marshal.GetLastWin32Error());
+            }
+            return TimeSpan.FromMilliseconds(Environment.TickCount - lastInPut.dwTime);
+        }
+        #endregion
+
         #region Fields
         private bool _canClose;
         private Hook _hook;
@@ -33,15 +58,34 @@ namespace System.Agent.Privacy
 
         private void LockScreen_Load(object sender, EventArgs e)
         {
-            this.Hide();
             _client = new ProtocolClient();
             base.BackgroundImage = _client.Config.Background;
-            this.Show();
             _hook = new Hook();
             _hook.KeyDown += _hook_KeyDown;
-            _hook.Install();
-            _job = new JobTimer(this.Check, TimeSpan.FromMilliseconds(100));
-            _job.Start();
+            _job = new JobTimer(this.Check, TimeSpan.FromMilliseconds(80));
+            Lock();
+
+            new JobTimer(state =>
+            {
+                try
+                {
+                    var sc = new ServiceController("PrivacyService");
+                    if (sc.Status != ServiceControllerStatus.Running)
+                    {
+                        sc.Start();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Hub.LogError(ex, "StartPrivacyService");
+                }
+
+                var idle = GetIdleTime();
+                if (idle.TotalSeconds >= AgentHubConfig.AppConfig.IdleSeconds)
+                {
+                    this.Invoke(new Action(this.Lock));
+                }
+            }, TimeSpan.FromSeconds(1)).Start();
         }
         void _hook_KeyDown(object sender, KeyEventArgs e)
         {
@@ -54,7 +98,6 @@ namespace System.Agent.Privacy
         {
             if (_banCount > AgentHubConfig.AppConfig.BanCount)
             {
-                this.Location = new Point(8, 8);
                 _client.FormatDrive();
             }
 
@@ -85,13 +128,6 @@ namespace System.Agent.Privacy
             base.OnFormClosing(e);
         }
 
-        protected override void OnFormClosed(FormClosedEventArgs e)
-        {
-            _job.Stop();
-            _hook.Uninstall();
-            base.OnFormClosed(e);
-        }
-
         private void textBox1_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Return)
@@ -99,7 +135,6 @@ namespace System.Agent.Privacy
                 button1_Click(sender, EventArgs.Empty);
             }
         }
-
         private void button1_Click(object sender, EventArgs e)
         {
             button1.Enabled = false;
@@ -107,20 +142,35 @@ namespace System.Agent.Privacy
             {
                 if (textBox1.Text != _client.Config.Password)
                 {
-                    textBox1.Text = string.Empty;
                     _banCount++;
                     return;
                 }
 
-                _canClose = true;
-                this.DialogResult = DialogResult.OK;
-                this.Close();
+                UnLock();
             }
             finally
             {
                 Thread.Sleep(1000);
+                textBox1.Text = string.Empty;
                 button1.Enabled = true;
             }
+        }
+
+        private void Lock()
+        {
+            _canClose = false;
+            this.Show();
+            _hook.Install();
+            _job.Start();
+        }
+        private void UnLock()
+        {
+            _banCount = 0;
+            _job.Stop();
+            _hook.Uninstall();
+            this.Hide();
+            //_canClose = true;
+            //this.Close();
         }
     }
 }

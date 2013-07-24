@@ -17,7 +17,8 @@ namespace System.Net
     {
         #region StaticMembers
         #region Fields
-        internal const string AgentSock = "Agent-Sock",
+        internal const string AgentAuth = "Agent-Auth",
+            AgentSock = "Agent-Sock",
             AgentDirect = "Agent-Direct",
             AgentReverse = "Agent-Reverse",
             AgentCommand = "Command",
@@ -200,7 +201,7 @@ namespace System.Net
             Response.ContentType = MediaTypeNames.Application.Octet;
             Response.ContentEncoding = Encoding.UTF8;
 
-            string agentCredential = Request.Headers[HttpRequestHeader.Authorization.ToString()];
+            string agentCredential = Request.Headers[xHttpHandler.AgentAuth];
             int agentCommand = 0;
             if (string.IsNullOrEmpty(agentCredential)
                 || !int.TryParse(Request.Form[AgentCommand] ?? Request.Headers[AgentCommand], out agentCommand))

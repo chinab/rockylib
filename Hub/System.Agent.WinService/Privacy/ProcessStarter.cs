@@ -197,17 +197,15 @@ namespace System.Agent.Privacy
         private PROCESS_INFORMATION _processInfo;
 
         public string ProcessPath { get; set; }
-        public string ProcessName { get; set; }
         public string Arguments { get; set; }
 
         public ProcessStarter()
         {
 
         }
-        public ProcessStarter(string processPath, string fullExeName, string arguments = "")
+        public ProcessStarter(string processPath, string arguments = "")
         {
             ProcessPath = processPath;
-            ProcessName = fullExeName;
             Arguments = arguments;
         }
 
@@ -254,18 +252,6 @@ namespace System.Agent.Privacy
             WaitForSingleObject(_processInfo.hProcess, INFINITE);
             int errorcode = Marshal.GetLastWin32Error();
             return errorcode;
-        }
-
-        public void Kill()
-        {
-            Process[] processes = Process.GetProcesses();
-            foreach (Process current in processes)
-            {
-                if (current.ProcessName == ProcessName)
-                {
-                    current.Kill();
-                }
-            }
         }
     }
 }

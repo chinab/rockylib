@@ -150,7 +150,7 @@ namespace System.Net
         {
             var waitHandle = (AutoResetEvent)state;
             _keepAlive.SendReceiveTimeout = Timeout.Infinite;
-            var crypto = xHttpHandler.CreateCrypto(_keepAlive.Headers[HttpRequestHeader.Authorization]);
+            var crypto = xHttpHandler.CreateCrypto(_keepAlive.Headers[xHttpHandler.AgentAuth]);
             string checksum = this.LAN_IP.ToString();
             var inStream = crypto.Encrypt(new MemoryStream(Encoding.UTF8.GetBytes(checksum)));
             _keepAlive.Files.Add(new HttpFile(xHttpHandler.AgentChecksum, xHttpHandler.AgentChecksum, inStream));
@@ -282,7 +282,7 @@ namespace System.Net
             var tunnel = new HttpClient((Uri)xHttpServer.GetRandom(this.ServerBalance));
             tunnel.SendReceiveTimeout = xHttpHandler.Timeout * 1000;
             var cred = this.Credential;
-            tunnel.Headers[HttpRequestHeader.Authorization] = CryptoManaged.MD5Hex(string.Format("{0}:{1}", cred.UserName, cred.Password));
+            tunnel.Headers[xHttpHandler.AgentAuth] = CryptoManaged.MD5Hex(string.Format("{0}:{1}", cred.UserName, cred.Password));
             if (proxyClient != null)
             {
                 var state = this.GetClientState(proxyClient);

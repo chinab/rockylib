@@ -230,6 +230,7 @@ namespace System.Agent
             this.CreateMenuItem("日志", "L");
             this.CreateMenuItem("我的设备", "D");
             this.CreateMenuItem("启动Proxifier", "P");
+            this.CreateMenuItem("安装隐私服务", "PS");
             this.CreateMenuItem("帮助", "H", true);
             this.CreateMenuItem("开机启动/禁止", "S");
             this.CreateMenuItem("显示/隐藏", "V");
@@ -271,6 +272,14 @@ namespace System.Agent
                     {
                         pipeClient.Connect();
                         pipeClient.WriteByte(1);
+                        pipeClient.WaitForPipeDrain();
+                    }
+                    break;
+                case "PS":
+                    using (var pipeClient = new NamedPipeClientStream(SecurityPolicy.PipeName))
+                    {
+                        pipeClient.Connect();
+                        pipeClient.WriteByte(2);
                         pipeClient.WaitForPipeDrain();
                     }
                     break;
@@ -342,7 +351,8 @@ namespace System.Agent
         {
             _tokenSource.Cancel(true);
             _handler(CtrlTypes.CTRL_C_EVENT);
-            Application.Exit();
+            //Application.Exit();
+            Environment.Exit(0);
         }
         #endregion
     }

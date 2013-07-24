@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.ServiceProcess;
 using System.Text;
+using L = System.Threading.Monitor;
 
 namespace System.Agent.Privacy
 {
@@ -14,6 +17,7 @@ namespace System.Agent.Privacy
     {
         #region Fields
         private TcpListener _listener;
+        private Process _proc;
         #endregion
 
         #region Methods
@@ -25,13 +29,13 @@ namespace System.Agent.Privacy
         protected override void OnStart(string[] args)
         {
             // TODO: Add code here to start your service.
-            var config = PrivacyHelper.Config;
-            Hub.LogInfo("Privacy service start... It's monitor on disk {0}.", config.Drive);
-            ShowLock();
+            Hub.LogInfo("Privacy service start... It's monitor on disk {0}.", PrivacyHelper.Config.Drive);
 
             _listener = new TcpListener(PackModel.ServiceEndPoint);
             _listener.Start();
             _listener.BeginAcceptTcpClient(this.AcceptTcpClient, null);
+
+            KeepLock();
         }
         private void AcceptTcpClient(IAsyncResult ar)
         {
@@ -42,6 +46,7 @@ namespace System.Agent.Privacy
             _listener.BeginAcceptTcpClient(this.AcceptTcpClient, null);
 
             var client = _listener.EndAcceptTcpClient(ar);
+            Hub.LogDebug("Client: {0}", client.Client.RemoteEndPoint);
             TaskHelper.Factory.StartNew(this.OnReceive, client);
         }
         private void OnReceive(object state)
@@ -60,6 +65,7 @@ namespace System.Agent.Privacy
                         if (!ok)
                         {
                             client.Close();
+                            return;
                         }
                         break;
                     case Command.GetConfig:
@@ -72,24 +78,24 @@ namespace System.Agent.Privacy
                     case Command.Format:
                         try
                         {
-                            var config = PrivacyHelper.Config;
-							if(	System.Threading.Monitor.TryEnter(config))
-							{
-								try
-							{
-                            	PrivacyHelper.FormatDrive(config.Drive);
-							}
-							finally{
-								System.Threading.Monitor.Exit(config);
-							}
-							}
-						}
+                            if (L.TryEnter(_listener))
+                            {
+                                try
+                                {
+                                    PrivacyHelper.FormatDrive(PrivacyHelper.Config.Drive);
+                                }
+                                finally
+                                {
+                                    L.Exit(_listener);
+                                }
+                            }
+                        }
                         catch (Exception ex)
                         {
                             Hub.LogError(ex, "FormatDrive");
                         }
                         break;
-				}
+                }
             }
         }
 
@@ -101,23 +107,37 @@ namespace System.Agent.Privacy
             Hub.LogInfo("Privacy service stop...");
         }
 
-        private void ShowLock()
+        private void KeepLock()
         {
-            TaskHelper.Factory.StartNew(() =>
+            new JobTimer(state =>
             {
-                try
+                bool run = _proc == null;
+                if (!run)
                 {
-                    string path = @"D:\Projects\GitLib\Hub\System.Agent\bin\Debug\Agent.exe";
-                    //string path = Hub.CombinePath("Agent.exe");
-                    var proc = new ProcessStarter(path, "test0", "1");
-                    var p = proc.Start();
-                    Hub.LogDebug("ProcessStarter={0}", p.Id);
+                    try
+                    {
+                        Process.GetProcessById(_proc.Id);
+                    }
+                    catch (ArgumentException)
+                    {
+                        run = true;
+                    }
                 }
-                catch (Exception ex)
+                if (run)
                 {
-                    Hub.LogError(ex, "ShowLock");
+                    try
+                    {
+                        string path = File.ReadAllText(Hub.CombinePath("ref.txt"));
+                        var proc = new ProcessStarter(path, "1");
+                        _proc = proc.Start();
+                        Hub.LogDebug("ProcessStarter={0}", _proc.Id);
+                    }
+                    catch (Exception ex)
+                    {
+                        Hub.LogError(ex, "KeepLock");
+                    }
                 }
-            });
+            }, TimeSpan.FromSeconds(1)).Start();
         }
         #endregion
     }

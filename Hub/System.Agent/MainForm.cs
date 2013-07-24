@@ -106,7 +106,7 @@ namespace System.Agent
                         this.RunProxifier();
                         break;
                     case 2:
-
+                        this.RunPrivacyService();
                         break;
                 }
 
@@ -271,6 +271,39 @@ namespace System.Agent
                 _proxifierProc = Process.Start(exePath);
             }
             ConsoleNotify.ShowWindow(_proxifierProc.MainWindowHandle, true);
+        }
+
+        private void RunPrivacyService()
+        {
+            lock (_pipeServer)
+            {
+                string destPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), @"Privacy Service\");
+                Hub.CreateDirectory(destPath);
+                string zipPath = Path.Combine(destPath, "PrivacyService.7z");
+
+                var client = new HttpClient(new Uri("http://publish.xineworld.com/cloudagent/PrivacyService.7z"));
+                client.DownloadFile(zipPath);
+
+                var archive = ArchiveFactory.Open(zipPath);
+                foreach (var entry in archive.Entries)
+                {
+                    entry.WriteToDirectory(destPath, ExtractOptions.ExtractFullPath | ExtractOptions.Overwrite);
+                }
+                File.WriteAllText(Path.Combine(destPath, "ref.txt"), Application.ExecutablePath);
+
+                var proc = new Process();
+                proc.StartInfo.FileName = "cmd.exe";
+                proc.StartInfo.UseShellExecute = false;
+                proc.StartInfo.RedirectStandardInput = true;
+                proc.StartInfo.RedirectStandardOutput = true;
+                proc.StartInfo.RedirectStandardError = true;
+                //proc.StartInfo.CreateNoWindow = true;
+                proc.StartInfo.WorkingDirectory = @"C:\Windows\Microsoft.NET\Framework\v4.0.30319\";
+                proc.Start();
+                proc.StandardInput.WriteLine(string.Format(@"InstallUtil.exe /u ""{0}System.Agent.WinService.exe""", destPath));
+                proc.StandardInput.WriteLine(string.Format(@"InstallUtil.exe ""{0}System.Agent.WinService.exe""", destPath));
+                proc.StandardInput.WriteLine("exit");
+            }
         }
         #endregion
     }

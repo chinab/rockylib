@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Configuration.Install;
 using System.Diagnostics;
 using System.Linq;
+using System.ServiceProcess;
 
 namespace System.Agent.WinService
 {
@@ -44,6 +45,17 @@ namespace System.Agent.WinService
             catch (Exception ex)
             {
                 Hub.LogError(ex, "设置服务允许与桌面交互");
+            }
+        }
+
+        protected override void OnCommitted(IDictionary savedState)
+        {
+            base.OnCommitted(savedState);
+            //Auot start service after the installation is completed
+            var sc = new ServiceController(this.serviceInstaller1.ServiceName);
+            if (sc.Status == ServiceControllerStatus.Stopped)
+            {
+                sc.Start();
             }
         }
     }

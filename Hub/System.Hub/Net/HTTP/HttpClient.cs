@@ -22,7 +22,7 @@ namespace System.Net
         static HttpClient()
         {
             //最大并发连接数
-			ServicePointManager.DefaultConnectionLimit = ushort.MaxValue;
+            ServicePointManager.DefaultConnectionLimit = ushort.MaxValue;
             ServicePointManager.CheckCertificateRevocationList = true;
             //返回域名多IP地址
             ServicePointManager.EnableDnsRoundRobin = true;

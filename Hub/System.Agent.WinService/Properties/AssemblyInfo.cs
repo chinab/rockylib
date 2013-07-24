@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("System.AgentHub.WinService")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("AgentSvc")]
+[assembly: AssemblyDescription("System.AgentHub.WinService")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Microsoft")]
+[assembly: AssemblyCompany("JeansMan Studio")]
 [assembly: AssemblyProduct("System.AgentHub.WinService")]
-[assembly: AssemblyCopyright("Copyright © Microsoft 2013")]
+[assembly: AssemblyCopyright("版权所有 (C) JeansMan(杰斯曼) Team 2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

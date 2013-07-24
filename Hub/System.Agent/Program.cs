@@ -1,4 +1,5 @@
-﻿using System;
+﻿#define TUNNEL
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
@@ -16,8 +17,6 @@ namespace System.Agent
             SecurityPolicy.Check();
             try
             {
-                LockEntry();
-                return;
                 short cmd;
                 if (args.Length > 0 && short.TryParse(args[0], out cmd))
                 {
@@ -32,8 +31,9 @@ namespace System.Agent
                     }
                     return;
                 }
+#if TUNNEL
                 TunnelEntry();
-
+#else
             test:
                 Console.Out.WriteInfo("Start test...");
                 CodeTimer.Time("Test:", Iteration, Action);
@@ -45,6 +45,7 @@ namespace System.Agent
                 }
                 Console.Out.WriteInfo("Press any key to exit...");
                 Console.Read();
+#endif
             }
             catch (Exception ex)
             {
@@ -79,7 +80,7 @@ Copyright (c) 2012 JeansMan Studio。
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new System.Agent.Privacy.IdleForm());
+            Application.Run(new System.Agent.Privacy.LockScreen());
         }
     }
 }

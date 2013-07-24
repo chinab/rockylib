@@ -163,6 +163,12 @@ namespace System.Net
                     this.OutWrite("Udp {0} disconnect.", state.LocalEndPoint);
                 }
             }
+            catch (ObjectDisposedException ex)
+            {
+#if DEBUG
+                Hub.LogInfo(string.Format("Predictable objectDisposed exception: {0}", ex.StackTrace));
+#endif
+            }
             catch (SocketException ex)
             {
                 TunnelExceptionHandler.Handle(ex, controlClient.Client, "Udp disconnect");

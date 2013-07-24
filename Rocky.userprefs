@@ -4,13 +4,7 @@
     <Pads>
       <Pad Id="ProjectPad">
         <State expanded="True">
-          <Node name="02 Hub" expanded="True">
-            <Node name="System.Agent.WinService" expanded="True">
-              <Node name="Privacy" expanded="True">
-                <Node name="PrivacyService.cs" selected="True" />
-              </Node>
-            </Node>
-          </Node>
+          <Node name="02 Hub" expanded="True" selected="True" />
         </State>
       </Pad>
       <Pad Id="ClassPad">
