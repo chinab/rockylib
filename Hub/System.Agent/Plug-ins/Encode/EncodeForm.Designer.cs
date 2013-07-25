@@ -1,6 +1,6 @@
-﻿namespace Rocky.App
+﻿namespace System.Agent.Encode
 {
-    partial class FileEncodeForm
+    partial class EncodeForm
     {
         /// <summary>
         /// 必需的设计器变量。

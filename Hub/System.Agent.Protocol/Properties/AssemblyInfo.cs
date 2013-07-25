@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("System.Agent.Protocol")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("AgentProtocol")]
+[assembly: AssemblyDescription("System.Agent.Protocol")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyProduct("System.Agent.Protocol")]
-[assembly: AssemblyCopyright("Copyright © Microsoft 2013")]
+[assembly: AssemblyCompany("JeansMan Studio")]
+[assembly: AssemblyProduct("飞檐走壁")]
+[assembly: AssemblyCopyright("版权所有 (C) JeansMan(杰斯曼) Team 2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

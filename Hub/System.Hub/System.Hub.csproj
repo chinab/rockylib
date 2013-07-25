@@ -184,10 +184,9 @@
     <Compile Include="Data\ChangeTracking\SqlRowChangeMonitor.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Data\Database\ConnectionStringBuilder.cs" />
-    <Compile Include="Data\Database\DbProviderName.cs" />
-    <Compile Include="Data\Database\IRequiresFactory.cs" />
-    <Compile Include="Data\Database\SQLConfig.cs" />
+    <Compile Include="Data\DbProviderName.cs" />
+    <Compile Include="Data\IRequiresFactory.cs" />
+    <Compile Include="Data\SQLConfig.cs" />
     <Compile Include="Data\Meta\IMapping.cs" />
     <Compile Include="Data\Meta\MetaColumn.cs" />
     <Compile Include="Data\Meta\EntityUtility.cs">
@@ -196,7 +195,7 @@
     <Compile Include="Data\Meta\EntityConverter.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Data\Database\EntityStoredProc.cs">
+    <Compile Include="Data\EntityStoredProc.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Data\Meta\MappingException.cs">
@@ -279,12 +278,12 @@
     <Compile Include="DataStructure\BinaryTrees\BinaryTreeNode.cs" />
     <Compile Include="DataStructure\BinaryTrees\TraversalMethods.cs" />
     <Compile Include="DataStructure\Node.cs" />
-    <Compile Include="Data\Database\DbScope.cs" />
-    <Compile Include="Data\Database\Database.cs" />
-    <Compile Include="Data\Database\DbFactory.cs">
+    <Compile Include="Data\DbScope.cs" />
+    <Compile Include="Data\Database.cs" />
+    <Compile Include="Data\DbFactory.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Data\Database\DbUtility.cs">
+    <Compile Include="Data\DbUtility.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Data\Meta\IPropertyConvertible.cs" />

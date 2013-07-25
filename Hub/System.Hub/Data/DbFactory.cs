@@ -19,22 +19,21 @@ namespace System.Data
         {
             ConnectionStringSettingsCollection connectionStrings = ConfigurationManager.ConnectionStrings;
             List<DbFactory> factories = new List<DbFactory>(connectionStrings.Count - 1);
-            ConnectionStringBuilder builder = new ConnectionStringBuilder();
             for (int i = 1; i < connectionStrings.Count; i++)
             {
                 DbProviderName providerName;
                 if (TryConvertTo(connectionStrings[i].ProviderName, out providerName))
                 {
-                    builder.ConnectionString = connectionStrings[i].ConnectionString;
+                    string connectionString = connectionStrings[i].ConnectionString;
                     DbFactory factory = factories.Find(item => item.Name == connectionStrings[i].Name);
                     if (factory == null)
                     {
-                        factory = new DbFactory(connectionStrings[i].Name, builder.GetDecrypt(), providerName);
+                        factory = new DbFactory(connectionStrings[i].Name, connectionString, providerName);
                         factories.Add(factory);
                     }
                     else
                     {
-                        factory._connectionString = builder.GetDecrypt();
+                        factory._connectionString = connectionString;
                         factory._providerName = providerName;
                     }
                 }

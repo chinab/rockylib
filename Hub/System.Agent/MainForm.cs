@@ -15,7 +15,7 @@ using SharpCompress.Common;
 
 namespace System.Agent
 {
-    public partial class MainForm : Form
+    public partial class MainForm : Form, IFormEntry
     {
         public static bool Confirm(string content, string title = "确认操作")
         {
@@ -23,10 +23,14 @@ namespace System.Agent
         }
 
         #region Fields
-        internal const ushort TransferPort = 1079;
+        internal const ushort AssistPort = 1078, TransferPort = 1079;
         private NamedPipeServerStream _pipeServer;
         private FileTransfer _trans;
         private Process _proxifierProc;
+        #endregion
+
+        #region Properties
+        public bool CanClose { get; set; }
         #endregion
 
         #region Load
@@ -41,27 +45,27 @@ namespace System.Agent
             _pipeServer = new NamedPipeServerStream(SecurityPolicy.PipeName, PipeDirection.InOut);
             TaskHelper.Factory.StartNew(this.Callback);
 
-            this.Disposed += MainForm_Disposed;
             lb_user.SelectedIndexChanged += lb_user_SelectedIndexChanged;
             button1.Click += button1_Click;
             textBox2.Click += textBox2_Click;
             button2.Click += button2_Click;
-        }
 
-        void MainForm_Disposed(object sender, EventArgs e)
-        {
-            if (_proxifierProc != null && !_proxifierProc.HasExited)
-            {
-                _proxifierProc.Kill();
-                _proxifierProc.Dispose();
-            }
+            Threading.Thread.Sleep(1000);
+            MonitorChannel.Server(AssistPort);
         }
-
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            if (e.Cancel = !this.IsDisposed)
+            if (e.Cancel = !this.CanClose)
             {
                 this.HideForm();
+            }
+            else
+            {
+                if (_proxifierProc != null && !_proxifierProc.HasExited)
+                {
+                    _proxifierProc.Kill();
+                    _proxifierProc.Dispose();
+                }
             }
             base.OnFormClosing(e);
         }
@@ -78,6 +82,24 @@ namespace System.Agent
                 ReshowDelay = 500,
             };
             tip.SetToolTip(tb_destIpe, "暂只支持局域网IP");
+        }
+
+        private void toolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            var form = new System.Agent.Remote.MonitorClient();
+            form.Show();
+        }
+
+        private void toolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            var form = new System.Agent.Privacy.LockScreen();
+            form.Show();
+        }
+
+        private void toolStripMenuItem3_Click(object sender, EventArgs e)
+        {
+            var form = new System.Agent.Encode.EncodeForm();
+            form.Show();
         }
         #endregion
 

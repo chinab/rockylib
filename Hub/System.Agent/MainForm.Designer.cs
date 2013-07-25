@@ -48,17 +48,22 @@
             this.pb_b = new System.Windows.Forms.ToolStripProgressBar();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // tb_msg
             // 
-            this.tb_msg.Location = new System.Drawing.Point(140, 250);
+            this.tb_msg.Location = new System.Drawing.Point(140, 267);
             this.tb_msg.Multiline = true;
             this.tb_msg.Name = "tb_msg";
             this.tb_msg.ReadOnly = true;
-            this.tb_msg.Size = new System.Drawing.Size(432, 126);
+            this.tb_msg.Size = new System.Drawing.Size(432, 109);
             this.tb_msg.TabIndex = 0;
             this.tb_msg.TabStop = false;
             // 
@@ -66,9 +71,9 @@
             // 
             this.lb_user.FormattingEnabled = true;
             this.lb_user.ItemHeight = 12;
-            this.lb_user.Location = new System.Drawing.Point(14, 12);
+            this.lb_user.Location = new System.Drawing.Point(14, 36);
             this.lb_user.Name = "lb_user";
-            this.lb_user.Size = new System.Drawing.Size(120, 364);
+            this.lb_user.Size = new System.Drawing.Size(120, 340);
             this.lb_user.TabIndex = 2;
             // 
             // groupBox1
@@ -84,7 +89,7 @@
             this.groupBox1.Controls.Add(this.button2);
             this.groupBox1.Controls.Add(this.labID);
             this.groupBox1.Controls.Add(this.button1);
-            this.groupBox1.Location = new System.Drawing.Point(141, 13);
+            this.groupBox1.Location = new System.Drawing.Point(141, 30);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(431, 231);
             this.groupBox1.TabIndex = 3;
@@ -223,16 +228,51 @@
             // 
             this.folderBrowserDialog1.RootFolder = System.Environment.SpecialFolder.MyComputer;
             // 
+            // menuStrip1
+            // 
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem1,
+            this.toolStripMenuItem2,
+            this.toolStripMenuItem3});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(584, 25);
+            this.menuStrip1.TabIndex = 5;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(84, 21);
+            this.toolStripMenuItem1.Text = "远程协助(R)";
+            this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(58, 21);
+            this.toolStripMenuItem2.Text = "锁屏(L)";
+            this.toolStripMenuItem2.Click += new System.EventHandler(this.toolStripMenuItem2_Click);
+            // 
+            // toolStripMenuItem3
+            // 
+            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(59, 21);
+            this.toolStripMenuItem3.Text = "编码(E)";
+            this.toolStripMenuItem3.Click += new System.EventHandler(this.toolStripMenuItem3_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(584, 412);
             this.Controls.Add(this.statusStrip1);
+            this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.lb_user);
             this.Controls.Add(this.tb_msg);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MainMenuStrip = this.menuStrip1;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "MainForm";
@@ -245,6 +285,8 @@
             this.groupBox1.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -271,5 +313,9 @@
         private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.TextBox tb_destIpe;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
+        private Windows.Forms.MenuStrip menuStrip1;
+        private Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
+        private Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
+        private Windows.Forms.ToolStripMenuItem toolStripMenuItem3;
     }
 }

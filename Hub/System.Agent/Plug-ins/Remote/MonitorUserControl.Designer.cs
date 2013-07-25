@@ -1,4 +1,4 @@
-﻿namespace Rocky.App
+﻿namespace System.Agent.Remote
 {
     partial class MonitorUserControl
     {

@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 
-namespace Rocky.App
+namespace System.Agent.Remote
 {
     public partial class MonitorUserControl : UserControl
     {
@@ -49,7 +49,12 @@ namespace Rocky.App
         #region 屏幕
         public void UpdateDisplay()
         {
-            lock (this)
+            if (_objRef == null)
+            {
+                return;
+            }
+
+            lock (_objRef)
             {
                 byte[] bitmapBytes = _objRef.GetDesktopBitmapBytes();
                 if (bitmapBytes.Length == 0)
@@ -71,7 +76,12 @@ namespace Rocky.App
         /// <param name="e"></param>
         private void MonitorUserControl_Paint(object sender, PaintEventArgs e)
         {
-            lock (this)
+            if (_objRef == null)
+            {
+                return;
+            }
+
+            lock (_objRef)
             {
                 if (_bitmap == null)
                 {
@@ -87,7 +97,7 @@ namespace Rocky.App
         #region 鼠标
         private void MonitorUserControl_MouseMove(object sender, MouseEventArgs e)
         {
-            if (!this.DoControl)
+            if (_objRef == null || !this.DoControl)
             {
                 return;
             }
@@ -109,6 +119,11 @@ namespace Rocky.App
         #region 按键
         private void MonitorUserControl_KeyDown(object sender, KeyEventArgs e)
         {
+            if (_objRef == null || !this.DoControl)
+            {
+                return;
+            }
+
             e.Handled = true;
             _objRef.SendKeystroke((byte)e.KeyCode, (byte)MapVirtualKey((uint)e.KeyCode, 0), true, false);
         }

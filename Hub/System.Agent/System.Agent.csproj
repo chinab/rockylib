@@ -114,6 +114,13 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Plug-ins\Encode\EncodeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Plug-ins\Encode\EncodeForm.Designer.cs">
+      <DependentUpon>EncodeForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Plug-ins\Encode\IdentifyEncoding.cs" />
     <Compile Include="Plug-ins\Privacy\Hook.cs" />
     <Compile Include="Plug-ins\Privacy\LockScreen.cs">
       <SubType>Form</SubType>
@@ -122,6 +129,18 @@
       <DependentUpon>LockScreen.cs</DependentUpon>
     </Compile>
     <Compile Include="Plug-ins\Privacy\ProtocolClient.cs" />
+    <Compile Include="Plug-ins\Remote\MonitorClient.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Plug-ins\Remote\MonitorClient.Designer.cs">
+      <DependentUpon>MonitorClient.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Plug-ins\Remote\MonitorUserControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Plug-ins\Remote\MonitorUserControl.Designer.cs">
+      <DependentUpon>MonitorUserControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TransferForm.cs">
@@ -133,7 +152,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\System.Agent.Protocol\System.Agent.Protocol.csproj">
-      <Project>{05a3159a-92d4-4422-abff-143a709cc11d}</Project>
+      <Project>{05A3159A-92D4-4422-ABFF-143A709CC11D}</Project>
       <Name>System.Agent.Protocol</Name>
     </ProjectReference>
     <ProjectReference Include="..\System.Hub\System.Hub.csproj">
@@ -164,8 +183,18 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Plug-ins\Encode\EncodeForm.resx">
+      <DependentUpon>EncodeForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Plug-ins\Privacy\LockScreen.resx">
       <DependentUpon>LockScreen.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Plug-ins\Remote\MonitorClient.resx">
+      <DependentUpon>MonitorClient.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Plug-ins\Remote\MonitorUserControl.resx">
+      <DependentUpon>MonitorUserControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TransferForm.resx">
       <DependentUpon>TransferForm.cs</DependentUpon>

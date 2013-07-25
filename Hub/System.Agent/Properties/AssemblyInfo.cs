@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("JeansMan Studio")]
 [assembly: AssemblyProduct("飞檐走壁")]
-[assembly: AssemblyCopyright("版权所有 (C) JeansMan(杰斯曼) Team 2012")]
+[assembly: AssemblyCopyright("版权所有 (C) JeansMan(杰斯曼) Team 2009")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

@@ -3,7 +3,7 @@ using System.Text;
 using System.IO;
 using System.Net;
 
-namespace Rocky.App
+namespace System.Agent.Encode
 {
     /// <summary>
     /// 检测字符编码的类

@@ -78,6 +78,13 @@ Copyright (c) 2012 JeansMan Studio。
 
         private static void LockEntry()
         {
+            //bool createNew;
+            //var mutex = new Mutex(false, typeof(Program).FullName, out createNew);
+            //if (!createNew)
+            //{
+            //    return;
+            //}
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new System.Agent.Privacy.LockScreen());

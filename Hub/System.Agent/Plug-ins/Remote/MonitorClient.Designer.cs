@@ -1,4 +1,4 @@
-﻿namespace Rocky.App
+﻿namespace System.Agent.Remote
 {
     partial class MonitorClient
     {
@@ -32,22 +32,22 @@
             this.label1 = new System.Windows.Forms.Label();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
-            this.monitorUserControl1 = new Rocky.App.MonitorUserControl();
+            this.monitorUserControl1 = new System.Agent.Remote.MonitorUserControl();
             this.SuspendLayout();
             // 
             // textBox1
             // 
             this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.textBox1.Location = new System.Drawing.Point(47, 473);
+            this.textBox1.Location = new System.Drawing.Point(47, 456);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(207, 21);
+            this.textBox1.Size = new System.Drawing.Size(120, 21);
             this.textBox1.TabIndex = 1;
             // 
             // label1
             // 
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 477);
+            this.label1.Location = new System.Drawing.Point(12, 460);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(29, 12);
             this.label1.TabIndex = 2;
@@ -57,11 +57,11 @@
             // 
             this.checkBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(452, 475);
+            this.checkBox1.Location = new System.Drawing.Point(454, 458);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(48, 16);
             this.checkBox1.TabIndex = 3;
-            this.checkBox1.Text = "监视";
+            this.checkBox1.Text = "协助";
             this.checkBox1.UseVisualStyleBackColor = true;
             this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
             // 
@@ -69,7 +69,7 @@
             // 
             this.checkBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.checkBox2.AutoSize = true;
-            this.checkBox2.Location = new System.Drawing.Point(516, 475);
+            this.checkBox2.Location = new System.Drawing.Point(518, 458);
             this.checkBox2.Name = "checkBox2";
             this.checkBox2.Size = new System.Drawing.Size(48, 16);
             this.checkBox2.TabIndex = 4;
@@ -87,7 +87,7 @@
             this.monitorUserControl1.DoControl = false;
             this.monitorUserControl1.Location = new System.Drawing.Point(0, -1);
             this.monitorUserControl1.Name = "monitorUserControl1";
-            this.monitorUserControl1.Size = new System.Drawing.Size(603, 468);
+            this.monitorUserControl1.Size = new System.Drawing.Size(605, 451);
             this.monitorUserControl1.TabIndex = 0;
             // 
             // MonitorClient
@@ -95,7 +95,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.ClientSize = new System.Drawing.Size(602, 499);
+            this.ClientSize = new System.Drawing.Size(604, 482);
             this.Controls.Add(this.checkBox2);
             this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.label1);
@@ -104,7 +104,7 @@
             this.DoubleBuffered = true;
             this.MinimizeBox = false;
             this.Name = "MonitorClient";
-            this.Text = "远程监控";
+            this.Text = "远程协助";
             this.TopMost = true;
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.ResumeLayout(false);

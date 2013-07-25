@@ -6,10 +6,10 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("AgentSvc")]
-[assembly: AssemblyDescription("System.AgentHub.WinService")]
+[assembly: AssemblyDescription("System.Agent.WinService")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("JeansMan Studio")]
-[assembly: AssemblyProduct("System.AgentHub.WinService")]
+[assembly: AssemblyProduct("飞檐走壁")]
 [assembly: AssemblyCopyright("版权所有 (C) JeansMan(杰斯曼) Team 2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

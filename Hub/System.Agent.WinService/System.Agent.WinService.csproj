@@ -15,6 +15,8 @@
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <IsWebBootstrapper>false</IsWebBootstrapper>
+    <ProductVersion>12.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
     <PublishUrl>C:\Packages\AgentSvc\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -58,11 +60,15 @@
     <ManifestKeyFile>System.Agent.WinService_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <GenerateManifests>true</GenerateManifests>
+    <GenerateManifests>false</GenerateManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <SignManifests>true</SignManifests>
+    <SignManifests>false</SignManifests>
   </PropertyGroup>
+  <PropertyGroup>
+    <TargetZone>LocalIntranet</TargetZone>
+  </PropertyGroup>
+  <PropertyGroup />
   <ItemGroup>
     <Reference Include="Db4objects.Db4o">
       <HintPath>..\..\packages\db4o-devel.8.1.184.15492\lib\net40\Db4objects.Db4o.dll</HintPath>
@@ -110,7 +116,6 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
-    <None Include="System.Agent.WinService_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Privacy\PrivacyService.resx">
@@ -122,11 +127,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\System.Agent.Protocol\System.Agent.Protocol.csproj">
-      <Project>{05a3159a-92d4-4422-abff-143a709cc11d}</Project>
+      <Project>{05A3159A-92D4-4422-ABFF-143A709CC11D}</Project>
       <Name>System.Agent.Protocol</Name>
     </ProjectReference>
     <ProjectReference Include="..\System.Hub\System.Hub.csproj">
-      <Project>{0433cac5-baaa-4e73-8f68-a7ccb1f6c9bf}</Project>
+      <Project>{0433CAC5-BAAA-4E73-8F68-A7CCB1F6C9BF}</Project>
       <Name>System.Hub</Name>
     </ProjectReference>
   </ItemGroup>

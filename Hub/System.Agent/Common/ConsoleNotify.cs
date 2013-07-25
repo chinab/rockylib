@@ -314,7 +314,7 @@ namespace System.Agent
         #endregion
 
         #region Methods
-        public void Run(IHubEntry entry, Form entryForm = null)
+        public void Run(IHubEntry entry, Form form = null)
         {
             //ConsoleNotify.DisableCloseButton();
             _notify.ShowBalloonTip(3000, _notify.Text, string.Format("{0}已启动，单击托盘图标可以最小化！", _notify.Text), ToolTipIcon.Info);
@@ -322,9 +322,14 @@ namespace System.Agent
             {
                 ConsoleNotify.Visible = false;
                 _notify.Dispose();
-                if (entryForm != null)
+                if (form != null)
                 {
-                    entryForm.Dispose();
+                    var wrap = form as IFormEntry;
+                    if (wrap != null)
+                    {
+                        wrap.CanClose = true;
+                    }
+                    form.Close();
                 }
                 return false;
             });
@@ -336,14 +341,14 @@ namespace System.Agent
                 entry.Main(state);
                 this.Exit();
             }, null, _tokenSource.Token).ObservedException();
-            if (entryForm == null)
+            if (form == null)
             {
                 Application.Run();
             }
             else
             {
                 Application.EnableVisualStyles();
-                Application.Run(entryForm);
+                Application.Run(form);
             }
         }
 
@@ -355,5 +360,10 @@ namespace System.Agent
             Environment.Exit(0);
         }
         #endregion
+    }
+
+    public interface IFormEntry
+    {
+        bool CanClose { get; set; }
     }
 }

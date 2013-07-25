@@ -11,6 +11,9 @@ using System.Runtime.CompilerServices;
 
 namespace System.Data
 {
+    /// <summary>
+    /// MultipleActiveResultSets=True;
+    /// </summary>
     public class Database : IRequiresFactory
     {
         #region Static

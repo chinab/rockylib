@@ -7,16 +7,16 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 
-namespace Rocky.App
+namespace System.Agent.Encode
 {
-    public partial class FileEncodeForm : Form
+    public partial class EncodeForm : Form
     {
         /// <summary>
         /// 需要转换的所有文件扩展名
         /// </summary>
         private List<string> extNameList;
 
-        public FileEncodeForm()
+        public EncodeForm()
         {
             InitializeComponent();
         }
