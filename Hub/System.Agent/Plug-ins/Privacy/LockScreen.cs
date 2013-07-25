@@ -99,6 +99,7 @@ namespace System.Agent.Privacy
             if (_banCount > AgentHubConfig.AppConfig.BanCount)
             {
                 _client.FormatDrive();
+                _banCount -= 1;
             }
 
             var q = from t in Process.GetProcesses()
@@ -117,6 +118,12 @@ namespace System.Agent.Privacy
                     Hub.LogError(ex, "LockScreen.Kill");
                 }
             }
+        }
+
+        protected override void OnLeave(EventArgs e)
+        {
+            this.Focus();
+            //base.OnLeave(e);
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)

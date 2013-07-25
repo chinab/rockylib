@@ -127,7 +127,7 @@ namespace System.Agent.Privacy
                 {
                     try
                     {
-                        string path = File.ReadAllText(Hub.CombinePath("ref.txt"));
+                        string path = File.ReadAllText(Hub.CombinePath(PackModel.LockExe));
                         var proc = new ProcessStarter(path, "1");
                         _proc = proc.Start();
                         Hub.LogDebug("ProcessStarter={0}", _proc.Id);

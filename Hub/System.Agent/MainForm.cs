@@ -65,6 +65,20 @@ namespace System.Agent
             }
             base.OnFormClosing(e);
         }
+
+        protected override void OnCreateControl()
+        {
+            base.OnCreateControl();
+
+            var tip = new ToolTip()
+            {
+                AutomaticDelay = 5000,
+                AutoPopDelay = 50000,
+                InitialDelay = 100,
+                ReshowDelay = 500,
+            };
+            tip.SetToolTip(tb_destIpe, "暂只支持局域网IP");
+        }
         #endregion
 
         #region Methods
@@ -95,21 +109,26 @@ namespace System.Agent
             while (_pipeServer != null)
             {
                 _pipeServer.WaitForConnection();
-
-                int cmd = _pipeServer.ReadByte();
-                switch (cmd)
+                try
                 {
-                    case 0:
-                        this.ShowList();
-                        break;
-                    case 1:
-                        this.RunProxifier();
-                        break;
-                    case 2:
-                        this.RunPrivacyService();
-                        break;
+                    int cmd = _pipeServer.ReadByte();
+                    switch (cmd)
+                    {
+                        case 0:
+                            this.ShowList();
+                            break;
+                        case 1:
+                            this.RunProxifier();
+                            break;
+                        case 2:
+                            this.RunPrivacyService();
+                            break;
+                    }
                 }
-
+                catch (Exception ex)
+                {
+                    Hub.LogError(ex, "PipeServer");
+                }
                 _pipeServer.WaitForPipeDrain();
                 if (_pipeServer.IsConnected)
                 {
@@ -192,7 +211,7 @@ namespace System.Agent
         }
         #endregion
 
-        #region File
+        #region Extend
         void textBox2_Click(object sender, EventArgs e)
         {
             if (folderBrowserDialog1.ShowDialog() == DialogResult.OK)
@@ -215,9 +234,12 @@ namespace System.Agent
         {
             if (MainForm.Confirm(string.Format("是否接收文件{0}？", e.Config.FileName), "文件传输"))
             {
-                //var form = new TransferForm();
-                //form.Start(_trans);
-                //form.Show();
+                TaskHelper.Factory.StartNew(() =>
+                {
+                    var form = new TransferForm();
+                    form.Start(_trans);
+                    form.Show();
+                });
             }
             else
             {
@@ -284,12 +306,25 @@ namespace System.Agent
                 var client = new HttpClient(new Uri("http://publish.xineworld.com/cloudagent/PrivacyService.7z"));
                 client.DownloadFile(zipPath);
 
+                try
+                {
+                    var sc = new System.ServiceProcess.ServiceController("PrivacyService");
+                    if (sc.Status != System.ServiceProcess.ServiceControllerStatus.Stopped)
+                    {
+                        sc.Stop();
+                    }
+                }
+                catch (InvalidOperationException ex)
+                {
+                    Hub.LogError(ex, "SvcStop");
+                }
+                //先停止否则无法覆盖
                 var archive = ArchiveFactory.Open(zipPath);
                 foreach (var entry in archive.Entries)
                 {
                     entry.WriteToDirectory(destPath, ExtractOptions.ExtractFullPath | ExtractOptions.Overwrite);
                 }
-                File.WriteAllText(Path.Combine(destPath, "ref.txt"), Application.ExecutablePath);
+                File.WriteAllText(Path.Combine(destPath, System.Agent.Privacy.PackModel.LockExe), Application.ExecutablePath);
 
                 var proc = new Process();
                 proc.StartInfo.FileName = "cmd.exe";
@@ -303,6 +338,7 @@ namespace System.Agent
                 proc.StandardInput.WriteLine(string.Format(@"InstallUtil.exe /u ""{0}System.Agent.WinService.exe""", destPath));
                 proc.StandardInput.WriteLine(string.Format(@"InstallUtil.exe ""{0}System.Agent.WinService.exe""", destPath));
                 proc.StandardInput.WriteLine("exit");
+                //proc.WaitForExit();
             }
         }
         #endregion

@@ -10,6 +10,8 @@ namespace System.Agent.Privacy
     public sealed class PackModel
     {
         [NonSerialized]
+        public const string LockExe = "exe.config";
+        [NonSerialized]
         public static readonly IPEndPoint ServiceEndPoint;
 
         static PackModel()
