@@ -12,7 +12,7 @@ namespace System.Agent.Privacy
     internal class ProtocolClient : Disposable
     {
         private TcpClient _client;
-        private volatile ConfigEntity _config;
+        private ConfigEntity _config;
 
         internal ConfigEntity Config
         {
@@ -21,15 +21,18 @@ namespace System.Agent.Privacy
                 Contract.Ensures(Contract.Result<ConfigEntity>() != null);
                 base.CheckDisposed();
 
-                _client.Client.Send(new PackModel()
+                lock (_client)
                 {
-                    Cmd = Command.GetConfig,
-                });
-                while (_config == null)
-                {
-                    Thread.Sleep(1000);
+                    _client.Client.Send(new PackModel()
+                    {
+                        Cmd = Command.GetConfig,
+                    });
+                    while (_config == null)
+                    {
+                        Thread.Sleep(1000);
+                    }
+                    return _config;
                 }
-                return _config;
             }
             set
             {
@@ -78,7 +81,10 @@ namespace System.Agent.Privacy
                         }
                         break;
                     case Command.GetConfig:
-                        _config = (ConfigEntity)pack.Model;
+                        lock (_client)
+                        {
+                            _config = (ConfigEntity)pack.Model;
+                        }
                         break;
                 }
             }
