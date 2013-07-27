@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "System.Hub", "Hub\System.Hub\System.Hub.csproj", "{0433CAC5-BAAA-4E73-8F68-A7CCB1F6C9BF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "System.MacAgent", "Hub\System.MacAgent\System.MacAgent.csproj", "{65781073-BFA6-440F-8369-26396A2DFCB4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+		Mono|Any CPU = Mono|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0433CAC5-BAAA-4E73-8F68-A7CCB1F6C9BF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0433CAC5-BAAA-4E73-8F68-A7CCB1F6C9BF}.Debug|x86.Build.0 = Debug|Any CPU
+		{0433CAC5-BAAA-4E73-8F68-A7CCB1F6C9BF}.Mono|Any CPU.ActiveCfg = Mono|Any CPU
+		{0433CAC5-BAAA-4E73-8F68-A7CCB1F6C9BF}.Mono|Any CPU.Build.0 = Mono|Any CPU
+		{0433CAC5-BAAA-4E73-8F68-A7CCB1F6C9BF}.Release|x86.ActiveCfg = Release|Any CPU
+		{0433CAC5-BAAA-4E73-8F68-A7CCB1F6C9BF}.Release|x86.Build.0 = Release|Any CPU
+		{65781073-BFA6-440F-8369-26396A2DFCB4}.Debug|x86.ActiveCfg = Debug|x86
+		{65781073-BFA6-440F-8369-26396A2DFCB4}.Debug|x86.Build.0 = Debug|x86
+		{65781073-BFA6-440F-8369-26396A2DFCB4}.Mono|Any CPU.ActiveCfg = Mono|Any CPU
+		{65781073-BFA6-440F-8369-26396A2DFCB4}.Mono|Any CPU.Build.0 = Mono|Any CPU
+		{65781073-BFA6-440F-8369-26396A2DFCB4}.Release|x86.ActiveCfg = Release|x86
+		{65781073-BFA6-440F-8369-26396A2DFCB4}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Hub\System.MacAgent\System.MacAgent.csproj
+	EndGlobalSection
+EndGlobal

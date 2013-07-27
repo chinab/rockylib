@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 
-namespace System.Net
+namespace System.Agent.Remote
 {
     public class Monitor : MarshalByRefObject
     {

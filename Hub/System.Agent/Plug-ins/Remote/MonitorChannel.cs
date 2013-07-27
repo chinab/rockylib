@@ -5,7 +5,7 @@ using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Tcp;
 using System.Net;
 
-namespace System.Net
+namespace System.Agent.Remote
 {
     public static class MonitorChannel
     {

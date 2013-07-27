@@ -9,7 +9,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.ServiceProcess;
 using System.Text;
-using L = System.Threading.Monitor;
+using System.Threading;
 
 namespace System.Agent.Privacy
 {
@@ -78,7 +78,7 @@ namespace System.Agent.Privacy
                     case Command.Format:
                         try
                         {
-                            if (L.TryEnter(_listener))
+                            if (Monitor.TryEnter(_listener))
                             {
                                 try
                                 {
@@ -86,7 +86,7 @@ namespace System.Agent.Privacy
                                 }
                                 finally
                                 {
-                                    L.Exit(_listener);
+                                    Monitor.Exit(_listener);
                                 }
                             }
                         }

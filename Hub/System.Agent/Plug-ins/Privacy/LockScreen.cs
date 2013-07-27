@@ -122,8 +122,13 @@ namespace System.Agent.Privacy
 
         protected override void OnLeave(EventArgs e)
         {
-            this.Focus();
             //base.OnLeave(e);
+            this.Activate();
+        }
+        protected override void OnLostFocus(EventArgs e)
+        {
+            //base.OnLostFocus(e);
+            this.Focus();
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)

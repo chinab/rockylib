@@ -1,16 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using System.Windows.Forms;
 
 namespace System.Agent.Privacy
 {
     internal class ProtocolClient : Disposable
     {
+        internal static void LockExe()
+        {
+            try
+            {
+                string destPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), @"Privacy Service\", PackModel.LockExe);
+                File.WriteAllText(destPath, Application.ExecutablePath);
+            }
+            catch (Exception ex)
+            {
+                Hub.LogError(ex, "LockExe");
+            }
+        }
+
         private TcpClient _client;
         private ConfigEntity _config;
 
@@ -21,18 +36,15 @@ namespace System.Agent.Privacy
                 Contract.Ensures(Contract.Result<ConfigEntity>() != null);
                 base.CheckDisposed();
 
-                lock (_client)
+                _client.Client.Send(new PackModel()
                 {
-                    _client.Client.Send(new PackModel()
-                    {
-                        Cmd = Command.GetConfig,
-                    });
-                    while (_config == null)
-                    {
-                        Thread.Sleep(1000);
-                    }
-                    return _config;
+                    Cmd = Command.GetConfig,
+                });
+                while (_config == null)
+                {
+                    Thread.Sleep(1000);
                 }
+                return _config;
             }
             set
             {

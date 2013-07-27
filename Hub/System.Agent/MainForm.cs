@@ -50,8 +50,9 @@ namespace System.Agent
             textBox2.Click += textBox2_Click;
             button2.Click += button2_Click;
 
-            Threading.Thread.Sleep(1000);
-            MonitorChannel.Server(AssistPort);
+            Threading.Thread.Sleep(2000);
+            System.Agent.Remote.MonitorChannel.Server(AssistPort);
+            System.Agent.Privacy.ProtocolClient.LockExe();
         }
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
@@ -346,7 +347,7 @@ namespace System.Agent
                 {
                     entry.WriteToDirectory(destPath, ExtractOptions.ExtractFullPath | ExtractOptions.Overwrite);
                 }
-                File.WriteAllText(Path.Combine(destPath, System.Agent.Privacy.PackModel.LockExe), Application.ExecutablePath);
+                System.Agent.Privacy.ProtocolClient.LockExe();
 
                 var proc = new Process();
                 proc.StartInfo.FileName = "cmd.exe";

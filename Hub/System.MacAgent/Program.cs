@@ -7,8 +7,6 @@ namespace System.MacAgent
 		public static void Main (string[] args)
 		{
 			Console.WriteLine ("Hello World!");
-			Hub.LogDebug ("Hello World!");
-			Console.Read ();
 		}
 	}
 }
