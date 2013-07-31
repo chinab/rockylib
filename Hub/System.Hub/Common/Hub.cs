@@ -238,7 +238,7 @@ namespace System
             Contract.Ensures(Contract.Result<Stream>() != null);
 
             Assembly dll = dllPath == null ? Assembly.GetCallingAssembly() : Assembly.LoadFrom(dllPath);
-            string[] names = dll.GetManifestResourceNames();
+            //string[] names = dll.GetManifestResourceNames();
             return dll.GetManifestResourceStream(name);
         }
 

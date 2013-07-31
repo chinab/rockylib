@@ -24,8 +24,10 @@ namespace System.Net
             //最大并发连接数
             ServicePointManager.DefaultConnectionLimit = ushort.MaxValue;
             ServicePointManager.CheckCertificateRevocationList = true;
+#if !Mono
             //返回域名多IP地址
             ServicePointManager.EnableDnsRoundRobin = true;
+#endif
             //没有限制
             ServicePointManager.MaxServicePoints = 0;
             ServicePointManager.ServerCertificateValidationCallback = new System.Net.Security.RemoteCertificateValidationCallback(CheckValidationResult);
@@ -191,12 +193,14 @@ namespace System.Net
         #region VirtualMethods
         protected virtual HttpWebResponse GetResponse(string httpMethod)
         {
+#if !Mono
             if (_request.KeepAlive)
             {
                 var sp = _request.ServicePoint;
                 var prop = sp.GetType().GetProperty("HttpBehaviour", BindingFlags.NonPublic | BindingFlags.Instance);
                 prop.SetValue(sp, (byte)0, null);
             }
+#endif
             if (httpMethod == null)
             {
                 _request.Method = _entity.HasValue ? WebRequestMethods.Http.Post : WebRequestMethods.Http.Get;
@@ -377,7 +381,6 @@ namespace System.Net
 
         public string UploadFile(string filePath)
         {
-            string fileName = Path.GetFileName(filePath);
             long offset = this.GetResponseHead().ContentLength;
             _request.AddRange(offset);
             _request.AllowWriteStreamBuffering = false;
