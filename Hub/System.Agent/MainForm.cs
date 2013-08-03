@@ -50,7 +50,7 @@ namespace System.Agent
             textBox2.Click += textBox2_Click;
             button2.Click += button2_Click;
 
-            Threading.Thread.Sleep(2000);
+            Threading.Thread.Sleep(10000);
             System.Agent.Remote.MonitorChannel.Server(AssistPort);
             System.Agent.Privacy.ProtocolClient.LockExe();
         }
@@ -196,7 +196,7 @@ namespace System.Agent
             }
             var item = _deviceIdentitys[lb_user.SelectedIndex - 1];
 #if !DEBUG
-            if (item.Item2 == AgentHubApp.Instance.FirstClient.ClientID)
+            if (item.Item2 == AgentApp.Instance.FirstClient.ClientID)
             {
                 this.AppendLog("请选择非当前设备的其它设备ID");
                 return;

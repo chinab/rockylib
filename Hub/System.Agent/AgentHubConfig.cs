@@ -25,8 +25,10 @@ namespace System.Agent
                 config.Credential = GetCredential(exe, "Credential");
                 config.TunnelList = GetTunnelList(exe, "TunnelList");
 
-                config.IdleSeconds = Convert.ToUInt16(GetValue(exe, "IdleSeconds"));
-                config.BanCount = Convert.ToUInt16(GetValue(exe, "BanCount"));
+                config.LockBg = GetValue(exe, "LockBg", string.Empty);
+                config.UnlockPwd = GetValue(exe, "UnlockPwd", "123456");
+                config.IdleLock = Convert.ToUInt16(GetValue(exe, "IdleLock", "40"));
+                config.BanCount = Convert.ToUInt16(GetValue(exe, "BanCount", "7"));
                 return config;
             }
         }
@@ -37,15 +39,20 @@ namespace System.Agent
             Hub.CreateDirectory(AppConfigPath);
             if (!File.Exists(AppConfigPath))
             {
-                Hub.CreateFileFromResource("System.Agent.AgentHub.config", AppConfigPath, "Agent.exe");
+                Hub.CreateFileFromResource("System.Agent.AgentHub.config", AppConfigPath, Hub.CombinePath("Agent.exe"));
             }
         }
 
-        private static string GetValue(System.Configuration.Configuration exe, string key)
+        #region Methods
+        private static string GetValue(System.Configuration.Configuration exe, string key, string defaultVal = null)
         {
             var item = exe.AppSettings.Settings[key];
             if (item == null || string.IsNullOrEmpty(item.Value))
             {
+                if (defaultVal != null)
+                {
+                    return defaultVal;
+                }
                 throw new InvalidOperationException(string.Format("配置项 {0} 错误", key));
             }
             return item.Value;
@@ -75,13 +82,16 @@ namespace System.Agent
                     select Tuple.Create(ushort.Parse(a[0]), a[1]);
             return q.ToArray();
         }
+        #endregion
 
         public bool AsServerNode;
         public bool EnableSsl;
         public NetworkCredential Credential;
         public Tuple<ushort, string>[] TunnelList;
 
-        public ushort IdleSeconds;
+        public string LockBg;
+        public string UnlockPwd;
+        public ushort IdleLock;
         public ushort BanCount;
     }
 }

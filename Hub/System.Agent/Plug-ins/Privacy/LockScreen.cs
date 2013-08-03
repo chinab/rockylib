@@ -81,7 +81,7 @@ namespace System.Agent.Privacy
                 }
 
                 var idle = GetIdleTime();
-                if (idle.TotalSeconds >= AgentHubConfig.AppConfig.IdleSeconds)
+                if (idle.TotalSeconds >= AgentHubConfig.AppConfig.IdleLock)
                 {
                     this.Invoke(new Action(this.Lock));
                 }
@@ -89,9 +89,17 @@ namespace System.Agent.Privacy
         }
         void _hook_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Modifiers.HasFlag(Keys.Delete) || e.KeyData == Keys.Delete)
+            switch (e.KeyData)
             {
-                _banCount += 2;
+                case Keys.Control:
+                case Keys.Alt:
+                case Keys.Delete:
+                    _banCount++;
+                    break;
+            }
+            if (e.Modifiers.HasFlag(Keys.Delete))
+            {
+                _banCount++;
             }
         }
         private void Check(object state)
@@ -108,7 +116,7 @@ namespace System.Agent.Privacy
             var p1 = q.SingleOrDefault();
             if (p1 != null)
             {
-                _banCount += 2;
+                _banCount++;
                 try
                 {
                     p1.Kill();
@@ -122,7 +130,7 @@ namespace System.Agent.Privacy
 
         protected override void OnLeave(EventArgs e)
         {
-            //base.OnLeave(e);
+            base.OnLeave(e);
             this.Activate();
         }
         protected override void OnLostFocus(EventArgs e)
@@ -133,9 +141,10 @@ namespace System.Agent.Privacy
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
+            //监控关机
             if (e.Cancel = !_canClose)
             {
-                _banCount++;
+                _banCount += 2;
             }
             base.OnFormClosing(e);
         }

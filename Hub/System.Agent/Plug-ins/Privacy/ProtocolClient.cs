@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -43,6 +44,14 @@ namespace System.Agent.Privacy
                 while (_config == null)
                 {
                     Thread.Sleep(1000);
+                }
+                if (_config.Background == null)
+                {
+                    string path = AgentHubConfig.AppConfig.LockBg;
+                    if (File.Exists(path))
+                    {
+                        _config.Background = Image.FromFile(path);
+                    }
                 }
                 return _config;
             }
