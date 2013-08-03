@@ -15,7 +15,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Redis", "Redis", "{420091CC-684A-4B6F-9F79-7DD46BE50D9C}"
 	ProjectSection(SolutionItems) = preProject
 		Solution\ThirdParty\Redis\redis.conf = Solution\ThirdParty\Redis\redis.conf
-		Solution\ThirdParty\Redis\redisbin.zip = Solution\ThirdParty\Redis\redisbin.zip
+		Solution\ThirdParty\Redis\redisbin64.zip = Solution\ThirdParty\Redis\redisbin64.zip
 		Solution\ThirdParty\Redis\redisSlave.conf = Solution\ThirdParty\Redis\redisSlave.conf
 		Solution\ThirdParty\Redis\rediswatcherbin.zip = Solution\ThirdParty\Redis\rediswatcherbin.zip
 		Solution\ThirdParty\Redis\watcher.conf = Solution\ThirdParty\Redis\watcher.conf

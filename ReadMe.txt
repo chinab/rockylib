@@ -23,5 +23,4 @@
 5. 
   a. Https反向连接获取问题；
   b. Git项目网站生成；
-  c. Http Send 性能问题，DNS国内/外解析问题；
-  d. 远程操控；
+  d. https://github.com/MSOpenTech/redis;
