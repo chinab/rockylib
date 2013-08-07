@@ -126,8 +126,8 @@ Global
 		{AB259862-3DDF-4431-878B-AAAC03C8A13A}.Release|x86.ActiveCfg = Release|Any CPU
 		{F9900CCF-1978-4B88-B619-240271EB5F96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F9900CCF-1978-4B88-B619-240271EB5F96}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F9900CCF-1978-4B88-B619-240271EB5F96}.Debug|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{F9900CCF-1978-4B88-B619-240271EB5F96}.Debug|Mixed Platforms.Build.0 = Release|Any CPU
+		{F9900CCF-1978-4B88-B619-240271EB5F96}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{F9900CCF-1978-4B88-B619-240271EB5F96}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
 		{F9900CCF-1978-4B88-B619-240271EB5F96}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{F9900CCF-1978-4B88-B619-240271EB5F96}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F9900CCF-1978-4B88-B619-240271EB5F96}.Release|Any CPU.Build.0 = Release|Any CPU

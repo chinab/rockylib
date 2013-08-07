@@ -50,9 +50,12 @@ namespace System.Agent
             textBox2.Click += textBox2_Click;
             button2.Click += button2_Click;
 
-            Threading.Thread.Sleep(10000);
-            System.Agent.Remote.MonitorChannel.Server(AssistPort);
             System.Agent.Privacy.ProtocolClient.LockExe();
+            TaskHelper.Factory.StartNew(() =>
+            {
+                Threading.Thread.Sleep(8000);
+                System.Agent.Remote.MonitorChannel.Server(AssistPort);
+            });
         }
         protected override void OnFormClosing(FormClosingEventArgs e)
         {

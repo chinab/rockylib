@@ -20,7 +20,7 @@ namespace System.Net
         private class UdpClientState : Disposable
         {
             #region Fields
-            private SynchronizedCollection<EndPoint> _remoteEndPoints;
+            private static readonly HashSet<EndPoint> _remoteEndPoints = new HashSet<EndPoint>();
             private AutoResetEvent _waitHandle;
             #endregion
 
@@ -32,7 +32,6 @@ namespace System.Net
             #region Constructors
             public UdpClientState()
             {
-                _remoteEndPoints = new SynchronizedCollection<EndPoint>();
                 _waitHandle = new AutoResetEvent(false);
             }
 
@@ -47,7 +46,6 @@ namespace System.Net
                     }
                 }
                 _waitHandle = null;
-                _remoteEndPoints = null;
             }
             #endregion
 
@@ -59,34 +57,39 @@ namespace System.Net
                 {
                     var q = from ip in SocketHelper.GetHostAddresses(de.Host)
                             select new IPEndPoint(ip, de.Port);
-                    foreach (var ipe in q)
+                    lock (_remoteEndPoints)
                     {
-                        if (!_remoteEndPoints.Contains(ipe))
-                        {
-                            _remoteEndPoints.Add(ipe);
-                        }
+                        _remoteEndPoints.UnionWith(q);
                     }
                 }
                 else
                 {
-                    if (!_remoteEndPoints.Contains(remoteEndPoint))
+                    lock (_remoteEndPoints)
                     {
                         _remoteEndPoints.Add(remoteEndPoint);
                     }
                 }
+                Hub.LogInfo("Udp Record {0}.", remoteEndPoint);
             }
             public bool HasRemoteEndPoint(IPEndPoint remoteEndPoint)
             {
-                bool result = _remoteEndPoints.Contains(remoteEndPoint);
+                bool result;
+                lock (_remoteEndPoints)
+                {
+                    result = _remoteEndPoints.Contains(remoteEndPoint);
+                }
                 if (!result)
                 {
                     var sb = new StringBuilder();
-                    foreach (var ipe in _remoteEndPoints)
+                    lock (_remoteEndPoints)
                     {
-                        sb.Append(ipe).Append("\t");
+                        foreach (var ipe in _remoteEndPoints)
+                        {
+                            sb.Append(ipe).Append("\t");
+                        }
                     }
-                    sb.Append("--").Append(remoteEndPoint);
-                    Hub.LogInfo("Udp has: {0}", sb);
+                    sb.AppendLine().AppendFormat("\tForbidden: {0}.", remoteEndPoint);
+                    Hub.LogInfo("Udp Check: {0}", sb);
                 }
                 return result;
             }
@@ -252,9 +255,6 @@ namespace System.Net
                             currentState.AddRemoteEndPoint(ipe);
                             destIpe = ipe.ToString();
                         }
-#if DEBUG
-                        this.OutWrite("Udp Record {0} {1}.", localIpe, destIpe);
-#endif
                         var tunnel = this.CreateTunnel(TunnelCommand.UdpSend, controlClient);
                         tunnel.Headers[xHttpHandler.AgentDirect] = destIpe;
                         var outStream = new MemoryStream(data, offset, data.Length - offset);

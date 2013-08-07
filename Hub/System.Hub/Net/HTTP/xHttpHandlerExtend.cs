@@ -20,17 +20,22 @@ namespace System.Net
         #region Methods
         public static UdpClient CreateUdpClient()
         {
-            //var udpSock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            //udpSock.ReuseAddress();
-            //udpSock.Bind(new IPEndPoint(IPAddress.Any, _udpPortOffset++));
-
-            var client = new UdpClient(new IPEndPoint(IPAddress.Any, _udpPortOffset++));
-            if (_udpPortOffset == IPEndPoint.MaxPort)
+            try
             {
-                _udpPortOffset = 1090;
+                var udpSock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+                udpSock.ReuseAddress();
+                udpSock.Bind(new IPEndPoint(IPAddress.Any, _udpPortOffset++));
+                var client = new UdpClient();
+                client.Client = udpSock;
+                return client;
             }
-            //client.Client = udpSock;
-            return client;
+            finally
+            {
+                if (_udpPortOffset == IPEndPoint.MaxPort)
+                {
+                    _udpPortOffset = 1090;
+                }
+            }
         }
         #endregion
 
