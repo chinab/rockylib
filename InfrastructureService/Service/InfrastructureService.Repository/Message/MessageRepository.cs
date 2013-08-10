@@ -170,12 +170,23 @@ namespace InfrastructureService.Repository.Message
         public void SendSMS(SendSMSParameter param)
         {
             var client = GetSMSSender(param);
-            client.Form["mobile"] = param.ReceiveMobile;
+            client.Form["to"] = param.ReceiveMobile;
             client.Form["content"] = param.SendMessage;
-            client.Form["sendtime"] = string.Empty;
-            client.Form["fstd"] = "5";
+            client.Form["time"] = string.Empty;
+            client.SetRequest(client.BuildUri(client.Form["url"], client.Form));
             using (var context = base.CreateContext())
             {
+                int maxSentPreDay = 3;
+                var q = from t in context.SMSMessages
+                        where t.ReceiveMobile == param.ReceiveMobile && t.AppID == param.AppID
+                        && DateTime.UtcNow.AddDays(-1D) <= t.SendDate && t.SendDate <= DateTime.UtcNow.AddDays(1D)
+                        select t;
+                int count = q.Count();
+                if (count > maxSentPreDay)
+                {
+                    throw new DomainException("SendSMS");
+                }
+
                 var pObj = new SMSMessage();
                 EntityMapper.Map<SendSMSParameter, SMSMessage>(param, pObj);
                 pObj.RowID = Guid.NewGuid();
@@ -220,36 +231,37 @@ namespace InfrastructureService.Repository.Message
             using (var context = base.CreateContext())
             {
                 var config = context.SMSConfigs.First(t => header.ConfigID == null || t.RowID == header.ConfigID);
-                var client = new HttpClient(new Uri(config.WebAuthority));
-                client.Form["mark"] = "send";
-                client.Form["username"] = config.UserName;
-                client.Form["password"] = config.Password;
                 if (!string.IsNullOrEmpty(config.Sign))
                 {
                     header.SendMessage += "【" + config.Sign + "】";
                 }
+                var client = new HttpClient();
+                client.Form["url"] = config.WebAuthority;
+                client.Form["id"] = config.UserName;
+                client.Form["pwd"] = config.Password;
                 return client;
             }
         }
 
         public decimal GetSMSBalance(Guid configID)
         {
-            using (var context = base.CreateContext())
-            {
-                var config = context.SMSConfigs.First(t => t.RowID == configID);
-                var sender = new HttpClient(new Uri(config.WebAuthority));
-                sender.Form["mark"] = "balance";
-                sender.Form["username"] = config.UserName;
-                sender.Form["password"] = config.Password;
-                sender.Form["fstd"] = "5";
-                string result = sender.GetResponse().GetResponseText();
-                var alive = System.Text.RegularExpressions.Regex.Split(result, "&lt;br/>")[0].Split(':');
-                if (alive.Length != 2)
-                {
-                    return 0M;
-                }
-                return decimal.Parse(alive[1]);
-            }
+            //using (var context = base.CreateContext())
+            //{
+            //    var config = context.SMSConfigs.First(t => t.RowID == configID);
+            //    var sender = new HttpClient(new Uri(config.WebAuthority));
+            //    sender.Form["mark"] = "balance";
+            //    sender.Form["username"] = config.UserName;
+            //    sender.Form["password"] = config.Password;
+            //    sender.Form["fstd"] = "5";
+            //    string result = sender.GetResponse().GetResponseText();
+            //    var alive = System.Text.RegularExpressions.Regex.Split(result, "&lt;br/>")[0].Split(':');
+            //    if (alive.Length != 2)
+            //    {
+            //        return 0M;
+            //    }
+            //    return decimal.Parse(alive[1]);
+            //}
+            return decimal.MinusOne;
         }
         #endregion
     }

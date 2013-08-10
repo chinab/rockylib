@@ -245,6 +245,11 @@ namespace System
         public static bool CreateFileFromResource(string name, string filePath, string dllPath = null)
         {
             Assembly dll = dllPath == null ? Assembly.GetCallingAssembly() : Assembly.LoadFrom(dllPath);
+            string[] names = dll.GetManifestResourceNames();
+            if (!names.Contains(name))
+            {
+                throw new ArgumentException(string.Format("{0}, expect: {1}", name, string.Join(";", names)));
+            }
             var stream = dll.GetManifestResourceStream(name);
             var file = new FileInfo(filePath);
             if (file.Exists)

@@ -19,6 +19,7 @@ namespace InfrastructureService.Model.Message
 
         [DataMember]
         [NotNullValidator]
+        [StringLengthValidator(1, 133)]
         public string SendMessage { get; set; }
     }
 }
