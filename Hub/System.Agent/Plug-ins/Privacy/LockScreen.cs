@@ -126,17 +126,15 @@ namespace System.Agent.Privacy
                     Hub.LogError(ex, "LockScreen.Kill");
                 }
             }
+
+            this.Focus();
+            this.Activate();
         }
 
         protected override void OnLeave(EventArgs e)
         {
             base.OnLeave(e);
             this.Activate();
-        }
-        protected override void OnLostFocus(EventArgs e)
-        {
-            //base.OnLostFocus(e);
-            this.Focus();
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
@@ -161,6 +159,10 @@ namespace System.Agent.Privacy
             button1.Enabled = false;
             try
             {
+                if (string.IsNullOrEmpty(textBox1.Text))
+                {
+                    return;
+                }
                 if (textBox1.Text != _client.Config.Password)
                 {
                     _banCount++;
@@ -171,7 +173,7 @@ namespace System.Agent.Privacy
             }
             finally
             {
-                Thread.Sleep(1000);
+                Thread.Sleep(800);
                 textBox1.Text = string.Empty;
                 button1.Enabled = true;
             }
