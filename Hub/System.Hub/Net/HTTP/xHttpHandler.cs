@@ -24,9 +24,13 @@ namespace System.Net
             AgentCommand = "Command",
             AgentChecksum = "Checksum";
         /// <summary>
-        /// 超时时间300秒(5分钟)
+        /// 网页超时时间300秒(5分钟)
         /// </summary>
         internal const ushort Timeout = 300;
+        /// <summary>
+        /// TCP Keepalive时间300秒
+        /// </summary>
+        internal const ulong KeepAliveInterval = 300000;
         internal static readonly byte[] EmptyBuffer = new byte[0];
         internal static readonly IPEndPoint GoAgent = new IPEndPoint(IPAddress.Loopback, 8087);
 

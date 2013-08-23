@@ -11,64 +11,64 @@ by editing this MSBuild file. In order to learn more about this please visit htt
   </PropertyGroup>
   <ItemGroup>
     <File Include="bin/EmitMapper.dll">
-      <publishTime>08/03/2013 15:17:10</publishTime>
+      <publishTime>08/19/2013 09:48:48</publishTime>
     </File>
     <File Include="bin/EntityFramework.dll">
-      <publishTime>07/25/2013 18:53:26</publishTime>
+      <publishTime>08/19/2013 09:48:24</publishTime>
     </File>
     <File Include="bin/EntityFramework.Extended.dll">
-      <publishTime>07/25/2013 18:53:26</publishTime>
+      <publishTime>08/19/2013 09:48:24</publishTime>
     </File>
     <File Include="bin/InfrastructureService.AppService.dll">
-      <publishTime>08/07/2013 16:12:11</publishTime>
+      <publishTime>08/23/2013 11:39:23</publishTime>
     </File>
     <File Include="bin/InfrastructureService.Common.dll">
-      <publishTime>08/07/2013 16:12:06</publishTime>
+      <publishTime>08/23/2013 11:39:20</publishTime>
     </File>
     <File Include="bin/InfrastructureService.Contract.dll">
-      <publishTime>08/07/2013 16:12:06</publishTime>
+      <publishTime>08/23/2013 11:39:20</publishTime>
     </File>
     <File Include="bin/InfrastructureService.DomainService.dll">
-      <publishTime>08/07/2013 16:12:10</publishTime>
+      <publishTime>08/23/2013 11:39:23</publishTime>
     </File>
     <File Include="bin/InfrastructureService.Model.dll">
-      <publishTime>08/07/2013 16:12:06</publishTime>
+      <publishTime>08/23/2013 11:39:19</publishTime>
     </File>
     <File Include="bin/InfrastructureService.Repository.dll">
-      <publishTime>08/07/2013 16:12:09</publishTime>
+      <publishTime>08/23/2013 11:39:22</publishTime>
     </File>
     <File Include="bin/log4net.dll">
       <publishTime>08/03/2013 15:17:22</publishTime>
     </File>
     <File Include="bin/Microsoft.Practices.EnterpriseLibrary.Common.dll">
-      <publishTime>07/25/2013 18:53:25</publishTime>
+      <publishTime>08/19/2013 09:48:24</publishTime>
     </File>
     <File Include="bin/Microsoft.Practices.EnterpriseLibrary.Validation.dll">
-      <publishTime>07/25/2013 18:53:26</publishTime>
+      <publishTime>08/19/2013 09:48:24</publishTime>
     </File>
     <File Include="bin/Microsoft.Practices.ServiceLocation.dll">
-      <publishTime>08/03/2013 15:17:10</publishTime>
+      <publishTime>08/19/2013 09:48:24</publishTime>
     </File>
     <File Include="bin/Microsoft.Practices.Unity.Configuration.dll">
-      <publishTime>07/25/2013 18:53:26</publishTime>
+      <publishTime>08/19/2013 09:48:24</publishTime>
     </File>
     <File Include="bin/Microsoft.Practices.Unity.dll">
-      <publishTime>07/25/2013 18:53:26</publishTime>
+      <publishTime>08/19/2013 09:48:24</publishTime>
     </File>
     <File Include="bin/Microsoft.Practices.Unity.Interception.dll">
-      <publishTime>07/25/2013 18:53:26</publishTime>
+      <publishTime>08/19/2013 09:48:24</publishTime>
     </File>
     <File Include="bin/Newtonsoft.Json.dll">
-      <publishTime>08/03/2013 15:17:10</publishTime>
+      <publishTime>08/19/2013 09:48:24</publishTime>
     </File>
     <File Include="bin/PostSharp.dll">
-      <publishTime>08/03/2013 15:17:22</publishTime>
+      <publishTime>08/19/2013 09:48:19</publishTime>
     </File>
     <File Include="bin/SharpICTCLAS.dll">
-      <publishTime>08/07/2013 15:13:14</publishTime>
+      <publishTime>08/23/2013 11:37:05</publishTime>
     </File>
     <File Include="bin/System.Hub.dll">
-      <publishTime>08/07/2013 16:12:04</publishTime>
+      <publishTime>08/23/2013 11:39:18</publishTime>
     </File>
     <File Include="bin/zh-Hans/EntityFramework.resources.dll">
       <publishTime>07/17/2013 16:17:18</publishTime>

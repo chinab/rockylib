@@ -21,15 +21,19 @@ namespace System.Net
 
         static HttpClient()
         {
-            //最大并发连接数
-            ServicePointManager.DefaultConnectionLimit = ushort.MaxValue;
-            ServicePointManager.CheckCertificateRevocationList = true;
 #if !Mono
             //返回域名多IP地址
             ServicePointManager.EnableDnsRoundRobin = true;
 #endif
-            //没有限制
+            ServicePointManager.DefaultConnectionLimit = ushort.MaxValue;
             ServicePointManager.MaxServicePoints = 0;
+            ServicePointManager.MaxServicePointIdleTime = 100000;
+            checked
+            {
+                int keep = (int)xHttpHandler.KeepAliveInterval;
+                ServicePointManager.SetTcpKeepAlive(true, keep, keep);
+            }
+            ServicePointManager.CheckCertificateRevocationList = true;
             ServicePointManager.ServerCertificateValidationCallback = new System.Net.Security.RemoteCertificateValidationCallback(CheckValidationResult);
         }
 
@@ -115,6 +119,24 @@ namespace System.Net
             get { return _request.ReadWriteTimeout; }
             set { _request.ReadWriteTimeout = value; }
         }
+        /// <summary>
+        /// 移除PersistentConnection为2的限制
+        /// </summary>
+        public bool KeepAlive
+        {
+            get { return _request.KeepAlive; }
+            set
+            {
+                if (_request.KeepAlive = value)
+                {
+#if !Mono
+                    //var sp = _request.ServicePoint;
+                    //var prop = sp.GetType().GetProperty("HttpBehaviour", BindingFlags.NonPublic | BindingFlags.Instance);
+                    //prop.SetValue(sp, (byte)0, null);
+#endif
+                }
+            }
+        }
         #endregion
 
         #region Constructors
@@ -154,7 +176,6 @@ namespace System.Net
                 _request.Credentials = credential;
             }
             _request.Accept = "*/*";
-            _request.KeepAlive = true;
             _request.Referer = _referer;
             _request.UserAgent = DefaultUserAgent;
             //_request.AutomaticDecompression = DecompressionMethods.GZip;
@@ -193,14 +214,6 @@ namespace System.Net
         #region VirtualMethods
         protected virtual HttpWebResponse GetResponse(string httpMethod)
         {
-#if !Mono
-            if (_request.KeepAlive)
-            {
-                var sp = _request.ServicePoint;
-                var prop = sp.GetType().GetProperty("HttpBehaviour", BindingFlags.NonPublic | BindingFlags.Instance);
-                prop.SetValue(sp, (byte)0, null);
-            }
-#endif
             if (httpMethod == null)
             {
                 _request.Method = _entity.HasValue ? WebRequestMethods.Http.Post : WebRequestMethods.Http.Get;

@@ -184,9 +184,8 @@ namespace System.Net
             {
                 throw new InvalidOperationException(string.Format("Tcp connect {0} invalid", destIpe));
             }
-            //5分钟
-            const ulong keepalive_interval = 300000;
-            proxyClient.Client.SetKeepAlive(keepalive_interval, keepalive_interval);
+            ulong keep = xHttpHandler.KeepAliveInterval;
+            proxyClient.Client.SetKeepAlive(keep, keep);
             return proxyClient;
         }
 

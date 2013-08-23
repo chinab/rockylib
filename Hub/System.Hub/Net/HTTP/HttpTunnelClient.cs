@@ -280,6 +280,15 @@ namespace System.Net
         private HttpClient CreateTunnel(TunnelCommand cmd, TcpClient proxyClient)
         {
             var tunnel = new HttpClient((Uri)xHttpServer.GetRandom(this.ServerBalance));
+            switch (cmd)
+            {
+                case TunnelCommand.KeepAlive:
+                    tunnel.KeepAlive = false;
+                    break;
+                default:
+                    tunnel.KeepAlive = true;
+                    break;
+            }
             tunnel.SendReceiveTimeout = xHttpHandler.Timeout * 1000;
             var cred = this.Credential;
             tunnel.Headers[xHttpHandler.AgentAuth] = CryptoManaged.MD5Hex(string.Format("{0}:{1}", cred.UserName, cred.Password));
