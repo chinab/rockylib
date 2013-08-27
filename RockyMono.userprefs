@@ -1,10 +1,6 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Mono" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Hub/System.MacAgent/Program.cs">
-    <Files>
-      <File FileName="Hub/System.MacAgent/Program.cs" Line="15" Column="2" />
-    </Files>
-  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workbench />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
