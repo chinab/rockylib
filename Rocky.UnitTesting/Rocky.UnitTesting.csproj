@@ -48,7 +48,6 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Data.Entity" />
-    <Reference Include="System.Data.Linq" />
     <Reference Include="System.Management.Automation, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Program Files\Reference Assemblies\Microsoft\WindowsPowerShell\3.0\System.Management.Automation.dll</HintPath>
@@ -63,12 +62,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\UserTableEntity.cs" />
-    <Compile Include="Caching\NoSQLTest.cs" />
-    <Compile Include="NoSQL.designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>NoSQL.dbml</DependentUpon>
-    </Compile>
     <Compile Include="PowerShell\PSSnapIn.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -84,10 +77,6 @@
     <Compile Include="AgentTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Hub\NoSQL\NoSQL.csproj">
-      <Project>{4b320abe-989a-4f45-b059-3aebca98328b}</Project>
-      <Name>NoSQL</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Hub\System.Hub\System.Hub.csproj">
       <Project>{0433cac5-baaa-4e73-8f68-a7ccb1f6c9bf}</Project>
       <Name>System.Hub</Name>
@@ -95,11 +84,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="NoSQL.dbml">
-      <Generator>MSLinqToSQLGenerator</Generator>
-      <LastGenOutput>NoSQL.designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -111,11 +95,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="NoSQL.dbml.layout">
-      <DependentUpon>NoSQL.dbml</DependentUpon>
-    </None>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />

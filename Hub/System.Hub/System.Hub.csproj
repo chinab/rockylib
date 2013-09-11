@@ -177,6 +177,7 @@
     <Compile Include="Common\Security\SplitFileMode.cs" />
     <Compile Include="Common\Serializer.cs" />
     <Compile Include="Common\Utility\GDI\ThumbnailMode.cs" />
+    <Compile Include="Common\Utility\XmlHelper.cs" />
     <Compile Include="DataStructure\BloomFilter\BitVector.cs" />
     <Compile Include="DataStructure\BloomFilter\BloomFilter.cs" />
     <Compile Include="Data\ChangeTracking\SqlRowChangedEventArgs.cs" />

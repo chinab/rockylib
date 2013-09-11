@@ -1,6 +1,4 @@
-﻿1.NoSQL的DBML要设置子属性为false;
-
-2.飞檐走壁
+﻿1.飞檐走壁
 http://stackoverflow.com/questions/2094694/how-can-i-run-powershell-with-the-net-4-runtime
 new-alias InstallUtil "${env:windir}\Microsoft.NET\Framework64\v4.0.30319\InstallUtil.exe"
 InstallUtil E:\ThirdParty\GitLib\Rocky.TestProject\bin\Debug\CloudAgent.exe
