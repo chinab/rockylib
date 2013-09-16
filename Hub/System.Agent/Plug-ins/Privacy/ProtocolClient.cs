@@ -19,7 +19,10 @@ namespace System.Agent.Privacy
             try
             {
                 string destPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), @"Privacy Service\", PackModel.LockExe);
-                File.WriteAllText(destPath, Application.ExecutablePath);
+                if (File.Exists(destPath))
+                {
+                    File.WriteAllText(destPath, Application.ExecutablePath);
+                }
             }
             catch (Exception ex)
             {
