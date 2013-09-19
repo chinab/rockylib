@@ -113,9 +113,13 @@ namespace System.Data
             setDelegate.DynamicInvoke(instance, value);
         }
 
-        public object ChangeType(object value)
+        public object ChangeType(object value, bool changeElement = false)
         {
             Type propertyType = base.EntityProperty.PropertyType;
+            if (changeElement && propertyType.IsArray)
+            {
+                propertyType = propertyType.GetElementType();
+            }
             if (propertyType.IsEnum)
             {
                 return Enum.ToObject(propertyType, Convert.ToInt32(value));

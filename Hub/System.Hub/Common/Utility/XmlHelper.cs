@@ -24,7 +24,7 @@ namespace System
                 string configDirectory = System.Configuration.ConfigurationManager.AppSettings["XmlConfigDirectory"];
                 if (string.IsNullOrEmpty(configDirectory))
                 {
-                    configDirectory = "/Config/";
+                    configDirectory = @"Config\";
                 }
                 configDirectory = Hub.CombinePath(configDirectory);
                 Hub.CreateDirectory(configDirectory);
