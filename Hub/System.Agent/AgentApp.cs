@@ -69,6 +69,7 @@ namespace System.Agent
             }
             finally
             {
+                ConsoleNotify.Visible = false;
                 Console.ReadLine();
             }
         }

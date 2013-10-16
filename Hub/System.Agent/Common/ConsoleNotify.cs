@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using Microsoft.Win32;
+using System.Configuration;
 
 namespace System.Agent
 {
@@ -316,8 +317,15 @@ namespace System.Agent
         #region Methods
         public void Run(IHubEntry entry, Form form = null)
         {
+            var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            bool showTip;
+            if (bool.TryParse(config.AppSettings.Settings["ShowTip"].Value, out showTip) && showTip)
+            {
+                _notify.ShowBalloonTip(3000, _notify.Text, string.Format("{0}已启动，单击托盘图标可以最小化！", _notify.Text), ToolTipIcon.Info);
+                config.AppSettings.Settings["ShowTip"].Value = bool.FalseString;
+                config.Save();
+            }
             //ConsoleNotify.DisableCloseButton();
-            _notify.ShowBalloonTip(3000, _notify.Text, string.Format("{0}已启动，单击托盘图标可以最小化！", _notify.Text), ToolTipIcon.Info);
             _handler = new HandlerRoutine(eventType =>
             {
                 ConsoleNotify.Visible = false;
