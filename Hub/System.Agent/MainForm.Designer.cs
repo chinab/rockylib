@@ -244,22 +244,15 @@
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
             this.toolStripMenuItem1.Size = new System.Drawing.Size(84, 21);
-            this.toolStripMenuItem1.Text = "远程协助(R)";
+            this.toolStripMenuItem1.Text = "锁屏(L)";
             this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
             // 
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
             this.toolStripMenuItem2.Size = new System.Drawing.Size(58, 21);
-            this.toolStripMenuItem2.Text = "锁屏(L)";
+            this.toolStripMenuItem2.Text = "编码(E)";
             this.toolStripMenuItem2.Click += new System.EventHandler(this.toolStripMenuItem2_Click);
-            // 
-            // toolStripMenuItem3
-            // 
-            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(59, 21);
-            this.toolStripMenuItem3.Text = "编码(E)";
-            this.toolStripMenuItem3.Click += new System.EventHandler(this.toolStripMenuItem3_Click);
             // 
             // MainForm
             // 

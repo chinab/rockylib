@@ -51,11 +51,6 @@ namespace System.Agent
             button2.Click += button2_Click;
 
             System.Agent.Privacy.ProtocolClient.LockExe();
-            TaskHelper.Factory.StartNew(() =>
-            {
-                Threading.Thread.Sleep(8000);
-                System.Agent.Remote.MonitorChannel.Server(AssistPort);
-            });
         }
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
@@ -90,17 +85,11 @@ namespace System.Agent
 
         private void toolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            var form = new System.Agent.Remote.MonitorClient();
-            form.Show();
-        }
-
-        private void toolStripMenuItem2_Click(object sender, EventArgs e)
-        {
             var form = new System.Agent.Privacy.LockScreen();
             form.Show();
         }
 
-        private void toolStripMenuItem3_Click(object sender, EventArgs e)
+        private void toolStripMenuItem2_Click(object sender, EventArgs e)
         {
             var form = new System.Agent.Encode.EncodeForm();
             form.Show();

@@ -131,20 +131,6 @@
       <DependentUpon>LockScreen.cs</DependentUpon>
     </Compile>
     <Compile Include="Plug-ins\Privacy\ProtocolClient.cs" />
-    <Compile Include="Plug-ins\Remote\Monitor.cs" />
-    <Compile Include="Plug-ins\Remote\MonitorChannel.cs" />
-    <Compile Include="Plug-ins\Remote\MonitorClient.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Plug-ins\Remote\MonitorClient.Designer.cs">
-      <DependentUpon>MonitorClient.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Plug-ins\Remote\MonitorUserControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Plug-ins\Remote\MonitorUserControl.Designer.cs">
-      <DependentUpon>MonitorUserControl.cs</DependentUpon>
-    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TransferForm.cs">
@@ -193,12 +179,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Plug-ins\Privacy\LockScreen.resx">
       <DependentUpon>LockScreen.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Plug-ins\Remote\MonitorClient.resx">
-      <DependentUpon>MonitorClient.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Plug-ins\Remote\MonitorUserControl.resx">
-      <DependentUpon>MonitorUserControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TransferForm.resx">
       <DependentUpon>TransferForm.cs</DependentUpon>
