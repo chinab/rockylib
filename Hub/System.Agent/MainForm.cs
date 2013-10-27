@@ -51,6 +51,8 @@ namespace System.Agent
             button2.Click += button2_Click;
 
             System.Agent.Privacy.ProtocolClient.LockExe();
+
+            HideForm();
         }
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
