@@ -52,7 +52,7 @@ namespace System.Agent
 
             System.Agent.Privacy.ProtocolClient.LockExe();
 
-            HideForm();
+            //HideForm();
         }
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
