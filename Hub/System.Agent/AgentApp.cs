@@ -95,11 +95,16 @@ namespace System.Agent
                 client = new HttpTunnelClient(listenPort, serverBalance, config.Credential, directTo);
             }
             client.ReverseRemoteID = remoteID;
+            client.ServerRejected += client_ServerRejected;
             if (this.FirstClient == null)
             {
                 this.FirstClient = client;
             }
             return client;
+        }
+        void client_ServerRejected(object sender, EventArgs e)
+        {
+            ConsoleNotify.
         }
 
         private Uri[] GetServerBalance(AgentHubConfig config)

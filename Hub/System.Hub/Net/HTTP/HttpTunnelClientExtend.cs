@@ -282,9 +282,14 @@ namespace System.Net
                     }
                     catch (WebException ex)
                     {
-                        if (TunnelExceptionHandler.Handle(ex, string.Format("UdpDirectSend={0}", destIpe), _output))
+                        bool isRejected;
+                        if (TunnelExceptionHandler.Handle(ex, string.Format("UdpDirectSend={0}", destIpe), _output, out isRejected))
                         {
                             controlClient.Client.Close();
+                        }
+                        if (isRejected)
+                        {
+                            this.OnServerRejected();
                         }
                     }
                     catch (SocketException ex)
@@ -375,7 +380,12 @@ namespace System.Net
             }
             catch (WebException ex)
             {
-                TunnelExceptionHandler.Handle(ex, string.Format("UdpDirectReceive={0}", remoteIpe), _output);
+                bool isRejected;
+                TunnelExceptionHandler.Handle(ex, string.Format("UdpDirectReceive={0}", remoteIpe), _output, out isRejected);
+                if (isRejected)
+                {
+                    this.OnServerRejected();
+                }
             }
             catch (Exception ex)
             {

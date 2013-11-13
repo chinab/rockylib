@@ -235,7 +235,7 @@ namespace System.Agent
             this.CreateMenuItem("帮助", "H", true);
             this.CreateMenuItem("开机启动/禁止", "S");
             this.CreateMenuItem("显示/隐藏", "V");
-            //this.CreateMenuItem("重新载入", "R");
+            this.CreateMenuItem("重新载入", "R");
             this.CreateMenuItem("退出", "E");
             _notify.ContextMenuStrip.ItemClicked += new ToolStripItemClickedEventHandler(ContextMenuStrip_ItemClicked);
         }
@@ -303,10 +303,10 @@ namespace System.Agent
                 case "V":
                     ConsoleNotify.Visible = !ConsoleNotify.Visible;
                     break;
-                //case "R":
-                //    Application.Restart();
-                //    this.Exit();
-                //    break;
+                case "R":
+                    Application.Restart();
+                    this.Exit();
+                    break;
                 default:
                     this.Exit();
                     break;

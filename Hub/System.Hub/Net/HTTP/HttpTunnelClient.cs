@@ -37,6 +37,18 @@ namespace System.Net
         }
         #endregion
 
+        #region Events
+        public event EventHandler ServerRejected;
+
+        protected void OnServerRejected()
+        {
+            if (ServerRejected != null)
+            {
+                ServerRejected(this, EventArgs.Empty);
+            }
+        }
+        #endregion
+
         #region Fields
         private static HttpClient _keepAlive;
         private static Guid _clientID;
@@ -553,9 +565,14 @@ namespace System.Net
             }
             catch (WebException ex)
             {
-                if (TunnelExceptionHandler.Handle(ex, string.Format("DirectReceive={0}", destIpe), _output))
+                bool isReject;
+                if (TunnelExceptionHandler.Handle(ex, string.Format("DirectReceive={0}", destIpe), _output, out isReject))
                 {
                     proxyClient.Client.Close(1);
+                }
+                if (isReject)
+                {
+                    this.OnServerRejected();
                 }
             }
             catch (Exception ex)
@@ -628,9 +645,14 @@ namespace System.Net
                     }
                     catch (WebException ex)
                     {
-                        if (TunnelExceptionHandler.Handle(ex, string.Format("DirectSend={0}", destIpe), _output))
+                        bool isReject;
+                        if (TunnelExceptionHandler.Handle(ex, string.Format("DirectSend={0}", destIpe), _output, out isReject))
                         {
                             proxyClient.Client.Close();
+                        }
+                        if (isReject)
+                        {
+                            this.OnServerRejected();
                         }
                     }
                     catch (IOException ex)

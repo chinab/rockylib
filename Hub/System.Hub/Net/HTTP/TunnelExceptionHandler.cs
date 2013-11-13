@@ -21,8 +21,9 @@ namespace System.Net
             Hub.LogError(ex, message);
         }
 
-        public static bool Handle(WebException ex, string message, TextWriter output = null)
+        public static bool Handle(WebException ex, string message, TextWriter output, out bool isServerRejected)
         {
+            isServerRejected = false;
             var msg = new StringBuilder();
             var res = (HttpWebResponse)ex.Response;
             if (res != null)
@@ -31,6 +32,7 @@ namespace System.Net
                 {
                     case HttpStatusCode.Forbidden:
                         output.WriteLine("Server Rejected.");
+                        isServerRejected = true;
                         return true;
                     case HttpStatusCode.BadGateway:
                         output.WriteLine("{0} Connect Failure, Please contact the administrator.", message);
