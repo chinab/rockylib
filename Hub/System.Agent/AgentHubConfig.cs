@@ -26,7 +26,7 @@ namespace System.Agent
                 config.TunnelList = GetTunnelList(exe, "TunnelList");
 
                 config.LockBg = GetValue(exe, "LockBg", string.Empty);
-                config.UnlockPwd = GetValue(exe, "UnlockPwd", "123456");
+                config.UnlockPIN = GetValue(exe, "UnlockPIN", "123456");
                 config.IdleLock = Convert.ToUInt16(GetValue(exe, "IdleLock", "40"));
                 config.BanCount = Convert.ToUInt16(GetValue(exe, "BanCount", "7"));
                 return config;
@@ -90,7 +90,7 @@ namespace System.Agent
         public Tuple<ushort, string>[] TunnelList;
 
         public string LockBg;
-        public string UnlockPwd;
+        public string UnlockPIN;
         public ushort IdleLock;
         public ushort BanCount;
     }
