@@ -178,7 +178,7 @@ namespace System.Net
             _request.Accept = "*/*";
             _request.Referer = _referer;
             _request.UserAgent = DefaultUserAgent;
-            //_request.AutomaticDecompression = DecompressionMethods.GZip;
+            //_request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
             if (asNew)
             {
                 _entity.Clear();

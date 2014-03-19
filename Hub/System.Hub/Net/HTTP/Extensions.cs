@@ -98,7 +98,7 @@ namespace System.Net
             return string.IsNullOrEmpty(instance.CharacterSet) ? Encoding.UTF8 : Encoding.GetEncoding(instance.CharacterSet);
         }
 
-        public static string GetResponseText(this HttpWebResponse instance)
+        public static string GetResponseText(this HttpWebResponse instance, Encoding contentEncoding = null)
         {
             Contract.Requires(instance != null);
 
@@ -113,7 +113,7 @@ namespace System.Net
                 mem.Position = 0L;
                 resStream = mem;
             }
-            using (var reader = new StreamReader(resStream, instance.GetContentEncoding()))
+            using (var reader = new StreamReader(resStream, contentEncoding ?? instance.GetContentEncoding()))
             {
                 return reader.ReadToEnd();
             }
