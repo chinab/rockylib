@@ -12,7 +12,7 @@ namespace Rocky.Web
         {
             get
             {
-                var page = PageUtils.Current;
+                var page = PageBase.Current;
                 return (T)page.GetDataItem();
             }
         }

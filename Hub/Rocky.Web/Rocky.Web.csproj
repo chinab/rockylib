@@ -121,7 +121,9 @@
     <Compile Include="UploadExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="HttpUtils.cs" />
-    <Compile Include="PageUtils.cs" />
+    <Compile Include="PageBase.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\System.Hub\System.Hub.csproj">

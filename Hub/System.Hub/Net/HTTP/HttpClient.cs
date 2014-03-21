@@ -212,8 +212,9 @@ namespace System.Net
 
         #region Response
         #region VirtualMethods
-        protected virtual HttpWebResponse GetResponse(string httpMethod)
+        protected virtual HttpWebResponse GetResponse(string httpMethod, bool autoRedirect)
         {
+            _request.AllowAutoRedirect = autoRedirect;
             if (httpMethod == null)
             {
                 _request.Method = _entity.HasValue ? WebRequestMethods.Http.Post : WebRequestMethods.Http.Get;
@@ -309,13 +310,21 @@ namespace System.Net
         }
         #endregion
 
+        public string GetResponseLocation()
+        {
+            using (var response = this.GetResponse(null, false))
+            {
+                return response.Headers[HttpResponseHeader.Location];
+            }
+        }
+
         /// <summary>
         /// 通过WebRequestMethods.Http.Head获取HttpWebResponse
         /// </summary>
         /// <returns></returns>
         public HttpWebResponse GetResponseHead()
         {
-            var responseHead = GetResponse(WebRequestMethods.Http.Head);
+            var responseHead = GetResponse(WebRequestMethods.Http.Head, true);
             Uri url = _request.RequestUri;
             NetworkCredential credential = (NetworkCredential)_request.Credentials;
             this.SetRequest(url, credential, false);
@@ -330,7 +339,7 @@ namespace System.Net
             }
 
             string httpMethod = null;
-            var response = this.GetResponse(httpMethod);
+            var response = this.GetResponse(httpMethod, true);
             if (serverPush != null)
             {
                 serverPush(response);
@@ -350,7 +359,7 @@ namespace System.Net
             HttpWebResponse response;
             try
             {
-                response = this.GetResponse(template.HttpMethod);
+                response = this.GetResponse(template.HttpMethod, true);
             }
             catch (WebException ex)
             {
@@ -374,7 +383,7 @@ namespace System.Net
                 _request.AddRange(file.Length);
             }
 
-            var response = this.GetResponse(_request.Method);
+            var response = this.GetResponse(_request.Method, true);
             long offset = useRange && response.StatusCode == (HttpStatusCode)206 ? file.Length : 0L,
                 length = response.ContentLength;
             using (Stream responseStream = response.GetResponseStream())

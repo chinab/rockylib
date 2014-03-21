@@ -77,8 +77,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "04 Portal", "04 Portal", "{
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InfrastructureService.Client", "InfrastructureService\Portal\InfrastructureService.Client\InfrastructureService.Client.csproj", "{C260A80D-856B-4405-BA41-F23F49717982}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InfrastructureService.WebModel", "InfrastructureService\Portal\InfrastructureService.WebModel\InfrastructureService.WebModel.csproj", "{8AF1451B-B7A8-41EF-8158-433AC2022336}"
-EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = Rocky.vsmdi
@@ -232,16 +230,6 @@ Global
 		{C260A80D-856B-4405-BA41-F23F49717982}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{C260A80D-856B-4405-BA41-F23F49717982}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{C260A80D-856B-4405-BA41-F23F49717982}.Release|x86.ActiveCfg = Release|Any CPU
-		{8AF1451B-B7A8-41EF-8158-433AC2022336}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8AF1451B-B7A8-41EF-8158-433AC2022336}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8AF1451B-B7A8-41EF-8158-433AC2022336}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{8AF1451B-B7A8-41EF-8158-433AC2022336}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{8AF1451B-B7A8-41EF-8158-433AC2022336}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{8AF1451B-B7A8-41EF-8158-433AC2022336}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8AF1451B-B7A8-41EF-8158-433AC2022336}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8AF1451B-B7A8-41EF-8158-433AC2022336}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{8AF1451B-B7A8-41EF-8158-433AC2022336}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{8AF1451B-B7A8-41EF-8158-433AC2022336}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -268,7 +256,6 @@ Global
 		{15B3E0D2-6217-493A-A690-158C497F5318} = {2075C9AF-93B6-4C27-8533-A51C80E2ECCB}
 		{B8A3FF75-C48C-4349-9210-41EB5D2283B3} = {2075C9AF-93B6-4C27-8533-A51C80E2ECCB}
 		{C260A80D-856B-4405-BA41-F23F49717982} = {235046FC-D2C5-47E6-BE2E-135D6A47D666}
-		{8AF1451B-B7A8-41EF-8158-433AC2022336} = {235046FC-D2C5-47E6-BE2E-135D6A47D666}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35;packages\Unity.Interception.2.1.505.2\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Validation.5.0.505.0\lib\NET35

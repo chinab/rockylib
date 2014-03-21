@@ -8,10 +8,11 @@ using System.Web.UI.WebControls;
 using System.Web.UI.HtmlControls;
 using System.Text.RegularExpressions;
 using System.Data;
+using System.Collections.Specialized;
 
 namespace Rocky.Web
 {
-    public static class PageUtils
+    public class PageBase : System.Web.UI.Page
     {
         #region Fields
         private static readonly string[] DangerousHtmlTags;
@@ -33,7 +34,7 @@ namespace Rocky.Web
         #endregion
 
         #region Constructor
-        static PageUtils()
+        static PageBase()
         {
             DangerousHtmlTags = new string[] { "script", "object", "form", "body", "iframe", "style", "link", "meta", "applet", "frame", "frameset", "html", "layer", "ilayer" };
         }
@@ -462,7 +463,82 @@ namespace Rocky.Web
         #endregion
         #endregion
 
+        #region Fake MVVM
+        public virtual void SetModel<T>(T view, bool asState = false) where T : class
+        {
+            SetModel(view, asState ? vo =>
+            {
+#if Session
+                var dict = (ListDictionary)Session["ModelState"];
+                if (dict == null)
+                {
+                    Session["ModelState"] = dict = new ListDictionary();
+                }
+                dict[vo.GetType()] = vo;
+#else
+                var dict = (ListDictionary)ViewState["ModelState"];
+                if (dict == null)
+                {
+                    ViewState["ModelState"] = dict = new ListDictionary();
+                }
+                dict[vo.GetType()] = vo;
+#endif
+            } : (Action<T>)null);
+        }
+        public virtual void SetModel<T>(T view, Action<T> stateMapper) where T : class
+        {
+            if (view == null)
+            {
+                throw new ArgumentNullException("view");
+            }
+
+            PageBase.SetPost(view, this);
+            if (stateMapper != null)
+            {
+                stateMapper(view);
+            }
+        }
+
+        public virtual T GetModel<T>(bool asState = false) where T : class, new()
+        {
+            return GetModel<T>(asState ? () =>
+            {
+#if Session
+                var dict = (ListDictionary)Session["ModelState"];
+                return dict != null ? ((T)dict[typeof(T)] ?? new T()) : new T();
+#else
+                var dict = (ListDictionary)ViewState["ModelState"];
+                return dict != null ? ((T)dict[typeof(T)] ?? new T()) : new T();
+#endif
+            } : (Func<T>)null);
+        }
+        public virtual T GetModel<T>(Func<T> stateMapper) where T : class, new()
+        {
+            T view;
+            if (stateMapper != null)
+            {
+                view = stateMapper();
+                if (view == null)
+                {
+                    throw new ArgumentException("stateMapper");
+                }
+            }
+            else
+            {
+                view = new T();
+            }
+            PageBase.GetPost(view, this);
+            return view;
+        }
+        #endregion
+
         #region Methods
+        public static void RegisterHeader(string keywords, string description)
+        {
+            Page page = Current;
+            page.MetaKeywords += keywords;
+            page.MetaDescription += description;
+        }
         public static void RegisterCssInclude(string url)
         {
             var context = HttpContext.Current;
