@@ -37,7 +37,7 @@
       <HintPath>..\..\..\packages\EntityFramework.6.1.0\lib\net40\EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework.Extended">
-      <HintPath>..\..\..\packages\EntityFramework.Extended.6.0.0.86\lib\net40\EntityFramework.Extended.dll</HintPath>
+      <HintPath>..\..\..\packages\EntityFramework.Extended.6.1.0.93\lib\net40\EntityFramework.Extended.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework.SqlServer">
       <HintPath>..\..\..\packages\EntityFramework.6.1.0\lib\net40\EntityFramework.SqlServer.dll</HintPath>

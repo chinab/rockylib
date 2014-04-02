@@ -57,6 +57,7 @@ namespace System
         [Pure]
         public static void LogDebug(string messageOrFormat, params object[] formatArgs)
         {
+            messageOrFormat += Environment.NewLine + Environment.StackTrace;
             if (!formatArgs.IsNullOrEmpty())
             {
                 DefaultLogger.DebugFormat(messageOrFormat, formatArgs);
@@ -123,16 +124,56 @@ namespace System
             }
         }
 
-        public static bool Retry(Func<bool> func, int retryCount, int? retryWaitTimeout = null)
+        public static void Retry(Action func, ushort retryCount, int? retryWaitTimeout = null)
         {
             Contract.Requires(func != null);
 
             int failTimes = 0;
             while (failTimes < retryCount)
             {
-                if (func())
+                try
                 {
-                    return true;
+                    func();
+                    return;
+                }
+                catch (Exception)
+                {
+                    if (failTimes >= retryCount)
+                    {
+                        throw;
+                    }
+                }
+                if (retryWaitTimeout.HasValue)
+                {
+                    Thread.Sleep(Math.Max(1, retryWaitTimeout.Value));
+                    failTimes++;
+                }
+                else
+                {
+                    LoopSleep(ref failTimes);
+                }
+            }
+        }
+        public static bool Retry(Func<bool> func, ushort retryCount, int? retryWaitTimeout = null)
+        {
+            Contract.Requires(func != null);
+
+            int failTimes = 0;
+            while (failTimes < retryCount)
+            {
+                try
+                {
+                    if (func())
+                    {
+                        return true;
+                    }
+                }
+                catch (Exception)
+                {
+                    if (failTimes >= retryCount)
+                    {
+                        throw;
+                    }
                 }
                 if (retryWaitTimeout.HasValue)
                 {

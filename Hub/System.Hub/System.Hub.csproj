@@ -229,13 +229,11 @@
     <Compile Include="Net\Grid\IGridClient.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Net\HolePunching\HolePunchingModel.cs" />
-    <Compile Include="Net\HolePunching\HolePunchingClient.cs" />
-    <Compile Include="Net\HolePunching\HolePunchingServer.cs" />
-    <Compile Include="Net\HolePunching\HolePunchingCommand.cs" />
     <Compile Include="Net\HTTP\Entity\TunnelDataQueue.cs" />
     <Compile Include="Net\HTTP\Business\xUserManager.cs" />
     <Compile Include="Net\HTTP\Extensions.cs" />
+    <Compile Include="Net\HTTP\HttpClient\DownloadException.cs" />
+    <Compile Include="Net\HTTP\HttpClient\IHttpClient.cs" />
     <Compile Include="Net\HTTP\TunnelStateMissingException.cs" />
     <Compile Include="Net\HTTP\Entity\TunnelCommand.cs" />
     <Compile Include="Common\IHubEntry.cs" />
@@ -264,7 +262,7 @@
     <Compile Include="Net\Utility\PingClient.cs" />
     <Compile Include="Net\Proxy\Entity\SocksProxy.cs" />
     <Compile Include="Net\Socket\SocketHelper.cs" />
-    <Compile Include="Net\HTTP\HttpClient.cs">
+    <Compile Include="Net\HTTP\HttpClient\HttpClient.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />

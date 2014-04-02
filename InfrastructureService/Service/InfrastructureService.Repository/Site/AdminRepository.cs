@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Objects;
 using System.Linq;
 using System.Text;
 using System.Data;
@@ -9,6 +8,7 @@ using InfrastructureService.Common;
 using InfrastructureService.Model;
 using InfrastructureService.Model.Site;
 using InfrastructureService.Repository.DataAccess;
+using System.Data.Entity.Core.Objects;
 
 namespace InfrastructureService.Repository.Site
 {

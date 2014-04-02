@@ -12,12 +12,19 @@ using E = System.Environment;
 
 namespace System.Net
 {
-    public partial class HttpClient
+    /// <summary>
+    /// http://hc.apache.org
+    /// </summary>
+    public partial class HttpClient : IHttpClient
     {
         #region StaticMembers
-        public const string ValidateResponseFailure = "ValidateResponseFailure";
-        internal const string DefaultReferer = "http://www.google.com/?bot=Timothy.net";
+        /// <summary>
+        /// http://
+        /// </summary>
+        internal static readonly string HttpScheme = Uri.UriSchemeHttp + Uri.SchemeDelimiter;
+        internal const string DefaultReferer = "http://www.google.com/#Timothy.net";
         internal const string DefaultUserAgent = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html#Timothy.net)";
+        internal const string ValidateResponseFailure = "ValidateResponseFailure";
 
         static HttpClient()
         {
@@ -57,24 +64,13 @@ namespace System.Net
         private bool _hasNewRequest;
         private string _referer;
         private CookieContainer _cookieContainer;
-        private HttpRequestEntity _entity;
         private HttpWebRequest _request;
+        private HttpRequestEntity _entity;
+        private Action<HttpWebRequest> _requestChanged;
         private Func<HttpWebResponse, bool> _validateResponse;
         #endregion
 
         #region Properties
-        public WebHeaderCollection Headers
-        {
-            get { return _request.Headers; }
-        }
-        public NameValueCollection Form
-        {
-            get { return _entity.Form; }
-        }
-        public List<HttpFile> Files
-        {
-            get { return _entity.Files; }
-        }
         public bool KeepCookie
         {
             get { return _cookieContainer != null; }
@@ -92,32 +88,6 @@ namespace System.Net
                     _cookieContainer = null;
                 }
             }
-        }
-        public CookieCollection Cookies
-        {
-            get
-            {
-                Contract.Requires(this.KeepCookie);
-
-                return _cookieContainer.GetCookies(_request.RequestUri);
-            }
-        }
-
-        /// <summary>
-        /// "ConnectTimeout" is the time for the server to respond to a request, not the amount of time to wait for the server to respond and send down all of the data.
-        /// </summary>
-        public int ConnectTimeout
-        {
-            get { return _request.Timeout; }
-            set { _request.Timeout = value; }
-        }
-        /// <summary>
-        /// "SendReceiveTimeout" applies to Read or Write operations to streams that transmit over the connection. 
-        /// </summary>
-        public int SendReceiveTimeout
-        {
-            get { return _request.ReadWriteTimeout; }
-            set { _request.ReadWriteTimeout = value; }
         }
         /// <summary>
         /// 移除PersistentConnection为2的限制
@@ -137,10 +107,48 @@ namespace System.Net
                 }
             }
         }
+        /// <summary>
+        /// "ConnectTimeout" is the time for the server to respond to a request, not the amount of time to wait for the server to respond and send down all of the data.
+        /// </summary>
+        public int ConnectTimeout
+        {
+            get { return _request.Timeout; }
+            set { _request.Timeout = value; }
+        }
+        /// <summary>
+        /// "SendReceiveTimeout" applies to Read or Write operations to streams that transmit over the connection. 
+        /// </summary>
+        public int SendReceiveTimeout
+        {
+            get { return _request.ReadWriteTimeout; }
+            set { _request.ReadWriteTimeout = value; }
+        }
+
+        public WebHeaderCollection Headers
+        {
+            get { return _request.Headers; }
+        }
+        public NameValueCollection Form
+        {
+            get { return _entity.Form; }
+        }
+        public List<HttpFile> Files
+        {
+            get { return _entity.Files; }
+        }
+        public CookieCollection Cookies
+        {
+            get
+            {
+                Contract.Requires(this.KeepCookie);
+
+                return _cookieContainer.GetCookies(_request.RequestUri);
+            }
+        }
         #endregion
 
         #region Constructors
-        public HttpClient(Uri url = null, Func<HttpWebResponse, bool> validateResponse = null)
+        public HttpClient(Uri url = null, Action<HttpWebRequest> requestChanged = null, Func<HttpWebResponse, bool> validateResponse = null)
         {
             if (url == null)
             {
@@ -150,6 +158,7 @@ namespace System.Net
             _referer = DefaultReferer;
             _entity = new HttpRequestEntity();
             this.SetRequest(url);
+            _requestChanged = requestChanged;
             _validateResponse = validateResponse;
         }
         #endregion
@@ -164,10 +173,14 @@ namespace System.Net
             return new Uri(url);
         }
 
-        public virtual void SetRequest(Uri url, NetworkCredential credential = null, bool asNew = true, string checksum = null, Stream rawStream = null)
+        public virtual void SetRequest(Uri url, NetworkCredential credential = null, bool newRequest = true, string checksum = null, Stream rawStream = null)
         {
             _request = (HttpWebRequest)WebRequest.Create(url);
             _request.CookieContainer = _cookieContainer;
+            _request.Accept = "*/*";
+            _request.UserAgent = DefaultUserAgent;
+            _request.Referer = _referer;
+            //_request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
             if (credential != null)
             {
                 _request.SendChunked = false;
@@ -175,15 +188,16 @@ namespace System.Net
                 _request.UseDefaultCredentials = false;
                 _request.Credentials = credential;
             }
-            _request.Accept = "*/*";
-            _request.Referer = _referer;
-            _request.UserAgent = DefaultUserAgent;
-            //_request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-            if (asNew)
+            if (newRequest)
             {
                 _entity.Clear();
                 _hasNewRequest = true;
             }
+            if (_requestChanged != null)
+            {
+                _requestChanged(_request);
+            }
+
             if (checksum != null)
             {
                 _entity.Form["checksum"] = checksum;
@@ -211,7 +225,7 @@ namespace System.Net
         #endregion
 
         #region Response
-        #region VirtualMethods
+        #region Core
         protected virtual HttpWebResponse GetResponse(string httpMethod, bool autoRedirect)
         {
             _request.AllowAutoRedirect = autoRedirect;
@@ -296,17 +310,11 @@ namespace System.Net
                 _cookieContainer.Add(response.ResponseUri, response.Cookies);
             }
             _hasNewRequest = false;
-            this.OnValidateResponse(response);
-            return response;
-        }
-
-        [DebuggerStepThrough]
-        protected virtual void OnValidateResponse(HttpWebResponse res)
-        {
-            if (_validateResponse != null && !_validateResponse(res))
+            if (_validateResponse != null && !_validateResponse(response))
             {
-                throw new WebException(ValidateResponseFailure, null, WebExceptionStatus.UnknownError, res);
+                throw new WebException(ValidateResponseFailure, null, WebExceptionStatus.UnknownError, response);
             }
+            return response;
         }
         #endregion
 
@@ -324,50 +332,24 @@ namespace System.Net
         /// <returns></returns>
         public HttpWebResponse GetResponseHead()
         {
-            var responseHead = GetResponse(WebRequestMethods.Http.Head, true);
+            var response = GetResponse(WebRequestMethods.Http.Head, true);
             Uri url = _request.RequestUri;
             NetworkCredential credential = (NetworkCredential)_request.Credentials;
             this.SetRequest(url, credential, false);
-            return responseHead;
+            return response;
         }
 
         public HttpWebResponse GetResponse(Action<HttpWebResponse> serverPush = null)
         {
             if (!_hasNewRequest)
             {
-                throw new WebException("No new request");
+                throw new WebException("Requires new request");
             }
 
-            string httpMethod = null;
-            var response = this.GetResponse(httpMethod, true);
+            var response = this.GetResponse(null, true);
             if (serverPush != null)
             {
                 serverPush(response);
-            }
-            return response;
-        }
-
-        internal HttpWebResponse GetResponseWith(System.Web.HttpRequestBase template)
-        {
-            if (!_hasNewRequest)
-            {
-                throw new WebException("No new request");
-            }
-
-            _entity.Clear();
-            template.CopyTo(_request);
-            HttpWebResponse response;
-            try
-            {
-                response = this.GetResponse(template.HttpMethod, true);
-            }
-            catch (WebException ex)
-            {
-                if (ex.Response == null || ex.Status != WebExceptionStatus.ProtocolError)
-                {
-                    throw;
-                }
-                response = (HttpWebResponse)ex.Response;
             }
             return response;
         }
@@ -409,6 +391,93 @@ namespace System.Net
             _entity.Files.Add(new HttpFile(string.Empty, filePath, offset));
             var res = this.GetResponse();
             return res.GetResponseText();
+        }
+        #endregion
+
+        #region IHttpClient
+        ushort? IHttpClient.RetryCount { get; set; }
+        TimeSpan? IHttpClient.RetryWaitDuration { get; set; }
+        string IHttpClient.SaveFileDirectory { get; set; }
+
+        string IHttpClient.GetHtml(Uri url, NameValueCollection form)
+        {
+            var client = (IHttpClient)this;
+            string result = null;
+            var waitDuration = client.RetryWaitDuration;
+            Hub.Retry(() =>
+            {
+                this.SetRequest(url);
+                if (!form.IsNullOrEmpty())
+                {
+                    for (int i = 0; i < form.Count; i++)
+                    {
+                        this.Form[form.GetKey(i)] = form.Get(i);
+                    }
+                }
+                var res = this.GetResponse();
+                result = res.GetResponseText();
+            }, client.RetryCount.GetValueOrDefault(1), waitDuration.HasValue ? (int?)waitDuration.Value.TotalMilliseconds : null);
+            return result;
+        }
+
+        Stream IHttpClient.GetStream(Uri url, NameValueCollection form)
+        {
+            var client = (IHttpClient)this;
+            Stream result = null;
+            var waitDuration = client.RetryWaitDuration;
+            Hub.Retry(() =>
+            {
+                this.SetRequest(url);
+                if (!form.IsNullOrEmpty())
+                {
+                    for (int i = 0; i < form.Count; i++)
+                    {
+                        this.Form[form.GetKey(i)] = form.Get(i);
+                    }
+                }
+                var res = this.GetResponse();
+                result = res.GetResponseStream();
+            }, client.RetryCount.GetValueOrDefault(1), waitDuration.HasValue ? (int?)waitDuration.Value.TotalMilliseconds : null);
+            return result;
+        }
+
+        void IHttpClient.DownloadFile(Uri fileUrl, out string fileName)
+        {
+            var client = (IHttpClient)this;
+            fileName = fileUrl.OriginalString;
+            int i = fileName.LastIndexOf("?");
+            if (i != -1)
+            {
+                fileName = fileName.Remove(i);
+            }
+            fileName = CryptoManaged.MD5Hex(fileUrl.OriginalString) + Path.GetExtension(fileName);
+            string localPath = client.SaveFileDirectory + fileName;
+            var waitDuration = client.RetryWaitDuration;
+            try
+            {
+                if (!Hub.Retry(() =>
+                {
+                    this.SetRequest(fileUrl);
+                    this.DownloadFile(localPath);
+                    var file = new FileInfo(localPath);
+                    return file.Exists && file.Length > 0L;
+                }, client.RetryCount.GetValueOrDefault(1), waitDuration.HasValue ? (int?)waitDuration.Value.TotalMilliseconds : null))
+                {
+                    throw new DownloadException(string.Empty)
+                    {
+                        RemoteUrl = fileUrl.OriginalString,
+                        LocalPath = localPath
+                    };
+                };
+            }
+            catch (Exception ex)
+            {
+                throw new DownloadException(string.Empty, ex)
+                {
+                    RemoteUrl = fileUrl.OriginalString,
+                    LocalPath = localPath
+                };
+            }
         }
         #endregion
     }

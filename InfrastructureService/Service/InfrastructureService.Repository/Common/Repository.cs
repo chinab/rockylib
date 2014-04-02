@@ -11,6 +11,10 @@ namespace InfrastructureService.Repository
     public abstract class RepositoryBase
     {
         #region Static
+        static RepositoryBase()
+        {
+            var _hack = typeof(System.Data.Entity.SqlServer.SqlProviderServices);
+        }
         internal static int EnumToValue<T>(T value) where T : struct
         {
             return Convert.ToInt32(value);
