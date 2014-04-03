@@ -35,6 +35,7 @@ namespace System.Net
         /// </summary>
         string SaveFileDirectory { get; set; }
 
+        void SetProxy(EndPoint address, NetworkCredential credential = null);
         /// <summary>
         /// 获取响应文本
         /// </summary>
@@ -85,6 +86,11 @@ namespace System.Net
         {
             get { return default(string); }
             set { }
+        }
+
+        void IHttpClient.SetProxy(EndPoint address, NetworkCredential credential)
+        {
+            Contract.Requires(address != null);
         }
 
         string IHttpClient.GetHtml(Uri url, NameValueCollection form)

@@ -157,9 +157,9 @@ namespace System.Net
 
             _referer = DefaultReferer;
             _entity = new HttpRequestEntity();
-            this.SetRequest(url);
             _requestChanged = requestChanged;
             _validateResponse = validateResponse;
+            this.SetRequest(url);
         }
         #endregion
 
@@ -177,10 +177,10 @@ namespace System.Net
         {
             _request = (HttpWebRequest)WebRequest.Create(url);
             _request.CookieContainer = _cookieContainer;
+            _request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
             _request.Accept = "*/*";
             _request.UserAgent = DefaultUserAgent;
             _request.Referer = _referer;
-            //_request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
             if (credential != null)
             {
                 _request.SendChunked = false;
@@ -208,9 +208,9 @@ namespace System.Net
             }
         }
 
-        public virtual void SetProxy(Uri address, NetworkCredential credential = null)
+        public virtual void SetProxy(EndPoint address, NetworkCredential credential = null)
         {
-            var proxy = new WebProxy(address);
+            var proxy = new WebProxy(string.Format("http://{0}", address));
             if (credential == null)
             {
                 proxy.UseDefaultCredentials = true;
