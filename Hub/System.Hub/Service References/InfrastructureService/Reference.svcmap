@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="5fd6002c-7967-4db0-884b-d767e892b109" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://azure2.open.net/InfrastructureService.svc" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="InfrastructureService.xsd" MetadataType="Schema" ID="67f857ef-6ebc-41f0-b55c-2280a41b9744" SourceId="1" SourceUrl="http://azure2.open.net/InfrastructureService.svc?xsd=xsd5" />
+    <MetadataFile FileName="InfrastructureService.disco" MetadataType="Disco" ID="a659d274-8697-446e-8ef7-ed2e63ef68f0" SourceId="1" SourceUrl="http://azure2.open.net/InfrastructureService.svc?disco" />
+    <MetadataFile FileName="InfrastructureService1.xsd" MetadataType="Schema" ID="af2c138e-f587-4dc7-957f-6cd23fba43bb" SourceId="1" SourceUrl="http://azure2.open.net/InfrastructureService.svc?xsd=xsd0" />
+    <MetadataFile FileName="InfrastructureService2.xsd" MetadataType="Schema" ID="f8479fa7-a327-4f38-8445-8d9f2227f7b7" SourceId="1" SourceUrl="http://azure2.open.net/InfrastructureService.svc?xsd=xsd2" />
+    <MetadataFile FileName="InfrastructureService3.xsd" MetadataType="Schema" ID="e088abb3-0980-4218-bc1f-3c12a51f897e" SourceId="1" SourceUrl="http://azure2.open.net/InfrastructureService.svc?xsd=xsd3" />
+    <MetadataFile FileName="InfrastructureService.wsdl" MetadataType="Wsdl" ID="7fc8550a-55a2-4220-af37-8ec94fd80e8d" SourceId="1" SourceUrl="http://azure2.open.net/InfrastructureService.svc?wsdl" />
+    <MetadataFile FileName="InfrastructureService4.xsd" MetadataType="Schema" ID="df9916a3-6900-4ab2-9dcc-71b3a8bd6646" SourceId="1" SourceUrl="http://azure2.open.net/InfrastructureService.svc?xsd=xsd1" />
+    <MetadataFile FileName="InfrastructureService5.xsd" MetadataType="Schema" ID="c5f256f9-0042-423a-89e4-1255c31555fe" SourceId="1" SourceUrl="http://azure2.open.net/InfrastructureService.svc?xsd=xsd6" />
+    <MetadataFile FileName="InfrastructureService6.xsd" MetadataType="Schema" ID="b10bb9b9-dff3-4996-8168-ed26f3399774" SourceId="1" SourceUrl="http://azure2.open.net/InfrastructureService.svc?xsd=xsd7" />
+    <MetadataFile FileName="InfrastructureService7.xsd" MetadataType="Schema" ID="decb67eb-dcf9-44c1-b301-0d83df8a5b4a" SourceId="1" SourceUrl="http://azure2.open.net/InfrastructureService.svc?xsd=xsd4" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

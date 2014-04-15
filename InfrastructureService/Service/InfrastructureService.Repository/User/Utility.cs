@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Configuration;
 using System.Net;
-using InfrastructureService.Repository.Message;
-using InfrastructureService.Model.Message;
+using InfrastructureService.Repository.Basic;
+using InfrastructureService.Model.Basic;
 
 namespace InfrastructureService.Repository.User
 {
@@ -22,7 +22,7 @@ namespace InfrastructureService.Repository.User
             body.Replace("{$UserName$}", userName);
             body.Replace("{$SiteUrl$}", WebHostUrl);
             body.Replace("{$FindUrl$}", WebHostUrl + "Account/VerifyEmail.aspx?authCode=" + authCode.ToString());
-            var svc = new MessageRepository();
+            var svc = new InfrastructureRepository();
             svc.SendEmail(new SendEmailParameter()
             {
                 AppID = appID,
@@ -41,7 +41,7 @@ namespace InfrastructureService.Repository.User
             body.Replace("{$UserName$}", userName);
             body.Replace("{$SiteUrl$}", WebHostUrl);
             body.Replace("{$FindUrl$}", WebHostUrl + "Account/ChangePwd.aspx?authCode=" + authCode.ToString());
-            var svc = new MessageRepository();
+            var svc = new InfrastructureRepository();
             svc.SendEmail(new SendEmailParameter()
             {
                 AppID = appID,
@@ -54,7 +54,7 @@ namespace InfrastructureService.Repository.User
         public static void SendSignUpSMS(Guid appID, string receiveMobile, int smsCode)
         {
             string msg = "您的手机验证码是" + smsCode + "，请在页面填写验证码完成验证。如非本人操作，可不予理会，谢谢。";
-            var svc = new MessageRepository();
+            var svc = new InfrastructureRepository();
             svc.SendSMS(new SendSMSParameter()
             {
                 AppID = appID,
@@ -66,7 +66,7 @@ namespace InfrastructureService.Repository.User
         public static void SendFindPwdSMS(Guid appID, string receiveMobile, int smsCode)
         {
             string msg = "您的密码修改网址是 " + WebHostUrl + "?authCode=" + receiveMobile + "," + smsCode + " ，请浏览页面完成修改。如非本人操作，可不予理会，谢谢。";
-            var svc = new MessageRepository();
+            var svc = new InfrastructureRepository();
             svc.SendSMS(new SendSMSParameter()
             {
                 AppID = appID,

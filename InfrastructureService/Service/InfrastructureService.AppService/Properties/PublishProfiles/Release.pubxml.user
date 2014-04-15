@@ -8,43 +8,44 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <LastUsedBuildConfiguration>Release</LastUsedBuildConfiguration>
     <LastUsedPlatform>Any CPU</LastUsedPlatform>
     <TimeStampOfAssociatedLegacyPublishXmlFile />
+    <_PublishTargetUrl>D:\Packages\Azure</_PublishTargetUrl>
   </PropertyGroup>
   <ItemGroup>
     <File Include="bin/EmitMapper.dll">
-      <publishTime>08/19/2013 09:48:48</publishTime>
+      <publishTime>03/17/2014 13:31:52</publishTime>
     </File>
     <File Include="bin/EntityFramework.dll">
-      <publishTime>08/19/2013 09:48:24</publishTime>
+      <publishTime>03/21/2014 16:40:00</publishTime>
     </File>
     <File Include="bin/EntityFramework.Extended.dll">
-      <publishTime>08/19/2013 09:48:24</publishTime>
+      <publishTime>04/01/2014 11:34:24</publishTime>
     </File>
     <File Include="bin/InfrastructureService.AppService.dll">
-      <publishTime>09/11/2013 17:06:34</publishTime>
+      <publishTime>04/15/2014 14:28:01</publishTime>
     </File>
     <File Include="bin/InfrastructureService.Common.dll">
-      <publishTime>09/11/2013 17:06:30</publishTime>
+      <publishTime>04/15/2014 14:00:08</publishTime>
     </File>
     <File Include="bin/InfrastructureService.Contract.dll">
-      <publishTime>09/11/2013 17:06:30</publishTime>
+      <publishTime>04/15/2014 14:07:39</publishTime>
     </File>
     <File Include="bin/InfrastructureService.DomainService.dll">
-      <publishTime>09/11/2013 17:06:34</publishTime>
+      <publishTime>04/15/2014 14:23:23</publishTime>
     </File>
     <File Include="bin/InfrastructureService.Model.dll">
-      <publishTime>09/11/2013 17:06:29</publishTime>
+      <publishTime>04/15/2014 14:07:38</publishTime>
     </File>
     <File Include="bin/InfrastructureService.Repository.dll">
-      <publishTime>09/11/2013 17:06:33</publishTime>
+      <publishTime>04/15/2014 14:23:22</publishTime>
     </File>
     <File Include="bin/log4net.dll">
-      <publishTime>08/03/2013 15:17:22</publishTime>
+      <publishTime>03/17/2014 13:31:34</publishTime>
     </File>
     <File Include="bin/Microsoft.Practices.EnterpriseLibrary.Common.dll">
-      <publishTime>08/19/2013 09:48:24</publishTime>
+      <publishTime>04/15/2014 13:58:57</publishTime>
     </File>
     <File Include="bin/Microsoft.Practices.EnterpriseLibrary.Validation.dll">
-      <publishTime>08/19/2013 09:48:24</publishTime>
+      <publishTime>04/15/2014 13:59:01</publishTime>
     </File>
     <File Include="bin/Microsoft.Practices.ServiceLocation.dll">
       <publishTime>08/19/2013 09:48:24</publishTime>
@@ -59,28 +60,28 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>08/19/2013 09:48:24</publishTime>
     </File>
     <File Include="bin/Newtonsoft.Json.dll">
-      <publishTime>08/19/2013 09:48:24</publishTime>
+      <publishTime>04/15/2014 13:55:42</publishTime>
     </File>
     <File Include="bin/PostSharp.dll">
-      <publishTime>09/11/2013 16:28:11</publishTime>
+      <publishTime>04/15/2014 13:53:07</publishTime>
     </File>
     <File Include="bin/SharpICTCLAS.dll">
-      <publishTime>09/11/2013 16:36:25</publishTime>
+      <publishTime>04/15/2014 13:52:23</publishTime>
     </File>
     <File Include="bin/System.Hub.dll">
-      <publishTime>09/11/2013 17:06:28</publishTime>
+      <publishTime>04/15/2014 13:27:07</publishTime>
     </File>
     <File Include="bin/zh-Hans/EntityFramework.resources.dll">
-      <publishTime>07/17/2013 16:17:18</publishTime>
+      <publishTime>03/21/2014 16:40:20</publishTime>
     </File>
     <File Include="Global.asax">
-      <publishTime>07/17/2013 16:08:27</publishTime>
+      <publishTime>03/17/2014 13:31:11</publishTime>
     </File>
     <File Include="Storage/Web.config">
-      <publishTime>07/17/2013 16:08:27</publishTime>
+      <publishTime>03/17/2014 13:31:11</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>09/11/2013 17:07:43</publishTime>
+      <publishTime>04/15/2014 14:31:06</publishTime>
     </File>
   </ItemGroup>
 </Project>

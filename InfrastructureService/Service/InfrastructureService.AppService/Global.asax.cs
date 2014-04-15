@@ -13,7 +13,7 @@ namespace InfrastructureService.AppService
         protected void Application_Start(object sender, EventArgs e)
         {
 #if !DEBUG
-            StorageService.Create();
+            InfrastructureService.DomainService.InfrastructureService.Create();
 #endif
         }
 
@@ -36,7 +36,7 @@ namespace InfrastructureService.AppService
         protected void Application_End(object sender, EventArgs e)
         {
 #if !DEBUG
-            StorageService.Create(true);
+            InfrastructureService.DomainService.InfrastructureService.Create(true);
 #endif
         }
     }

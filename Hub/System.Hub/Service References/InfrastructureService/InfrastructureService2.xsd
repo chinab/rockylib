@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:ser="http://schemas.microsoft.com/2003/10/Serialization/" xmlns:tns="http://schemas.datacontract.org/2004/07/InfrastructureService.Model.Basic" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/InfrastructureService.Model.Basic" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="http://azure2.open.net/InfrastructureService.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+  <xs:import schemaLocation="http://azure2.open.net/InfrastructureService.svc?xsd=xsd4" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+  <xs:import schemaLocation="http://azure2.open.net/InfrastructureService.svc?xsd=xsd3" namespace="http://schemas.datacontract.org/2004/07/InfrastructureService.Model" />
+  <xs:import schemaLocation="http://azure2.open.net/InfrastructureService.svc?xsd=xsd5" namespace="http://schemas.datacontract.org/2004/07/System.Net" />
+  <xs:import schemaLocation="http://azure2.open.net/InfrastructureService.svc?xsd=xsd7" namespace="http://schemas.datacontract.org/2004/07/System.Drawing" />
+  <xs:complexType name="SendEmailParameter">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q1="http://schemas.datacontract.org/2004/07/InfrastructureService.Model" base="q1:HeaderEntity">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Body" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="ConfigID" nillable="true" type="ser:guid" />
+          <xs:element xmlns:q2="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="Recipients" nillable="true" type="q2:ArrayOfstring" />
+          <xs:element minOccurs="0" name="Subject" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="SendEmailParameter" nillable="true" type="tns:SendEmailParameter" />
+  <xs:complexType name="SendSMSParameter">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q3="http://schemas.datacontract.org/2004/07/InfrastructureService.Model" base="q3:HeaderEntity">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="ConfigID" nillable="true" type="ser:guid" />
+          <xs:element minOccurs="0" name="ReceiveMobile" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="SendMessage" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="SendSMSParameter" nillable="true" type="tns:SendSMSParameter" />
+  <xs:complexType name="StorageConfig">
+    <xs:sequence>
+      <xs:element xmlns:q4="http://schemas.datacontract.org/2004/07/System.Net" minOccurs="0" name="ListenedAddress" nillable="true" type="q4:IPEndPoint" />
+      <xs:element minOccurs="0" name="StorageUrl" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="StorageConfig" nillable="true" type="tns:StorageConfig" />
+  <xs:complexType name="SaveFileParameter">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q5="http://schemas.datacontract.org/2004/07/InfrastructureService.Model" base="q5:HeaderEntity">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="FileData" nillable="true" type="xs:base64Binary" />
+          <xs:element minOccurs="0" name="FileName" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="SaveFileParameter" nillable="true" type="tns:SaveFileParameter" />
+  <xs:complexType name="QueryFileParameter">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q6="http://schemas.datacontract.org/2004/07/InfrastructureService.Model" base="q6:HeaderEntity">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="FileKey" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="QueryFileParameter" nillable="true" type="tns:QueryFileParameter" />
+  <xs:complexType name="QueryFileResult">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="CreateDate" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="FileKey" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="FileName" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="QueryFileResult" nillable="true" type="tns:QueryFileResult" />
+  <xs:complexType name="GetFileUrlParameter">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q7="http://schemas.datacontract.org/2004/07/InfrastructureService.Model" base="q7:HeaderEntity">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="FileKey" nillable="true" type="xs:string" />
+          <xs:element xmlns:q8="http://schemas.datacontract.org/2004/07/System.Drawing" minOccurs="0" name="ImageThumbnailSize" nillable="true" type="q8:Size" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="GetFileUrlParameter" nillable="true" type="tns:GetFileUrlParameter" />
+</xs:schema>

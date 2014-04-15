@@ -1,17 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<edmx:Edmx Version="2.0" xmlns:edmx="http://schemas.microsoft.com/ado/2008/10/edmx">
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
   <!-- EF Runtime content -->
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="InfrastructureService.UserModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
+    <Schema Namespace="InfrastructureService.UserModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityContainer Name="InfrastructureServiceUserModelStoreContainer">
-          <EntitySet Name="Account" EntityType="InfrastructureService.UserModel.Store.Account" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="EmailAuth" EntityType="InfrastructureService.UserModel.Store.EmailAuth" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="MobileAuth" EntityType="InfrastructureService.UserModel.Store.MobileAuth" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="OpenOAuth" EntityType="InfrastructureService.UserModel.Store.OpenOAuth" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="PersistentSession" EntityType="InfrastructureService.UserModel.Store.PersistentSession" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="SignInLog" EntityType="InfrastructureService.UserModel.Store.SignInLog" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Account" EntityType="InfrastructureService.UserModel.Store.Account" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="EmailAuth" EntityType="InfrastructureService.UserModel.Store.EmailAuth" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="MobileAuth" EntityType="InfrastructureService.UserModel.Store.MobileAuth" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="OpenOAuth" EntityType="InfrastructureService.UserModel.Store.OpenOAuth" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="PersistentSession" EntityType="InfrastructureService.UserModel.Store.PersistentSession" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="SignInLog" EntityType="InfrastructureService.UserModel.Store.SignInLog" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
           <AssociationSet Name="FK_EmailAuth_Account" Association="InfrastructureService.UserModel.Store.FK_EmailAuth_Account">
             <End Role="Account" EntitySet="Account" />
             <End Role="EmailAuth" EntitySet="EmailAuth" />
@@ -129,8 +129,8 @@
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
-      <Schema Namespace="InfrastructureService.UserModel" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
-        <EntityContainer Name="InfrastructureService_UserEntities" annotation:LazyLoadingEnabled="true">
+      <Schema Namespace="InfrastructureService.UserModel" Alias="Self" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="InfrastructureService_UserEntities" annotation:LazyLoadingEnabled="true" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation">
           <EntitySet Name="Accounts" EntityType="InfrastructureService.UserModel.Account" />
           <EntitySet Name="EmailAuths" EntityType="InfrastructureService.UserModel.EmailAuth" />
           <EntitySet Name="MobileAuths" EntityType="InfrastructureService.UserModel.MobileAuth" />
@@ -261,7 +261,7 @@
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
-      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2008/09/mapping/cs">
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="InfrastructureServiceUserModelStoreContainer" CdmEntityContainer="InfrastructureService_UserEntities">
           <EntitySetMapping Name="Accounts">
             <EntityTypeMapping TypeName="InfrastructureService.UserModel.Account">
@@ -338,7 +338,7 @@
     </edmx:Mappings>
   </edmx:Runtime>
   <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
-  <Designer xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <Connection>
       <DesignerInfoPropertySet>
         <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
@@ -353,6 +353,6 @@
       </DesignerInfoPropertySet>
     </Options>
     <!-- Diagram content (shape and connector positions) -->
-    <Diagrams></Diagrams>
+    <Diagrams />
   </Designer>
 </edmx:Edmx>

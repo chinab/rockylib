@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<edmx:Edmx Version="2.0" xmlns:edmx="http://schemas.microsoft.com/ado/2008/10/edmx">
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
   <!-- EF Runtime content -->
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="InfrastructureServiceModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
+      <Schema Namespace="InfrastructureServiceModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityContainer Name="InfrastructureServiceModelStoreContainer">
-          <EntitySet Name="ActionLog" EntityType="InfrastructureServiceModel.Store.ActionLog" store:Type="Tables" store:Schema="dbo" store:Name="ActionLog">
+          <EntitySet Name="ActionLog" EntityType="InfrastructureServiceModel.Store.ActionLog" store:Type="Tables" store:Schema="dbo" store:Name="ActionLog" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator">
             <DefiningQuery>SELECT 
       [ActionLog].[ControlID] AS [ControlID], 
       [ActionLog].[UserID] AS [UserID], 
@@ -17,28 +17,28 @@
       [ActionLog].[CreateDate] AS [CreateDate]
       FROM [dbo].[ActionLog] AS [ActionLog]</DefiningQuery>
           </EntitySet>
-          <EntitySet Name="AppEmailConfigMap" EntityType="InfrastructureServiceModel.Store.AppEmailConfigMap" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="AppInfo" EntityType="InfrastructureServiceModel.Store.AppInfo" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="AppSMSConfigMap" EntityType="InfrastructureServiceModel.Store.AppSMSConfigMap" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="ComponentInfo" EntityType="InfrastructureServiceModel.Store.ComponentInfo" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="ControlInfo" EntityType="InfrastructureServiceModel.Store.ControlInfo" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="EmailConfig" EntityType="InfrastructureServiceModel.Store.EmailConfig" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="EmailMessage" EntityType="InfrastructureServiceModel.Store.EmailMessage" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="Feedback" EntityType="InfrastructureServiceModel.Store.Feedback" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="FileStorage" EntityType="InfrastructureServiceModel.Store.FileStorage" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="FriendLink" EntityType="InfrastructureServiceModel.Store.FriendLink" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="News" EntityType="InfrastructureServiceModel.Store.News" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="NewsCategory" EntityType="InfrastructureServiceModel.Store.NewsCategory" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="RoleControlMap" EntityType="InfrastructureServiceModel.Store.RoleControlMap" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="RoleInfo" EntityType="InfrastructureServiceModel.Store.RoleInfo" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="SearchKeyword" EntityType="InfrastructureServiceModel.Store.SearchKeyword" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="ServiceInfo" EntityType="InfrastructureServiceModel.Store.ServiceInfo" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="SiteAD" EntityType="InfrastructureServiceModel.Store.SiteAD" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="SMSConfig" EntityType="InfrastructureServiceModel.Store.SMSConfig" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="SMSMessage" EntityType="InfrastructureServiceModel.Store.SMSMessage" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="UserControlMap" EntityType="InfrastructureServiceModel.Store.UserControlMap" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="UserInfo" EntityType="InfrastructureServiceModel.Store.UserInfo" store:Type="Tables" Schema="dbo" />
-          <EntitySet Name="UserRoleMap" EntityType="InfrastructureServiceModel.Store.UserRoleMap" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="AppEmailConfigMap" EntityType="InfrastructureServiceModel.Store.AppEmailConfigMap" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="AppInfo" EntityType="InfrastructureServiceModel.Store.AppInfo" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="AppSMSConfigMap" EntityType="InfrastructureServiceModel.Store.AppSMSConfigMap" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="ComponentInfo" EntityType="InfrastructureServiceModel.Store.ComponentInfo" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="ControlInfo" EntityType="InfrastructureServiceModel.Store.ControlInfo" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="EmailConfig" EntityType="InfrastructureServiceModel.Store.EmailConfig" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="EmailMessage" EntityType="InfrastructureServiceModel.Store.EmailMessage" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="Feedback" EntityType="InfrastructureServiceModel.Store.Feedback" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="FileStorage" EntityType="InfrastructureServiceModel.Store.FileStorage" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="FriendLink" EntityType="InfrastructureServiceModel.Store.FriendLink" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="News" EntityType="InfrastructureServiceModel.Store.News" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="NewsCategory" EntityType="InfrastructureServiceModel.Store.NewsCategory" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="RoleControlMap" EntityType="InfrastructureServiceModel.Store.RoleControlMap" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="RoleInfo" EntityType="InfrastructureServiceModel.Store.RoleInfo" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="SearchKeyword" EntityType="InfrastructureServiceModel.Store.SearchKeyword" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="ServiceInfo" EntityType="InfrastructureServiceModel.Store.ServiceInfo" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="SiteAD" EntityType="InfrastructureServiceModel.Store.SiteAD" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="SMSConfig" EntityType="InfrastructureServiceModel.Store.SMSConfig" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="SMSMessage" EntityType="InfrastructureServiceModel.Store.SMSMessage" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="UserControlMap" EntityType="InfrastructureServiceModel.Store.UserControlMap" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="UserInfo" EntityType="InfrastructureServiceModel.Store.UserInfo" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="UserRoleMap" EntityType="InfrastructureServiceModel.Store.UserRoleMap" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
           <AssociationSet Name="FK_AppEmailConfigMap_AppInfo" Association="InfrastructureServiceModel.Store.FK_AppEmailConfigMap_AppInfo">
             <End Role="AppInfo" EntitySet="AppInfo" />
             <End Role="AppEmailConfigMap" EntitySet="AppEmailConfigMap" />
@@ -738,8 +738,8 @@
     </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
-      <Schema Namespace="InfrastructureServiceModel" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
-        <EntityContainer Name="InfrastructureServiceEntities" annotation:LazyLoadingEnabled="true">
+      <Schema Namespace="InfrastructureServiceModel" Alias="Self" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="InfrastructureServiceEntities" annotation:LazyLoadingEnabled="true" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation">
           <EntitySet Name="ActionLogs" EntityType="InfrastructureServiceModel.ActionLog" />
           <EntitySet Name="AppInfoes" EntityType="InfrastructureServiceModel.AppInfo" />
           <EntitySet Name="ComponentInfoes" EntityType="InfrastructureServiceModel.ComponentInfo" />
@@ -1025,7 +1025,7 @@
           <Key>
             <PropertyRef Name="RowID" />
           </Key>
-          <Property Name="RowID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RowID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Name="AppID" Type="Guid" Nullable="false" />
           <Property Name="CategoryID" Type="Int32" Nullable="false" />
           <Property Name="Title" Type="String" Nullable="false" MaxLength="100" Unicode="false" FixedLength="false" />
@@ -1046,7 +1046,7 @@
           <Key>
             <PropertyRef Name="RowID" />
           </Key>
-          <Property Name="RowID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RowID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Name="AppID" Type="Guid" Nullable="false" />
           <Property Name="ParentID" Type="Int32" Nullable="false" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="50" Unicode="false" FixedLength="false" />
@@ -1405,7 +1405,7 @@
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
-      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2008/09/mapping/cs">
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="InfrastructureServiceModelStoreContainer" CdmEntityContainer="InfrastructureServiceEntities">
           <EntitySetMapping Name="ActionLogs">
             <EntityTypeMapping TypeName="InfrastructureServiceModel.ActionLog">
@@ -1724,7 +1724,7 @@
     </edmx:Mappings>
   </edmx:Runtime>
   <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
-  <Designer xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <Connection>
       <DesignerInfoPropertySet>
         <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
@@ -1739,6 +1739,6 @@
       </DesignerInfoPropertySet>
     </Options>
     <!-- Diagram content (shape and connector positions) -->
-    <Diagrams></Diagrams>
+    <Diagrams />
   </Designer>
 </edmx:Edmx>

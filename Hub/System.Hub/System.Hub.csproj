@@ -167,6 +167,10 @@
     <Reference Include="System.Configuration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Azure\Basic\TransferClient.cs" />
+    <Compile Include="Azure\Basic\TransferHelper.cs" />
+    <Compile Include="Azure\Common\ClientCallException.cs" />
+    <Compile Include="Azure\Common\ServiceFacade.cs" />
     <Compile Include="Caching\CacheChangeMonitor.cs" />
     <Compile Include="Caching\DistributedCache.cs" />
     <Compile Include="Caching\DistributedException.cs" />
@@ -267,6 +271,11 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Common\Utility\TaskHelper.cs" />
+    <Compile Include="Service References\InfrastructureService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataStructure\NodeList.cs">
@@ -325,10 +334,63 @@
     <EmbeddedResource Include="Resource\CassiniDev4-console.exe.config" />
     <None Include="packages.config" />
     <None Include="rocky.snk" />
+    <None Include="Service References\InfrastructureService\InfrastructureService.wsdl" />
+    <None Include="Service References\InfrastructureService\InfrastructureService.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\InfrastructureService\InfrastructureService1.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\InfrastructureService\InfrastructureService2.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\InfrastructureService\InfrastructureService3.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\InfrastructureService\InfrastructureService4.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\InfrastructureService\InfrastructureService5.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\InfrastructureService\InfrastructureService6.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\InfrastructureService\InfrastructureService7.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\InfrastructureService\System.InfrastructureService.QueryFileResult.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\InfrastructureService\System.InfrastructureService.StorageConfig.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resource\CassiniDev4-console.exe" />
   </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadataStorage Include="Service References\InfrastructureService\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\InfrastructureService\InfrastructureService.disco" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\InfrastructureService\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\InfrastructureService\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\InfrastructureService\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

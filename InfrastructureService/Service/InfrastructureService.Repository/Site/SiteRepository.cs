@@ -159,14 +159,9 @@ namespace InfrastructureService.Repository.Site
             }
         }
 
-        public IQueryable<SiteADEntity> QuerySiteADs(QuerySiteADsParameter param, InfrastructureServiceEntities context = null)
+        public IQueryable<SiteADEntity> QuerySiteADs(QuerySiteADsParameter param)
         {
-            bool own = context == null;
-            if (own)
-            {
-                context = new InfrastructureServiceEntities();
-            }
-            try
+            using (var context = new InfrastructureServiceEntities())
             {
                 int status = EnumToValue(StatusKind.Blocked);
                 var q = from t in context.SiteADs
@@ -189,13 +184,6 @@ namespace InfrastructureService.Repository.Site
                             Url = t.Url
                         };
                 return q;
-            }
-            finally
-            {
-                if (own)
-                {
-                    context.Dispose();
-                }
             }
         }
         #endregion

@@ -74,7 +74,14 @@ namespace System.Agent.Privacy
         public ProtocolClient()
         {
             _client = new TcpClient();
-            _client.Connect(PackModel.ServiceEndPoint);
+            try
+            {
+                _client.Connect(PackModel.ServiceEndPoint);
+            }
+            catch (SocketException)
+            {
+                MessageBox.Show(string.Format("请先安装隐私服务。"), "提示：", MessageBoxButtons.OK);
+            }
             TaskHelper.Factory.StartNew(this.OnReceive);
 
             _client.Client.Send(new PackModel()
