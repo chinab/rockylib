@@ -6,6 +6,7 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Text;
 using E = System.Environment;
@@ -21,8 +22,8 @@ namespace System.Net
         /// <summary>
         /// http://
         /// </summary>
-        internal static readonly string HttpScheme = Uri.UriSchemeHttp + Uri.SchemeDelimiter;
-        internal const string DefaultReferer = "http://www.google.com/#Timothy.net";
+        public static readonly string HttpScheme = Uri.UriSchemeHttp + Uri.SchemeDelimiter;
+        internal static readonly Uri Default = new Uri("http://www.google.com/#Timothy.net");
         internal const string DefaultUserAgent = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html#Timothy.net)";
         internal const string ValidateResponseFailure = "ValidateResponseFailure";
 
@@ -61,36 +62,17 @@ namespace System.Net
         #endregion
 
         #region Fields
-        private bool _hasNewRequest;
+        private bool _initRequest;
         private string _referer;
         private CookieContainer _cookieContainer;
+        private HttpRequestContent _content;
         private HttpWebRequest _request;
-        private HttpRequestEntity _entity;
-        private Action<HttpWebRequest> _requestChanged;
         private Func<HttpWebResponse, bool> _validateResponse;
         #endregion
 
         #region Properties
-        public bool KeepCookie
-        {
-            get { return _cookieContainer != null; }
-            set
-            {
-                if (value)
-                {
-                    if (_cookieContainer == null)
-                    {
-                        _cookieContainer = new CookieContainer();
-                    }
-                }
-                else
-                {
-                    _cookieContainer = null;
-                }
-            }
-        }
         /// <summary>
-        /// 移除PersistentConnection为2的限制
+        /// 强制移除PersistentConnection为2的限制
         /// </summary>
         public bool KeepAlive
         {
@@ -123,43 +105,55 @@ namespace System.Net
             get { return _request.ReadWriteTimeout; }
             set { _request.ReadWriteTimeout = value; }
         }
+        public bool UseCookies
+        {
+            get { return _cookieContainer != null; }
+            set
+            {
+                if (value)
+                {
+                    if (_cookieContainer == null)
+                    {
+                        _cookieContainer = new CookieContainer();
+                    }
+                }
+                else
+                {
+                    _cookieContainer = null;
+                }
+            }
+        }
 
         public WebHeaderCollection Headers
         {
-            get { return _request.Headers; }
-        }
-        public NameValueCollection Form
-        {
-            get { return _entity.Form; }
-        }
-        public List<HttpFile> Files
-        {
-            get { return _entity.Files; }
+            get { return _content.Headers; }
         }
         public CookieCollection Cookies
         {
             get
             {
-                Contract.Requires(this.KeepCookie);
+                Contract.Requires(this.UseCookies);
 
                 return _cookieContainer.GetCookies(_request.RequestUri);
             }
         }
+        public NameValueCollection Form
+        {
+            get { return _content.Form; }
+        }
+        public List<HttpFileContent> Files
+        {
+            get { return _content.Files; }
+        }
         #endregion
 
         #region Constructors
-        public HttpClient(Uri url = null, Action<HttpWebRequest> requestChanged = null, Func<HttpWebResponse, bool> validateResponse = null)
+        public HttpClient(Uri url = null, Func<HttpWebResponse, bool> validateResponse = null)
         {
-            if (url == null)
-            {
-                url = new Uri(DefaultReferer);
-            }
-
-            _referer = DefaultReferer;
-            _entity = new HttpRequestEntity();
-            _requestChanged = requestChanged;
+            _referer = Default.OriginalString;
+            _content = new HttpRequestContent();
             _validateResponse = validateResponse;
-            this.SetRequest(url);
+            this.SetRequest(url ?? Default);
         }
         #endregion
 
@@ -168,7 +162,7 @@ namespace System.Net
         {
             if (queryString.Count > 0)
             {
-                url += _entity.GetFormString(queryString, url.Contains(HttpRequestEntity.Symbol_AndFirst));
+                url += _content.GetFormString(queryString, url.Contains(HttpRequestContent.Symbol_AndFirst));
             }
             return new Uri(url);
         }
@@ -176,11 +170,11 @@ namespace System.Net
         public virtual void SetRequest(Uri url, NetworkCredential credential = null, bool newRequest = true, string checksum = null, Stream rawStream = null)
         {
             _request = (HttpWebRequest)WebRequest.Create(url);
-            _request.CookieContainer = _cookieContainer;
             _request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
             _request.Accept = "*/*";
             _request.UserAgent = DefaultUserAgent;
             _request.Referer = _referer;
+            _request.CookieContainer = _cookieContainer;
             if (credential != null)
             {
                 _request.SendChunked = false;
@@ -190,21 +184,17 @@ namespace System.Net
             }
             if (newRequest)
             {
-                _entity.Clear();
-                _hasNewRequest = true;
-            }
-            if (_requestChanged != null)
-            {
-                _requestChanged(_request);
+                _content.Clear();
+                _initRequest = true;
             }
 
             if (checksum != null)
             {
-                _entity.Form["checksum"] = checksum;
+                _content.Form["checksum"] = checksum;
             }
             if (rawStream != null)
             {
-                _entity.Files.Add(new HttpFile("raw", "rawFile", rawStream));
+                _content.Files.Add(new HttpFileContent("raw", "rawFile", rawStream));
             }
         }
 
@@ -225,17 +215,58 @@ namespace System.Net
         #endregion
 
         #region Response
-        #region Core
-        protected virtual HttpWebResponse GetResponse(string httpMethod, bool autoRedirect)
+        public string GetResponseLocation()
         {
-            _request.AllowAutoRedirect = autoRedirect;
-            if (httpMethod == null)
+            using (var response = this.GetResponse(null, false))
             {
-                _request.Method = _entity.HasValue ? WebRequestMethods.Http.Post : WebRequestMethods.Http.Get;
+                return response.Headers[HttpResponseHeader.Location];
             }
-            if (_request.Method == WebRequestMethods.Http.Post)
+        }
+        public HttpWebResponse GetResponseHead()
+        {
+            var response = GetResponse(HttpMethod.Head, true);
+            Uri url = _request.RequestUri;
+            NetworkCredential credential = (NetworkCredential)_request.Credentials;
+            this.SetRequest(url, credential, false);
+            return response;
+        }
+
+        public HttpWebResponse GetResponse(Action<HttpWebResponse> serverPush = null)
+        {
+            if (!_initRequest)
             {
-                if (_entity.Files.Count > 0)
+                throw new WebException("Requires new request");
+            }
+
+            var response = this.GetResponse(null, true);
+            if (serverPush != null)
+            {
+                serverPush(response);
+            }
+            return response;
+        }
+
+        #region Core
+        protected virtual HttpWebResponse GetResponse(HttpMethod method, bool autoRedirect)
+        {
+            _initRequest = false;
+            if (method == null)
+            {
+                method = _content.HasValue ? HttpMethod.Post : HttpMethod.Get;
+            }
+            _request.Method = method.Method;
+            _request.AllowAutoRedirect = autoRedirect;
+            var headers = _content.Headers;
+            string referer = headers[HttpRequestHeader.Referer] ?? _referer;
+            if (!string.IsNullOrEmpty(referer))
+            {
+                _request.Referer = referer;
+                headers.Remove(HttpRequestHeader.Referer);
+            }
+            _content.AppendHeadersTo(_request.Headers);
+            if (method == HttpMethod.Post)
+            {
+                if (_content.Files.Count > 0)
                 {
                     var sb = new StringBuilder();
                     // http://www.w3.org/TR/html401/interact/forms.html#h-17.13.4
@@ -247,11 +278,11 @@ namespace System.Net
                     long contentLength = 0L;
                     var methodQueue = new Queue<Action<Stream>>();
 
-                    for (int i = 0; i < _entity.Form.Count; i++)
+                    for (int i = 0; i < _content.Form.Count; i++)
                     {
                         sb.Length = 0;
-                        sb.AppendFormat("Content-Disposition: form-data; name=\"{0}\"{1}{1}", _entity.Form.GetKey(i), E.NewLine);
-                        sb.AppendFormat("{0}{1}", _entity.Form.Get(i), E.NewLine);
+                        sb.AppendFormat("Content-Disposition: form-data; name=\"{0}\"{1}{1}", _content.Form.GetKey(i), E.NewLine);
+                        sb.AppendFormat("{0}{1}", _content.Form.Get(i), E.NewLine);
 
                         byte[] body = Encoding.UTF8.GetBytes(sb.ToString());
                         contentLength += beginBoundary.LongLength + body.LongLength;
@@ -263,7 +294,7 @@ namespace System.Net
                     }
 
                     byte[] endOfFile = Encoding.ASCII.GetBytes(E.NewLine);
-                    foreach (var file in _entity.Files)
+                    foreach (var file in _content.Files)
                     {
                         sb.Length = 0;
                         sb.AppendFormat("Content-Disposition: form-data; name=\"{0}\"; filename=\"{1}\"{2}", file.InputName, System.Web.HttpUtility.UrlEncode(file.FileName), E.NewLine);
@@ -292,9 +323,9 @@ namespace System.Net
                 else
                 {
                     _request.ContentType = "application/x-www-form-urlencoded";
-                    if (_entity.Form.Count > 0)
+                    if (_content.Form.Count > 0)
                     {
-                        byte[] body = Encoding.UTF8.GetBytes(_entity.GetFormString());
+                        byte[] body = Encoding.UTF8.GetBytes(_content.GetFormString());
                         _request.ContentLength = body.LongLength;
                         Stream requestStream = _request.GetRequestStream();
                         requestStream.Write(body, 0, body.Length);
@@ -305,11 +336,10 @@ namespace System.Net
 
             var response = (HttpWebResponse)_request.GetResponse();
             _referer = response.ResponseUri.AbsoluteUri;
-            if (this.KeepCookie)
+            if (this.UseCookies)
             {
                 _cookieContainer.Add(response.ResponseUri, response.Cookies);
             }
-            _hasNewRequest = false;
             if (_validateResponse != null && !_validateResponse(response))
             {
                 throw new WebException(ValidateResponseFailure, null, WebExceptionStatus.UnknownError, response);
@@ -317,42 +347,6 @@ namespace System.Net
             return response;
         }
         #endregion
-
-        public string GetResponseLocation()
-        {
-            using (var response = this.GetResponse(null, false))
-            {
-                return response.Headers[HttpResponseHeader.Location];
-            }
-        }
-
-        /// <summary>
-        /// 通过WebRequestMethods.Http.Head获取HttpWebResponse
-        /// </summary>
-        /// <returns></returns>
-        public HttpWebResponse GetResponseHead()
-        {
-            var response = GetResponse(WebRequestMethods.Http.Head, true);
-            Uri url = _request.RequestUri;
-            NetworkCredential credential = (NetworkCredential)_request.Credentials;
-            this.SetRequest(url, credential, false);
-            return response;
-        }
-
-        public HttpWebResponse GetResponse(Action<HttpWebResponse> serverPush = null)
-        {
-            if (!_hasNewRequest)
-            {
-                throw new WebException("Requires new request");
-            }
-
-            var response = this.GetResponse(null, true);
-            if (serverPush != null)
-            {
-                serverPush(response);
-            }
-            return response;
-        }
         #endregion
 
         #region File
@@ -365,7 +359,7 @@ namespace System.Net
                 _request.AddRange(file.Length);
             }
 
-            var response = this.GetResponse(_request.Method, true);
+            var response = this.GetResponse(null, true);
             long offset = useRange && response.StatusCode == (HttpStatusCode)206 ? file.Length : 0L,
                 length = response.ContentLength;
             using (Stream responseStream = response.GetResponseStream())
@@ -388,31 +382,32 @@ namespace System.Net
             long offset = this.GetResponseHead().ContentLength;
             _request.AddRange(offset);
             _request.AllowWriteStreamBuffering = false;
-            _entity.Files.Add(new HttpFile(string.Empty, filePath, offset));
-            var res = this.GetResponse();
-            return res.GetResponseText();
+            _content.Files.Add(new HttpFileContent(string.Empty, filePath, offset));
+            var response = this.GetResponse();
+            return response.GetResponseText();
         }
         #endregion
 
         #region IHttpClient
         ushort? IHttpClient.RetryCount { get; set; }
         TimeSpan? IHttpClient.RetryWaitDuration { get; set; }
+        CookieContainer IHttpClient.CookieContainer
+        {
+            get { return _cookieContainer; }
+        }
         string IHttpClient.SaveFileDirectory { get; set; }
 
-        string IHttpClient.GetHtml(Uri url, NameValueCollection form)
+        string IHttpClient.GetHtml(Uri requestUrl, HttpRequestContent content)
         {
             var client = (IHttpClient)this;
             string result = null;
             var waitDuration = client.RetryWaitDuration;
             Hub.Retry(() =>
             {
-                this.SetRequest(url);
-                if (!form.IsNullOrEmpty())
+                this.SetRequest(requestUrl);
+                if (content != null)
                 {
-                    for (int i = 0; i < form.Count; i++)
-                    {
-                        this.Form[form.GetKey(i)] = form.Get(i);
-                    }
+                    this._content = content;
                 }
                 var res = this.GetResponse();
                 result = res.GetResponseText();
@@ -420,20 +415,17 @@ namespace System.Net
             return result;
         }
 
-        Stream IHttpClient.GetStream(Uri url, NameValueCollection form)
+        Stream IHttpClient.GetStream(Uri requestUrl, HttpRequestContent content)
         {
             var client = (IHttpClient)this;
             Stream result = null;
             var waitDuration = client.RetryWaitDuration;
             Hub.Retry(() =>
             {
-                this.SetRequest(url);
-                if (!form.IsNullOrEmpty())
+                this.SetRequest(requestUrl);
+                if (content != null)
                 {
-                    for (int i = 0; i < form.Count; i++)
-                    {
-                        this.Form[form.GetKey(i)] = form.Get(i);
-                    }
+                    this._content = content;
                 }
                 var res = this.GetResponse();
                 result = res.GetResponseStream();
@@ -465,7 +457,7 @@ namespace System.Net
                 {
                     throw new DownloadException(string.Empty)
                     {
-                        RemoteUrl = fileUrl.OriginalString,
+                        RemoteUrl = fileUrl,
                         LocalPath = localPath
                     };
                 };
@@ -474,7 +466,7 @@ namespace System.Net
             {
                 throw new DownloadException(string.Empty, ex)
                 {
-                    RemoteUrl = fileUrl.OriginalString,
+                    RemoteUrl = fileUrl,
                     LocalPath = localPath
                 };
             }

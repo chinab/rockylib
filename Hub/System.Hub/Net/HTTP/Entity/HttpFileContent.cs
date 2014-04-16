@@ -9,7 +9,7 @@ using System.Web;
 
 namespace System.Net
 {
-    public sealed class HttpFile : HttpPostedFileBase
+    public sealed class HttpFileContent : HttpPostedFileBase
     {
         #region Fields
         private long _offset, _length;
@@ -55,12 +55,12 @@ namespace System.Net
         #endregion
 
         #region Constructors
-        public HttpFile(string inputName, string filePath, long offset = 0L, long length = -1L)
+        public HttpFileContent(string inputName, string filePath, long offset = 0L, long length = -1L)
             : this(inputName, Path.GetFileName(filePath), File.OpenRead(filePath), offset, length)
         {
 
         }
-        public HttpFile(string inputName, string fileName, Stream fileStream, long offset = 0L, long length = -1L)
+        public HttpFileContent(string inputName, string fileName, Stream fileStream, long offset = 0L, long length = -1L)
         {
             Contract.Requires(inputName != null);
             Contract.Requires(!string.IsNullOrEmpty(fileName));
@@ -77,7 +77,7 @@ namespace System.Net
             _offset = offset;
             _length = length;
         }
-        public HttpFile(string inputName, HttpPostedFileBase httpFile)
+        public HttpFileContent(string inputName, HttpPostedFileBase httpFile)
             : this(inputName, httpFile.FileName, httpFile.InputStream, 0L, httpFile.ContentLength)
         {
 

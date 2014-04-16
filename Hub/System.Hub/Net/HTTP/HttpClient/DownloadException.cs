@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 
 namespace System.Net
@@ -9,12 +10,12 @@ namespace System.Net
     /// 下载异常
     /// </summary>
     [Serializable]
-    public class DownloadException : Exception
+    public class DownloadException : HttpRequestException
     {
         /// <summary>
         /// 远程下载Url
         /// </summary>
-        public string RemoteUrl { get; set; }
+        public Uri RemoteUrl { get; set; }
         /// <summary>
         /// 本地保存Path
         /// </summary>
@@ -23,9 +24,5 @@ namespace System.Net
         public DownloadException() { }
         public DownloadException(string message) : base(message) { }
         public DownloadException(string message, Exception inner) : base(message, inner) { }
-        protected DownloadException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context)
-            : base(info, context) { }
     }
 }

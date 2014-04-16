@@ -8,11 +8,11 @@ using System.Net;
 
 namespace System.Net
 {
-    public sealed class HttpRequestEntity
+    public sealed class HttpRequestContent
     {
         #region NestedTypes
         [Flags]
-        public enum ItemKind
+        public enum ContentKind
         {
             None = 0,
             Form = 1 << 0,
@@ -30,7 +30,7 @@ namespace System.Net
         private WebHeaderCollection _header;
         private CookieCollection _cookies;
         private NameValueCollection _form;
-        private List<HttpFile> _files;
+        private List<HttpFileContent> _files;
         #endregion
 
         #region Properties
@@ -67,13 +67,13 @@ namespace System.Net
                 return _form;
             }
         }
-        public List<HttpFile> Files
+        public List<HttpFileContent> Files
         {
             get
             {
                 if (_files == null)
                 {
-                    _files = new List<HttpFile>();
+                    _files = new List<HttpFileContent>();
                 }
                 return _files;
             }
@@ -144,13 +144,13 @@ namespace System.Net
             return sb.ToString();
         }
 
-        public void Clear(ItemKind kind = ItemKind.All)
+        public void Clear(ContentKind kind = ContentKind.All)
         {
-            if (kind.HasFlag(ItemKind.Form) && _form != null)
+            if (kind.HasFlag(ContentKind.Form) && _form != null)
             {
                 _form.Clear();
             }
-            if (kind.HasFlag(ItemKind.Files) && _files != null)
+            if (kind.HasFlag(ContentKind.Files) && _files != null)
             {
                 _files.Clear();
             }

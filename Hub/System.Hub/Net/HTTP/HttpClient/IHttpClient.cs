@@ -15,10 +15,6 @@ namespace System.Net
     public interface IHttpClient
     {
         /// <summary>
-        /// 是否保存Cookie
-        /// </summary>
-        bool KeepCookie { get; set; }
-        /// <summary>
         /// 超时时间
         /// </summary>
         int SendReceiveTimeout { get; set; }
@@ -31,6 +27,14 @@ namespace System.Net
         /// </summary>
         TimeSpan? RetryWaitDuration { get; set; }
         /// <summary>
+        /// 是否保存Cookie
+        /// </summary>
+        bool UseCookies { get; set; }
+        /// <summary>
+        /// Cookie持久对象
+        /// </summary>
+        CookieContainer CookieContainer { get; }
+        /// <summary>
         /// 保存下载文件的文件夹
         /// </summary>
         string SaveFileDirectory { get; set; }
@@ -39,17 +43,17 @@ namespace System.Net
         /// <summary>
         /// 获取响应文本
         /// </summary>
-        /// <param name="url">url</param>
-        /// <param name="form">post data</param>
+        /// <param name="requestUrl">url</param>
+        /// <param name="content">post data</param>
         /// <returns></returns>
-        string GetHtml(Uri url, NameValueCollection form = null);
+        string GetHtml(Uri requestUrl, HttpRequestContent content = null);
         /// <summary>
         /// 获取响应数据流
         /// </summary>
-        /// <param name="url"></param>
-        /// <param name="form">post data</param>
+        /// <param name="requestUrl">url</param>
+        /// <param name="content">post data</param>
         /// <returns></returns>
-        Stream GetStream(Uri url, NameValueCollection form = null);
+        Stream GetStream(Uri requestUrl, HttpRequestContent content = null);
         /// <summary>
         /// 下载文件
         /// </summary>
@@ -62,11 +66,6 @@ namespace System.Net
     [ContractClassFor(typeof(IHttpClient))]
     internal abstract class IHttpClientContract : IHttpClient
     {
-        bool IHttpClient.KeepCookie
-        {
-            get { return default(bool); }
-            set { }
-        }
         int IHttpClient.SendReceiveTimeout
         {
             get { return default(int); }
@@ -82,6 +81,15 @@ namespace System.Net
             get { return default(TimeSpan?); }
             set { }
         }
+        bool IHttpClient.UseCookies
+        {
+            get { return default(bool); }
+            set { }
+        }
+        CookieContainer IHttpClient.CookieContainer
+        {
+            get { return default(CookieContainer); }
+        }
         string IHttpClient.SaveFileDirectory
         {
             get { return default(string); }
@@ -93,23 +101,23 @@ namespace System.Net
             Contract.Requires(address != null);
         }
 
-        string IHttpClient.GetHtml(Uri url, NameValueCollection form)
+        string IHttpClient.GetHtml(Uri requestUrl, HttpRequestContent content)
         {
-            Contract.Requires(url != null);
+            Contract.Requires(requestUrl != null);
             Contract.Ensures(Contract.Result<string>() != null);
             return default(string);
         }
 
-        Stream IHttpClient.GetStream(Uri url, NameValueCollection form)
+        Stream IHttpClient.GetStream(Uri requestUrl, HttpRequestContent content)
         {
-            Contract.Requires(url != null);
+            Contract.Requires(requestUrl != null);
             Contract.Ensures(Contract.Result<Stream>() != null);
             return default(Stream);
         }
 
-        void IHttpClient.DownloadFile(Uri url, out string fileName)
+        void IHttpClient.DownloadFile(Uri fileUrl, out string fileName)
         {
-            Contract.Requires(url != null);
+            Contract.Requires(fileUrl != null);
             fileName = default(string);
         }
     }

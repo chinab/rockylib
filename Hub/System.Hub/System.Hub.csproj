@@ -34,6 +34,7 @@
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -87,7 +88,8 @@
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>rocky.snk</AssemblyOriginatorKeyFile>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -134,14 +136,14 @@
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>rocky.snk</AssemblyOriginatorKeyFile>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="log4net">
       <HintPath>..\..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
@@ -155,11 +157,13 @@
     </Reference>
     <Reference Include="System.Data.Linq" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -262,7 +266,7 @@
     <Compile Include="Net\Socket\lmplement\SocketPool.cs" />
     <Compile Include="Net\Socket\TransferProgress.cs" />
     <Compile Include="Net\FileTransfer\TransferConfig.cs" />
-    <Compile Include="Net\HTTP\Entity\HttpRequestEntity.cs" />
+    <Compile Include="Net\HTTP\Entity\HttpRequestContent.cs" />
     <Compile Include="Net\Utility\PingClient.cs" />
     <Compile Include="Net\Proxy\Entity\SocksProxy.cs" />
     <Compile Include="Net\Socket\SocketHelper.cs" />
@@ -295,7 +299,7 @@
     </Compile>
     <Compile Include="Data\Meta\IPropertyConvertible.cs" />
     <Compile Include="Common\Extensions.cs" />
-    <Compile Include="Net\HTTP\Entity\HttpFile.cs" />
+    <Compile Include="Net\HTTP\Entity\HttpFileContent.cs" />
     <Compile Include="Net\Utility\MailClient.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -405,6 +409,7 @@
     <OutputPath>bin\Mono</OutputPath>
     <WarningLevel>4</WarningLevel>
     <DefineConstants>Mono</DefineConstants>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

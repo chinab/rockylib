@@ -18,6 +18,10 @@ namespace InfrastructureService.Contract
         void SendSMS(SendSMSParameter param);
         #endregion
 
+        #region Proxy
+
+        #endregion
+
         #region File
         [OperationContract]
         StorageConfig GetConfig();

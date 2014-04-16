@@ -262,7 +262,7 @@ namespace System.Net
                         tunnel.Form[xHttpHandler.AgentChecksum] = CryptoManaged.MD5Hash(outStream).ToString();
                         outStream.Position = 0L;
 #endif
-                        tunnel.Files.Add(new HttpFile(xHttpHandler.AgentDirect, xHttpHandler.AgentDirect, outStream));
+                        tunnel.Files.Add(new HttpFileContent(xHttpHandler.AgentDirect, xHttpHandler.AgentDirect, outStream));
                         var response = tunnel.GetResponse();
                         if (response.GetResponseText() != "1")
                         {
