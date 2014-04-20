@@ -242,6 +242,7 @@
     <Compile Include="Net\HTTP\Extensions.cs" />
     <Compile Include="Net\HTTP\HttpClient\DownloadException.cs" />
     <Compile Include="Net\HTTP\HttpClient\IHttpClient.cs" />
+    <Compile Include="Net\HTTP\PageLand\StringPatternGenerator.cs" />
     <Compile Include="Net\HTTP\TunnelStateMissingException.cs" />
     <Compile Include="Net\HTTP\Entity\TunnelCommand.cs" />
     <Compile Include="Common\IHubEntry.cs" />

@@ -79,7 +79,7 @@
     <Compile Include="AgentTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Hub\System.Hub\System.Hub.csproj">
+    <ProjectReference Include="..\Library\System.Hub\System.Hub.csproj">
       <Project>{0433cac5-baaa-4e73-8f68-a7ccb1f6c9bf}</Project>
       <Name>System.Hub</Name>
     </ProjectReference>

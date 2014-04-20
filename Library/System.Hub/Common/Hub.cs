@@ -17,14 +17,15 @@ namespace System
         #region Fields
         public const string DebugSymbal = "DEBUG";
         private static log4net.ILog DefaultLogger, ExceptionLogger;
+        private static Action<Exception> _onLogError;
         private static readonly ConcurrentDictionary<Guid, Assembly> _injectMapper;
         private static Hub _host;
         #endregion
 
         #region Properties
-        public static ushort MaxThreadCount
+        public static Action<Exception> OnLogError
         {
-            get { return (ushort)(Environment.ProcessorCount + 1); }
+            set { Interlocked.Exchange(ref _onLogError, value); }
         }
         public static IServiceProvider Host
         {
@@ -96,11 +97,14 @@ namespace System
                 var process = Process.GetCurrentProcess();
                 msg.Insert(0, Environment.NewLine);
                 msg.Insert(0, string.Format("[Process={0}:{1}]", process.Id, process.ProcessName));
+                if (_onLogError != null)
+                {
+                    _onLogError(ex);
+                }
             }
-            catch (Exception pEx)
+            catch (Exception ex2)
             {
-                //Process Information Unavailable
-                msg.AppendFormat("Process Information Unavailable:{0}", pEx.Message);
+                msg.AppendFormat("LogError Error:{0}", ex2.Message);
             }
             ExceptionLogger.Error(msg, ex);
         }
