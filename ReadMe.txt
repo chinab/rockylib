@@ -16,7 +16,6 @@
 3.
   a. C:\Windows\Microsoft.NET\Framework64\v4.0.30319\InstallUtil.exe D:\Projects\GitLib\Hub\System.Agent.WinService\bin\Debug\System.Agent.WinService.exe
   b. C:\Windows\Microsoft.NET\Framework64\v4.0.30319\InstallUtil.exe /u 'path'
-  c. 启动Service: net start "服务名称"
 
 4. 
   a. Https反向连接获取问题；

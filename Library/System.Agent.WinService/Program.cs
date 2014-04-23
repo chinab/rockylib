@@ -18,7 +18,8 @@ namespace System.Agent.WinService
             ServiceBase[] ServicesToRun;
             ServicesToRun = new ServiceBase[] 
             { 
-                new PrivacyService() 
+                new PrivacyService(),
+                new HubService()
             };
             ServiceBase.Run(ServicesToRun);
         }
