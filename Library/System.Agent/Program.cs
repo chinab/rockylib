@@ -66,7 +66,7 @@ namespace System.Agent
         {
             string name = "飞檐走壁", ver = ConsoleNotify.GetVersion();
             Console.Title = string.Format("{0} {1} - 专注网络通讯", name, ver);
-            Console.Out.WriteInfo(@"{0} Agent [Version {1}]
+            Console.Out.WriteLine(@"{0} Agent [Version {1}]
 Copyright (c) 2012 JeansMan Studio。
 ", name, ver);
             //Mutex如不在这里，则不会生效

@@ -109,7 +109,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AgentHubConfig.cs" />
-    <Compile Include="Common\CodeTimer.cs" />
     <Compile Include="Common\ConsoleNotify.cs" />
     <Compile Include="Common\SecurityPolicy.cs" />
     <Compile Include="AgentApp.cs" />

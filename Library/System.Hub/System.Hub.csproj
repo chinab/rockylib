@@ -217,6 +217,7 @@
     <Compile Include="Data\Meta\PropertyConverter.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Design\CodeTimer.cs" />
     <Compile Include="Design\Disposable.cs" />
     <Compile Include="Common\JobTimer.cs" />
     <Compile Include="Net\FileTransfer\TransferEventArgs.cs" />
@@ -228,15 +229,6 @@
     <Compile Include="Net\FileTransfer\FileValidator.cs" />
     <Compile Include="Net\FileTransfer\lmplement\ReceiveChunkModel.cs" />
     <Compile Include="Net\FileTransfer\lmplement\SendChunkModel.cs" />
-    <Compile Include="Net\Grid\Entity\GridCommand.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Net\Grid\GridRuntime.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Net\Grid\IGridClient.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Net\HTTP\Entity\TunnelDataQueue.cs" />
     <Compile Include="Net\HTTP\Business\xUserManager.cs" />
     <Compile Include="Net\HTTP\Extensions.cs" />

@@ -13,6 +13,9 @@ using System.Web;
 
 namespace System.Net
 {
+    /// <summary>
+    /// http://en.wikipedia.org/wiki/Grid_computing
+    /// </summary>
     public partial class xHttpHandler : IHttpHandler
     {
         #region StaticMembers

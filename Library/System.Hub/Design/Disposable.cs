@@ -20,16 +20,6 @@ namespace System
             Dispose(false);
         }
 
-        [DebuggerStepThrough]
-        protected virtual void CheckDisposed()
-        {
-            if (_disposed)
-            {
-                string typeName = this.GetType().FullName;
-                throw new ObjectDisposedException(typeName, string.Format("Cannot access a disposed {0}.", typeName));
-            }
-        }
-
         private void Dispose(bool disposing)
         {
             if (!_disposed)
@@ -48,6 +38,25 @@ namespace System
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        [DebuggerStepThrough]
+        protected virtual void CheckDisposed()
+        {
+            if (_disposed)
+            {
+                string typeName = this.GetType().FullName;
+                throw new ObjectDisposedException(typeName, string.Format("Can't access a disposed {0}.", typeName));
+            }
+        }
+
+        protected void DisposeObject(object obj)
+        {
+            var free = obj as IDisposable;
+            if (free != null)
+            {
+                free.Dispose();
+            }
         }
     }
 }

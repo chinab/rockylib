@@ -7,7 +7,7 @@ using System.Threading;
 using System.Runtime.InteropServices;
 using System.IO;
 
-namespace System.Agent
+namespace System
 {
     public static class CodeTimer
     {
@@ -135,12 +135,8 @@ namespace System.Agent
         }
     }
 
-    public static class TextWriterExtensions
+    public static class ConsoleWriterExtensions
     {
-        public static void WriteInfo(this TextWriter writer, string format, params object[] args)
-        {
-            writer.WriteLine(ConsoleColor.White, format, args);
-        }
         public static void WriteTip(this TextWriter writer, string format, params object[] args)
         {
             writer.WriteLine(ConsoleColor.Green, format, args);

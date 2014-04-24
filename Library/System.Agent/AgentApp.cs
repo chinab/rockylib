@@ -29,7 +29,7 @@ namespace System.Agent
             try
             {
                 var config = AgentHubConfig.AppConfig;
-                Console.Out.WriteInfo("加载配置{0}成功...", AgentHubConfig.AppConfigPath);
+                Console.Out.WriteLine("加载配置{0}成功...", AgentHubConfig.AppConfigPath);
                 //创建隧道客户端
                 foreach (var tunnel in config.TunnelList)
                 {
@@ -115,7 +115,7 @@ namespace System.Agent
                 //创建本地服务节点
                 Uri serverUrl;
                 xHttpServer.Start(@"C:\Packages\azure", out serverUrl);
-                Console.Out.WriteInfo("服务端节点{0}开启...", serverUrl);
+                Console.Out.WriteLine("服务端节点{0}开启...", serverUrl);
                 serverBalance.Add(serverUrl);
             }
             else
@@ -138,7 +138,7 @@ namespace System.Agent
                         where !string.IsNullOrEmpty(t)
                         select new Uri(string.Format("{0}://{1}/Go.ashx", config.EnableSsl ? Uri.UriSchemeHttps : Uri.UriSchemeHttp, t));
                 serverBalance.AddRange(q);
-                Console.Out.WriteInfo("连接服务器{0}...", q.First());
+                Console.Out.WriteLine("连接服务器{0}...", q.First());
             }
             return serverBalance.ToArray();
         }

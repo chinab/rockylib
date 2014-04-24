@@ -92,7 +92,7 @@ namespace System.Agent
         public static string GetExecPath()
         {
             string shortcutPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Programs), string.Format(@"{0}\{1}.appref-ms", Application.CompanyName, Application.ProductName));
-            Console.Out.WriteInfo(shortcutPath);
+            Console.Out.WriteLine(shortcutPath);
             return shortcutPath;
         }
 
