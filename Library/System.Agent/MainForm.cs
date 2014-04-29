@@ -15,7 +15,7 @@ using SharpCompress.Common;
 
 namespace System.Agent
 {
-    public partial class MainForm : Form, IFormEntry
+    public partial class MainForm : Form
     {
         public static bool Confirm(string content, string title = "确认操作")
         {
@@ -27,10 +27,6 @@ namespace System.Agent
         private NamedPipeServerStream _pipeServer;
         private FileTransfer _trans;
         private Process _proxifierProc;
-        #endregion
-
-        #region Properties
-        public bool CanClose { get; set; }
         #endregion
 
         #region Load
@@ -56,7 +52,7 @@ namespace System.Agent
         }
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            if (e.Cancel = !this.CanClose)
+            if (e.Cancel = !ConsoleNotify.Closing)
             {
                 this.HideForm();
             }

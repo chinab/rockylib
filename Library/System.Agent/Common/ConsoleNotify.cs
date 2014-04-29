@@ -19,19 +19,15 @@ namespace System.Agent
 {
     public class ConsoleNotify
     {
-        #region Win32API
-        [DllImport("kernel32")]
-        private static extern IntPtr GetConsoleWindow();
-        [DllImport("kernel32")]
-        private static extern bool SetConsoleCtrlHandler(HandlerRoutine Handler, bool Add);
-        [DllImport("user32.dll")]
-        private static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
-        [DllImport("user32.dll")]
-        private static extern bool ShowWindow(IntPtr hWnd, uint nCmdShow);
-        [DllImport("user32.dll", EntryPoint = "GetSystemMenu")]
+        #region WinAPI
+        [DllImport("User32.dll")]
+        private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+        [DllImport("User32.dll", EntryPoint = "GetSystemMenu")]
         private static extern IntPtr GetSystemMenu(IntPtr hWnd, IntPtr bRevert);
-        [DllImport("user32.dll", EntryPoint = "RemoveMenu")]
+        [DllImport("User32.dll", EntryPoint = "RemoveMenu")]
         private static extern IntPtr RemoveMenu(IntPtr hMenu, uint uPosition, uint uFlags);
+        [DllImport("Kernel32.dll")]
+        private static extern bool SetConsoleCtrlHandler(HandlerRoutine Handler, bool Add);
 
         public delegate bool HandlerRoutine(CtrlTypes dwCtrlType);
         /// <summary>
@@ -39,7 +35,7 @@ namespace System.Agent
         /// </summary>
         public enum CtrlTypes
         {
-            CTRL_C_EVENT = 0, // From wincom.h
+            CTRL_C_EVENT = 0,
             CTRL_BREAK_EVENT,
             CTRL_CLOSE_EVENT,
             CTRL_LOGOFF_EVENT = 5,
@@ -56,37 +52,35 @@ namespace System.Agent
             set
             {
                 _visible = value;
-                uint SW_SHOW;
-                if (_visible)
-                {
-                    SW_SHOW = 5;
-                }
-                else
-                {
-                    SW_SHOW = 0;
-                }
-                ShowWindow(GetConsoleHandle(), SW_SHOW);
+                int SW_SHOW = _visible ? 5 : 0;
+                ShowWindow(WindowHandle, SW_SHOW);
             }
         }
+        internal static IntPtr WindowHandle
+        {
+            get
+            {
+                Contract.Ensures(Contract.Result<IntPtr>() != IntPtr.Zero);
+
+                var proc = Process.GetCurrentProcess();
+                return proc.MainWindowHandle;
+            }
+        }
+        internal static bool Closing { get; private set; }
 
         /// <summary>
         /// 禁用关闭按钮
         /// </summary>        
-        public static void DisableCloseButton()
+        private static void DisableCloseButton()
         {
-            IntPtr closeMenu = GetSystemMenu(GetConsoleHandle(), IntPtr.Zero);
+            IntPtr closeMenu = GetSystemMenu(WindowHandle, IntPtr.Zero);
             uint SC_CLOSE = 0xF060;
             RemoveMenu(closeMenu, SC_CLOSE, 0x0);
         }
 
-        /// <summary>
-        /// 自动寻找当前控制台句柄
-        /// </summary>        
-        private static IntPtr GetConsoleHandle()
+        public static void ShowWindow(IntPtr windowName, bool visible)
         {
-            Contract.Ensures(Contract.Result<IntPtr>() != IntPtr.Zero);
-
-            return GetConsoleWindow();
+            ShowWindow(windowName, visible ? 9 : 0);
         }
 
         public static string GetExecPath()
@@ -154,11 +148,6 @@ namespace System.Agent
             version = string.Format("v{0}.{1}.{2}.{3}", ver.Major, ver.Minor, ver.Build, ver.Revision);
             return version;
         }
-
-        public static void ShowWindow(IntPtr lpWindowName, bool visible)
-        {
-            ShowWindow(lpWindowName, visible ? (uint)9 : 0);
-        }
         #endregion
 
         #region Fields
@@ -172,15 +161,18 @@ namespace System.Agent
         {
             if (!createNew)
             {
-                IntPtr handle = FindWindow(null, Console.Title);
-                if (handle == IntPtr.Zero)
+                var proc = Process.GetCurrentProcess();
+                var q = from t in Process.GetProcessesByName(proc.ProcessName)
+                        where t.Id != proc.Id
+                        select t.MainWindowHandle;
+                if (q.Any())
                 {
-                    Console.Out.WriteError("TunnelClient已启动，按任意键退出。");
-                    Console.Read();
+                    ShowWindow(q.First(), 5);
                 }
                 else
                 {
-                    ShowWindow(handle, 5);
+                    Console.Out.WriteError("控制台已启动，按任意键退出。");
+                    Console.Read();
                 }
                 Environment.Exit(0);
             }
@@ -206,10 +198,15 @@ namespace System.Agent
                 }
             }
 
+            var stream = Hub.GetResourceStream(string.Format("{0}.favicon.ico", typeof(ConsoleNotify).Namespace));
+            if (stream == null)
+            {
+                throw new InvalidOperationException("未嵌入NotifyIcon源");
+            }
             _notify = new NotifyIcon()
             {
                 Visible = _visible,
-                Icon = new Icon(Hub.GetResourceStream(string.Format("{0}.favicon.ico", typeof(ConsoleNotify).Namespace))),
+                Icon = new Icon(stream),
                 Text = notifyText,
                 ContextMenuStrip = new ContextMenuStrip() { RenderMode = ToolStripRenderMode.System }
             };
@@ -217,7 +214,7 @@ namespace System.Agent
             {
                 if (e.Button == MouseButtons.Left)
                 {
-                    ConsoleNotify.Visible = !ConsoleNotify.Visible;
+                    Visible = !Visible;
                 }
             };
             this.InitMenu();
@@ -238,17 +235,6 @@ namespace System.Agent
             this.CreateMenuItem("重新载入", "R");
             this.CreateMenuItem("退出", "E");
             _notify.ContextMenuStrip.ItemClicked += new ToolStripItemClickedEventHandler(ContextMenuStrip_ItemClicked);
-        }
-        private void CreateMenuItem(string txt, string name, bool doSeparator = false)
-        {
-            var menuItem = new ToolStripMenuItem();
-            menuItem.Name = name;
-            menuItem.Text = txt;
-            _notify.ContextMenuStrip.Items.Add(menuItem);
-            if (doSeparator)
-            {
-                _notify.ContextMenuStrip.Items.Add(new ToolStripSeparator());
-            }
         }
         void ContextMenuStrip_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
@@ -301,7 +287,7 @@ namespace System.Agent
                     }
                     break;
                 case "V":
-                    ConsoleNotify.Visible = !ConsoleNotify.Visible;
+                    Visible = !Visible;
                     break;
                 case "R":
                     Application.Restart();
@@ -325,30 +311,27 @@ namespace System.Agent
                 config.AppSettings.Settings["ShowTip"].Value = bool.FalseString;
                 config.Save();
             }
-            //ConsoleNotify.DisableCloseButton();
+
+            DisableCloseButton();
             _handler = new HandlerRoutine(eventType =>
             {
-                ConsoleNotify.Visible = false;
-                _notify.Dispose();
+                Visible = false;
+                Closing = true;
                 if (form != null)
                 {
-                    var wrap = form as IFormEntry;
-                    if (wrap != null)
-                    {
-                        wrap.CanClose = true;
-                    }
                     form.Close();
                 }
+                _notify.Dispose();
                 return false;
             });
             SetConsoleCtrlHandler(_handler, true);
 
             _tokenSource = new CancellationTokenSource();
-            TaskHelper.Factory.StartNew((state) =>
+            TaskHelper.Factory.StartNew(() =>
             {
-                entry.Main(state);
+                entry.Main(null);
                 this.Exit();
-            }, null, _tokenSource.Token).ObservedException();
+            }, _tokenSource.Token).ObservedException();
             if (form == null)
             {
                 Application.Run();
@@ -367,11 +350,18 @@ namespace System.Agent
             //Application.Exit();
             Environment.Exit(0);
         }
-        #endregion
-    }
 
-    public interface IFormEntry
-    {
-        bool CanClose { get; set; }
+        private void CreateMenuItem(string txt, string name, bool doSeparator = false)
+        {
+            var menuItem = new ToolStripMenuItem();
+            menuItem.Name = name;
+            menuItem.Text = txt;
+            _notify.ContextMenuStrip.Items.Add(menuItem);
+            if (doSeparator)
+            {
+                _notify.ContextMenuStrip.Items.Add(new ToolStripSeparator());
+            }
+        }
+        #endregion
     }
 }

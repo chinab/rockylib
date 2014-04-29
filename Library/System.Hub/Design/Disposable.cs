@@ -3,18 +3,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace System
 {
     public abstract class Disposable : IDisposable
     {
-        private bool _disposed;
+        #region Fields
+        [DllImport("Psapi.dll")]
+        internal static extern bool EmptyWorkingSet(IntPtr hProcess);
 
+        private volatile bool _disposed;
+        #endregion
+
+        #region Properties
         protected bool IsDisposed
         {
             get { return _disposed; }
         }
+        #endregion
 
+        #region Constructor
         ~Disposable()
         {
             Dispose(false);
@@ -39,7 +48,9 @@ namespace System
             Dispose(true);
             GC.SuppressFinalize(this);
         }
+        #endregion
 
+        #region Methods
         [DebuggerStepThrough]
         protected virtual void CheckDisposed()
         {
@@ -58,5 +69,20 @@ namespace System
                 free.Dispose();
             }
         }
+
+        protected void ReleaseMemory()
+        {
+            //long m = 100 * 1024;
+            //GC.AddMemoryPressure(m);
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            GC.Collect();
+            //GC.WaitForFullGCComplete();
+            //GC.Collect();
+            //GC.RemoveMemoryPressure(m);
+            var proc = Process.GetCurrentProcess();
+            EmptyWorkingSet(proc.Handle);
+        }
+        #endregion
     }
 }

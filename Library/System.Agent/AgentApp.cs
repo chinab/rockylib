@@ -104,7 +104,7 @@ namespace System.Agent
         }
         void client_ServerRejected(object sender, EventArgs e)
         {
-            //ConsoleNotify.
+            //ConsoleNotify...
         }
 
         private Uri[] GetServerBalance(AgentHubConfig config)
