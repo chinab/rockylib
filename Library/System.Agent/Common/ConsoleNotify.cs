@@ -20,10 +20,16 @@ namespace System.Agent
     public class ConsoleNotify
     {
         #region WinAPI
+        /// <summary>
+        /// 必须调用此API
+        /// </summary>
+        /// <returns></returns>
+        [DllImport("Kernel32.dll")]
+        private static extern IntPtr GetConsoleWindow();
         [DllImport("User32.dll")]
         private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
         [DllImport("User32.dll", EntryPoint = "GetSystemMenu")]
-        private static extern IntPtr GetSystemMenu(IntPtr hWnd, IntPtr bRevert);
+        private static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert);
         [DllImport("User32.dll", EntryPoint = "RemoveMenu")]
         private static extern IntPtr RemoveMenu(IntPtr hMenu, uint uPosition, uint uFlags);
         [DllImport("Kernel32.dll")]
@@ -62,8 +68,9 @@ namespace System.Agent
             {
                 Contract.Ensures(Contract.Result<IntPtr>() != IntPtr.Zero);
 
-                var proc = Process.GetCurrentProcess();
-                return proc.MainWindowHandle;
+                //var proc = Process.GetCurrentProcess();
+                //return proc.MainWindowHandle;
+                return GetConsoleWindow();
             }
         }
         internal static bool Closing { get; private set; }
@@ -73,7 +80,7 @@ namespace System.Agent
         /// </summary>        
         private static void DisableCloseButton()
         {
-            IntPtr closeMenu = GetSystemMenu(WindowHandle, IntPtr.Zero);
+            IntPtr closeMenu = GetSystemMenu(WindowHandle, false);
             uint SC_CLOSE = 0xF060;
             RemoveMenu(closeMenu, SC_CLOSE, 0x0);
         }
@@ -304,16 +311,17 @@ namespace System.Agent
         public void Run(IHubEntry entry, Form form = null)
         {
             var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            var setter = config.AppSettings.Settings["ShowTip"];
             bool showTip;
-            if (bool.TryParse(config.AppSettings.Settings["ShowTip"].Value, out showTip) && showTip)
+            if (setter != null && bool.TryParse(setter.Value, out showTip) && showTip)
             {
                 _notify.ShowBalloonTip(3000, _notify.Text, string.Format("{0}已启动，单击托盘图标可以最小化！", _notify.Text), ToolTipIcon.Info);
-                config.AppSettings.Settings["ShowTip"].Value = bool.FalseString;
+                setter.Value = bool.FalseString;
                 config.Save();
             }
 
             DisableCloseButton();
-            _handler = new HandlerRoutine(eventType =>
+            SetConsoleCtrlHandler(_handler = new HandlerRoutine(eventType =>
             {
                 Visible = false;
                 Closing = true;
@@ -323,8 +331,7 @@ namespace System.Agent
                 }
                 _notify.Dispose();
                 return false;
-            });
-            SetConsoleCtrlHandler(_handler, true);
+            }), true);
 
             _tokenSource = new CancellationTokenSource();
             TaskHelper.Factory.StartNew(() =>
@@ -347,7 +354,7 @@ namespace System.Agent
         {
             _tokenSource.Cancel(true);
             _handler(CtrlTypes.CTRL_C_EVENT);
-            //Application.Exit();
+            Application.Exit();
             Environment.Exit(0);
         }
 
