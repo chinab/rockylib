@@ -8,7 +8,7 @@ namespace System
     public interface IDisposeService
     {
         void Register(Type owner, IDisposable instance);
-        void Free(Type owner, IDisposable instance);
-        void FreeAll(Type owner);
+        void Release(Type owner, IDisposable instance);
+        void ReleaseAll(Type owner);
     }
 }

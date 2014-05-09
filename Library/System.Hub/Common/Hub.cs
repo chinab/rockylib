@@ -111,6 +111,13 @@ namespace System
         #endregion
 
         #region Methods
+        public static void RandomSleep(uint from, uint to)
+        {
+            var rnd = new Random();
+            int ms = rnd.Next((int)from, (int)to);
+            Thread.Sleep(ms);
+        }
+
         public static void LoopSleep(ref int loopIndex)
         {
             int procCount = Environment.ProcessorCount;
@@ -361,7 +368,7 @@ namespace System
             queue.Add(instance);
         }
 
-        void IDisposeService.Free(Type owner, IDisposable instance)
+        void IDisposeService.Release(Type owner, IDisposable instance)
         {
             try
             {
@@ -382,7 +389,7 @@ namespace System
             }
         }
 
-        void IDisposeService.FreeAll(Type owner)
+        void IDisposeService.ReleaseAll(Type owner)
         {
             object boxed;
             if (!_container.TryRemove(owner, out boxed))

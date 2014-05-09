@@ -111,7 +111,7 @@ namespace System
                 }
                 _job = null;
 
-                Hub.DisposeService.Free(this.GetType(), this);
+                Hub.DisposeService.Release(this.GetType(), this);
             }
         }
         #endregion

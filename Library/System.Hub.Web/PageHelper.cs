@@ -11,7 +11,7 @@ using System.Collections.Specialized;
 
 namespace System.Web
 {
-    public class PageBase : System.Web.UI.Page
+    public static class PageHelper
     {
         #region Fields
         private static readonly string[] DangerousHtmlTags;
@@ -33,7 +33,7 @@ namespace System.Web
         #endregion
 
         #region Constructor
-        static PageBase()
+        static PageHelper()
         {
             DangerousHtmlTags = new string[] { "script", "object", "form", "body", "iframe", "style", "link", "meta", "applet", "frame", "frameset", "html", "layer", "ilayer" };
         }
@@ -92,21 +92,17 @@ namespace System.Web
         #endregion
 
         #region ModelPost
-        #region SetPost
-        public static void SetPost(object entity)
-        {
-            SetPost(entity, Current);
-        }
-        public static void SetPost(object entity, Control parentControl)
+        #region SetModel
+        public static void SetModel(object viewObj, Control parentControl = null, bool asState = false)
         {
             if (parentControl == null)
             {
-                throw new ArgumentNullException("parentControl");
+                parentControl = Current;
             }
-            var list = GetPostPair(entity, parentControl);
+            var list = GetPostPair(viewObj, parentControl);
             if (list.Count == 0)
             {
-                throw new InvalidOperationException("PostPair is empty.");
+                throw new InvalidOperationException("PostPair's empty!");
             }
 
             Page page = parentControl.Page;
@@ -119,7 +115,7 @@ namespace System.Web
                 }
 
                 PropertyAccess property = pair.Property;
-                object value = property.GetValue(entity);
+                object value = property.GetValue(viewObj);
                 Type propType = property.EntityProperty.PropertyType;
                 if (!TypeHelper.IsStringOrValueType(propType))
                 {
@@ -131,7 +127,7 @@ namespace System.Web
                         }
                         else
                         {
-                            SetPost(value, parentControl);
+                            SetModel(value, parentControl);
                         }
                     }
                     continue;
@@ -199,6 +195,15 @@ namespace System.Web
                     }
                 }
             }
+            if (asState)
+            {
+                var dict = (ListDictionary)page.Session["ModelState"];
+                if (dict == null)
+                {
+                    page.Session["ModelState"] = dict = new ListDictionary();
+                }
+                dict[viewObj.GetType()] = viewObj;
+            }
         }
 
         private static void BindData(Control ctrl, object source)
@@ -228,7 +233,7 @@ namespace System.Web
                 return;
             }
 
-            throw new NotSupportedException(ctrl.GetType().Name);
+            throw new NotSupportedException(string.Format("Type={0} ID={1}", ctrl.GetType().Name, ctrl.ID));
         }
 
         public static void BindEnum(ListControl ctrl, Type enumType)
@@ -240,21 +245,29 @@ namespace System.Web
         }
         #endregion
 
-        #region GetPost
-        public static void GetPost(object entity)
+        #region GetModel
+        public static T GetModel<T>() where T : class, new()
         {
-            GetPost(entity, Current);
+            T viewObj;
+            var page = Current;
+            var dict = (ListDictionary)page.Session["ModelState"];
+            if (dict == null || (viewObj = (T)dict[typeof(T)]) == default(T))
+            {
+                throw new InvalidOperationException("AsState First!");
+            }
+            GetModel(viewObj, page);
+            return viewObj;
         }
-        public static void GetPost(object entity, Control parentControl)
+        public static void GetModel(object viewObj, Control parentControl = null)
         {
             if (parentControl == null)
             {
-                throw new ArgumentNullException("parentControl");
+                parentControl = Current;
             }
-            var list = GetPostPair(entity, parentControl);
+            var list = GetPostPair(viewObj, parentControl);
             if (list.Count == 0)
             {
-                throw new InvalidOperationException("PostPair is empty.");
+                throw new InvalidOperationException("PostPair's empty!");
             }
 
             Page page = parentControl.Page;
@@ -330,18 +343,18 @@ namespace System.Web
                     {
                         throw new InvalidCastException(property.MappedName);
                     }
-                    property.SetValue(entity, null);
+                    property.SetValue(viewObj, null);
                 }
                 else
                 {
                     if (property.EntityProperty.PropertyType == typeof(Guid))
                     {
-                        property.SetValue(entity, new Guid(value.ToString()));
+                        property.SetValue(viewObj, new Guid(value.ToString()));
                     }
                     else
                     {
                         // property.ChangeType 处理了类型为Enum的情况
-                        property.SetValue(entity, property.ChangeType(value));
+                        property.SetValue(viewObj, property.ChangeType(value));
                     }
                 }
             }
@@ -462,75 +475,6 @@ namespace System.Web
         #endregion
         #endregion
 
-        #region Fake MVVM
-        public virtual void SetModel<T>(T view, bool asState = false) where T : class
-        {
-            SetModel(view, asState ? vo =>
-            {
-#if Session
-                var dict = (ListDictionary)Session["ModelState"];
-                if (dict == null)
-                {
-                    Session["ModelState"] = dict = new ListDictionary();
-                }
-                dict[vo.GetType()] = vo;
-#else
-                var dict = (ListDictionary)ViewState["ModelState"];
-                if (dict == null)
-                {
-                    ViewState["ModelState"] = dict = new ListDictionary();
-                }
-                dict[vo.GetType()] = vo;
-#endif
-            } : (Action<T>)null);
-        }
-        public virtual void SetModel<T>(T view, Action<T> stateMapper) where T : class
-        {
-            if (view == null)
-            {
-                throw new ArgumentNullException("view");
-            }
-
-            PageBase.SetPost(view, this);
-            if (stateMapper != null)
-            {
-                stateMapper(view);
-            }
-        }
-
-        public virtual T GetModel<T>(bool asState = false) where T : class, new()
-        {
-            return GetModel<T>(asState ? () =>
-            {
-#if Session
-                var dict = (ListDictionary)Session["ModelState"];
-                return dict != null ? ((T)dict[typeof(T)] ?? new T()) : new T();
-#else
-                var dict = (ListDictionary)ViewState["ModelState"];
-                return dict != null ? ((T)dict[typeof(T)] ?? new T()) : new T();
-#endif
-            } : (Func<T>)null);
-        }
-        public virtual T GetModel<T>(Func<T> stateMapper) where T : class, new()
-        {
-            T view;
-            if (stateMapper != null)
-            {
-                view = stateMapper();
-                if (view == null)
-                {
-                    throw new ArgumentException("stateMapper");
-                }
-            }
-            else
-            {
-                view = new T();
-            }
-            PageBase.GetPost(view, this);
-            return view;
-        }
-        #endregion
-
         #region Methods
         public static void RegisterHeader(string keywords, string description)
         {
@@ -552,39 +496,40 @@ namespace System.Web
                 context.Items[url] = string.Empty;
             }
         }
-        public static void RegisterScriptInclude(string url)
-        {
-            var context = HttpContext.Current;
-            object flag = context.Items[url];
-            if (flag == null)
-            {
-                HtmlGenericControl script = new HtmlGenericControl("script");
-                script.Attributes["type"] = "text/javascript";
-                script.Attributes["src"] = url;
-                Current.Header.Controls.Add(script);
-                context.Items[url] = string.Empty;
-            }
-        }
         public static void RegisterScript(string script)
         {
             Page page = Current;
+            if (script.StartsWith(Uri.UriSchemeHttp))
+            {
+                var context = HttpContext.Current;
+                object flag = context.Items[script];
+                if (flag == null)
+                {
+                    HtmlGenericControl scriptTag = new HtmlGenericControl("script");
+                    scriptTag.Attributes["type"] = "text/javascript";
+                    scriptTag.Attributes["src"] = script;
+                    page.Header.Controls.Add(scriptTag);
+                    context.Items[script] = string.Empty;
+                }
+                return;
+            }
             Type type = page.GetType();
             string key = page.ClientScript.IsStartupScriptRegistered(type, string.Empty) ? Guid.NewGuid().ToString() : string.Empty;
             page.ClientScript.RegisterStartupScript(type, key, script, true);
         }
 
-        public static string RenderTitle(object html)
+        public static string RenderTitle(object html, int len = -1)
         {
             if (html == null)
             {
                 return string.Empty;
             }
-            return new StringBuilder(HtmlFilter(html.ToString()))
-                .Replace(Environment.NewLine, String.Empty)
-                .ToString();
-        }
-        public static string RenderTitle(object html, int len)
-        {
+            if (len == -1)
+            {
+                return new StringBuilder(HtmlFilter(html.ToString()))
+                    .Replace(Environment.NewLine, String.Empty)
+                    .ToString();
+            }
             return RenderTitle(html, len, String.Empty);
         }
         public static string RenderTitle(object html, int len, string extra)
@@ -592,19 +537,15 @@ namespace System.Web
             return StringHelper.ByteSubstring(RenderTitle(html), len, extra);
         }
 
-        public static string HtmlFilter(string html)
+        public static string HtmlFilter(string html, string[] tagName = null)
         {
             if (string.IsNullOrEmpty(html))
             {
                 return string.Empty;
             }
-            return Regex.Replace(html, "<(.[^>]*)>", String.Empty, RegexOptions.Compiled);
-        }
-        public static string HtmlFilter(string html, string[] tagName)
-        {
-            if (string.IsNullOrEmpty(html))
+            if (tagName == null)
             {
-                return string.Empty;
+                return Regex.Replace(html, "<(.[^>]*)>", String.Empty, RegexOptions.Compiled);
             }
             for (int i = 0; i < tagName.Length; i++)
             {
@@ -652,11 +593,7 @@ namespace System.Web
             context.Response.Write("<script>" + script + "</script>");
             context.Response.End();
         }
-        public static void AlertThenReload(string msg)
-        {
-            AlertThenReload(msg, false);
-        }
-        public static void AlertThenReload(string msg, bool onlyPath)
+        public static void AlertThenReload(string msg, bool onlyPath = false)
         {
             HttpContext context = HttpContext.Current;
             if (onlyPath)

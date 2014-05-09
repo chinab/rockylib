@@ -67,6 +67,7 @@ namespace System.Net
         private CookieContainer _cookieContainer;
         private HttpRequestContent _content;
         private HttpWebRequest _request;
+        private WebProxy _proxyAddr;
         private Func<HttpWebResponse, bool> _validateResponse;
         #endregion
 
@@ -175,6 +176,10 @@ namespace System.Net
             _request.UserAgent = DefaultUserAgent;
             _request.Referer = _referer;
             _request.CookieContainer = _cookieContainer;
+            if (_proxyAddr != null)
+            {
+                _request.Proxy = _proxyAddr;
+            }
             if (credential != null)
             {
                 _request.SendChunked = false;
@@ -200,17 +205,13 @@ namespace System.Net
 
         public virtual void SetProxy(EndPoint address, NetworkCredential credential = null)
         {
-            var proxy = new WebProxy(string.Format("http://{0}", address));
-            if (credential == null)
+            _proxyAddr = new WebProxy(string.Format("http://{0}", address));
+            if (credential != null)
             {
-                proxy.UseDefaultCredentials = true;
+                _proxyAddr.UseDefaultCredentials = false;
+                _proxyAddr.Credentials = credential;
             }
-            else
-            {
-                proxy.UseDefaultCredentials = false;
-                proxy.Credentials = credential;
-            }
-            _request.Proxy = proxy;
+            _request.Proxy = _proxyAddr;
         }
         #endregion
 
@@ -340,6 +341,7 @@ namespace System.Net
             {
                 _cookieContainer.Add(response.ResponseUri, response.Cookies);
             }
+            _proxyAddr = null;
             if (_validateResponse != null && !_validateResponse(response))
             {
                 throw new WebException(ValidateResponseFailure, null, WebExceptionStatus.UnknownError, response);

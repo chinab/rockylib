@@ -11,7 +11,7 @@ namespace System.Web
         {
             get
             {
-                var page = PageBase.Current;
+                var page = PageHelper.Current;
                 return (T)page.GetDataItem();
             }
         }

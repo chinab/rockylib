@@ -44,6 +44,7 @@ namespace System.Net
                 }
                 return _header;
             }
+            set { _header = value; }
         }
         public CookieCollection Cookies
         {
@@ -66,6 +67,7 @@ namespace System.Net
                 }
                 return _form;
             }
+            set { _form = value; }
         }
         public List<HttpFileContent> Files
         {

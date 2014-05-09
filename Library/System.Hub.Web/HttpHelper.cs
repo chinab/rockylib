@@ -8,24 +8,16 @@ using System.IO;
 
 namespace System.Web
 {
-    public static class HttpUtils
+    public static class HttpHelper
     {
         #region Fields
         public static readonly string WebDomain;
-        internal const string CookieIDName = "_CookieID";
-        internal const string CookieValueName = "_CookieValue";
+        internal const string CookieIDName = "_cID";
+        internal const string CookieValueName = "_cVal";
         private static readonly string CryptoKey;
         #endregion
 
         #region Properties
-        public static string Referer
-        {
-            get
-            {
-                var context = HttpContext.Current;
-                return context.Request.ServerVariables["HTTP_REFERER"];
-            }
-        }
         /// <summary>
         /// 通过代理服务器获取远程用户IP
         /// </summary>
@@ -116,7 +108,7 @@ namespace System.Web
         #endregion
 
         #region Methods
-        static HttpUtils()
+        static HttpHelper()
         {
             WebDomain = ConfigurationManager.AppSettings["WebDomain"];
             CryptoKey = ConfigurationManager.AppSettings["CryptoKey"];
@@ -129,24 +121,24 @@ namespace System.Web
         public static void AppendLog(string message)
         {
             var context = HttpContext.Current;
-            string url = context.Request.Url.PathAndQuery, referer = context.Request.ServerVariables["HTTP_REFERER"];
+            string url = context.Request.Url.PathAndQuery, referer = context.Request.UrlReferrer.OriginalString;
             if (!string.IsNullOrEmpty(referer))
             {
-                url += "[referer=" + referer + "]";
+                url += "[Referer=" + referer + "]";
             }
-            Hub.LogDebug("{0},{1}\t{2}\t{3}\t{4}", HttpUtils.RemoteIP, context.Request.UserAgent,
+            Hub.LogDebug("{0},{1}\t{2}\t{3}\t{4}", RemoteIP, context.Request.UserAgent,
                 context.Request.HttpMethod, url, message);
         }
         public static void AppendLog(Exception ex)
         {
             var context = HttpContext.Current;
             var msg = new StringBuilder(256);
-            msg.Append(HttpUtils.RemoteIP).Append(',').Append(context.Request.UserAgent);
+            msg.Append(RemoteIP).Append(',').Append(context.Request.UserAgent);
             msg.Append('\t').Append(context.Request.HttpMethod).Append('\t').Append(context.Request.Url.PathAndQuery);
-            string referer = context.Request.ServerVariables["HTTP_REFERER"];
+            string referer = context.Request.UrlReferrer.OriginalString;
             if (!string.IsNullOrEmpty(referer))
             {
-                msg.AppendFormat("[referer={0}]", referer);
+                msg.AppendFormat("[Referer={0}]", referer);
             }
             Hub.LogError(ex, msg.ToString());
         }
@@ -230,6 +222,7 @@ namespace System.Web
             using (var br = new BinaryWriter(stream, Encoding.UTF8))
             {
                 col.Serialize(br);
+                stream.Position = 0L;
                 SetCookie(context, new HttpCookie(CookieValueName)
                 {
                     HttpOnly = true,
