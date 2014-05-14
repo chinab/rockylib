@@ -28,9 +28,9 @@ namespace System
             Contract.Requires(job != null);
 
             _job = job;
-            if (dueTime != DateTime.MaxValue)
+            if (dueTime != DateTime.MinValue)
             {
-                this.DueTime = dueTime - DateTime.UtcNow;
+                this.DueTime = dueTime - DateTime.Now;
             }
             if (this.DueTime < TimeSpan.Zero)
             {
@@ -46,7 +46,7 @@ namespace System
 
         }
         public JobTimer(Action<object> job, TimeSpan period)
-            : this(job, DateTime.MaxValue, period)
+            : this(job, DateTime.MinValue, period)
         {
 
         }
@@ -65,10 +65,10 @@ namespace System
                 }
                 finally
                 {
-                    this.PreviousExecuteTime = DateTime.UtcNow;
+                    this.PreviousExecuteTime = DateTime.Now;
                     if (this.Period.Milliseconds == Timeout.Infinite)
                     {
-                        this.NextExecuteTime = DateTime.MaxValue;  //下次执行时间不存在 
+                        this.NextExecuteTime = DateTime.MinValue;  //下次执行时间不存在 
                         this.Dispose();
                     }
                     else
@@ -105,11 +105,11 @@ namespace System
         {
             if (_job != null)
             {
+                _job = null;
                 if (_timer != null)
                 {
                     _timer.Dispose();
                 }
-                _job = null;
 
                 Hub.DisposeService.Release(this.GetType(), this);
             }
