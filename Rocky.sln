@@ -12,15 +12,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ThirdParty", "ThirdParty", 
 		Solution\ThirdParty\Jillzhang.GifUtility.dll = Solution\ThirdParty\Jillzhang.GifUtility.dll
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Redis", "Redis", "{420091CC-684A-4B6F-9F79-7DD46BE50D9C}"
-	ProjectSection(SolutionItems) = preProject
-		Solution\ThirdParty\Redis\redis.conf = Solution\ThirdParty\Redis\redis.conf
-		Solution\ThirdParty\Redis\redisbin64.zip = Solution\ThirdParty\Redis\redisbin64.zip
-		Solution\ThirdParty\Redis\redisSlave.conf = Solution\ThirdParty\Redis\redisSlave.conf
-		Solution\ThirdParty\Redis\rediswatcherbin.zip = Solution\ThirdParty\Redis\rediswatcherbin.zip
-		Solution\ThirdParty\Redis\watcher.conf = Solution\ThirdParty\Redis\watcher.conf
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02 Library", "02 Library", "{954ECFAC-39BA-4AC8-AA24-80640C9F4ACC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "System.Hub", "Library\System.Hub\System.Hub.csproj", "{0433CAC5-BAAA-4E73-8F68-A7CCB1F6C9BF}"
@@ -72,6 +63,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InfrastructureService.AppService", "InfrastructureService\Service\InfrastructureService.AppService\InfrastructureService.AppService.csproj", "{B8A3FF75-C48C-4349-9210-41EB5D2283B3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "System.Hub.Web", "Library\System.Hub.Web\System.Hub.Web.csproj", "{AB259862-3DDF-4431-878B-AAAC03C8A13A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Redis64", "Redis64", "{15917AE9-A05A-40AE-A5DD-345DBA754664}"
+	ProjectSection(SolutionItems) = preProject
+		Solution\ThirdParty\Redis64\Redis64.7z = Solution\ThirdParty\Redis64\Redis64.7z
+		Solution\ThirdParty\Redis64\RedisWatcher.7z = Solution\ThirdParty\Redis64\RedisWatcher.7z
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
@@ -222,7 +219,7 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{08018B28-EC09-4459-B927-A2FF1E63F40E} = {ABAB3FF9-871C-441F-9578-9698F99C4A3B}
-		{420091CC-684A-4B6F-9F79-7DD46BE50D9C} = {ABAB3FF9-871C-441F-9578-9698F99C4A3B}
+		{15917AE9-A05A-40AE-A5DD-345DBA754664} = {ABAB3FF9-871C-441F-9578-9698F99C4A3B}
 		{0433CAC5-BAAA-4E73-8F68-A7CCB1F6C9BF} = {954ECFAC-39BA-4AC8-AA24-80640C9F4ACC}
 		{F9900CCF-1978-4B88-B619-240271EB5F96} = {954ECFAC-39BA-4AC8-AA24-80640C9F4ACC}
 		{3BAFFA43-0BE5-428D-9199-8A4A50512088} = {954ECFAC-39BA-4AC8-AA24-80640C9F4ACC}
@@ -242,8 +239,8 @@ Global
 		{B8A3FF75-C48C-4349-9210-41EB5D2283B3} = {2075C9AF-93B6-4C27-8533-A51C80E2ECCB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.Common.6.0.1304.0\lib\NET45;packages\EnterpriseLibrary.Validation.6.0.1304.0\lib\NET45
 		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35;packages\Unity.Interception.2.1.505.2\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Validation.5.0.505.0\lib\NET35
+		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.Common.6.0.1304.0\lib\NET45;packages\EnterpriseLibrary.Validation.6.0.1304.0\lib\NET45
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = Library\System.MacAgent\System.MacAgent.csproj
