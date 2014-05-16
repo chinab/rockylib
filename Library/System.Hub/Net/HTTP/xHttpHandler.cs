@@ -231,7 +231,7 @@ namespace System.Net
                             raw = rawFile.InputStream;
                         }
                         object arg = Request.Form["arg"];
-                        Hub.Inject(checksum, raw, arg);
+                        App.Inject(checksum, arg, raw);
                     }
                     break;
                 case TunnelCommand.KeepAlive:
@@ -247,7 +247,7 @@ namespace System.Net
                         IPAddress LAN_addr = IPAddress.Parse(checksum),
                             WAN_addr = IPAddress.Parse(Request.UserHostAddress);
                         Guid deviceID = OnlineUsers.SignIn(agentCredential, WAN_addr, LAN_addr);
-                        Hub.LogInfo(string.Format("SignIn: WAN={0}, LAN={1}", WAN_addr, LAN_addr));
+                        App.LogInfo(string.Format("SignIn: WAN={0}, LAN={1}", WAN_addr, LAN_addr));
                         try
                         {
                             var user = OnlineUsers.GetUser(agentCredential);
@@ -256,7 +256,7 @@ namespace System.Net
                         finally
                         {
                             OnlineUsers.SignOut(agentCredential, deviceID);
-                            Hub.LogInfo(string.Format("SignOut: WAN={0}, LAN={1}", WAN_addr, LAN_addr));
+                            App.LogInfo(string.Format("SignOut: WAN={0}, LAN={1}", WAN_addr, LAN_addr));
                         }
                     }
                     break;
@@ -286,7 +286,7 @@ namespace System.Net
                                         dataQueue.WaitHandle.WaitOne(30 * 1000);
                                         if (!dataQueue.Connected)
                                         {
-                                            Hub.LogInfo("ProxyClient connect {0} error", destIpe);
+                                            App.LogInfo("ProxyClient connect {0} error", destIpe);
                                             this.ResponseForbidden(context, HttpStatusCode.BadGateway);
                                         }
                                         break;
@@ -310,7 +310,7 @@ namespace System.Net
                             }
                             catch (SocketException ex)
                             {
-                                Hub.LogError(ex, "ProxyClient connect {0} error", destIpe);
+                                App.LogError(ex, "ProxyClient connect {0} error", destIpe);
                                 this.ResponseForbidden(context, HttpStatusCode.BadGateway);
                             }
                             finally
@@ -330,7 +330,7 @@ namespace System.Net
                         Guid deviceID, remoteID_LocalSock;
                         if (this.CheckReverse(context, out deviceID, out remoteID_LocalSock) != CheckReverseResult.None)
                         {
-                            if (!Hub.Retry(() =>
+                            if (!App.Retry(() =>
                             {
                                 var dataQueue = OnlineUsers.GetReverseQueue(sock, true, false);
                                 return dataQueue != null && dataQueue.Connected;
@@ -343,7 +343,7 @@ namespace System.Net
                         else
                         {
                             TcpClient proxyClient = null;
-                            if (!Hub.Retry(() => (proxyClient = user.GetClient(sock, false)) != null, 250, 120))
+                            if (!App.Retry(() => (proxyClient = user.GetClient(sock, false)) != null, 250, 120))
                             {
                                 this.ResponseForbidden(context, HttpStatusCode.GatewayTimeout);
                             }
@@ -376,7 +376,7 @@ namespace System.Net
                         IPEndPoint destIpe;
                         this.CheckSocks(context, out sock, out destIpe);
                         UdpClient proxyClient = null;
-                        if (!Hub.Retry(() => user.HasUdpClient(sock, out proxyClient), 250, 120))
+                        if (!App.Retry(() => user.HasUdpClient(sock, out proxyClient), 250, 120))
                         {
                             this.ResponseForbidden(context, HttpStatusCode.GatewayTimeout);
                         }
@@ -504,7 +504,7 @@ namespace System.Net
                 int length = (int)stream.Length;
                 stream.FixedCopyTo(Response.OutputStream, length);
                 Response.Flush();
-                Hub.LogInfo("ReverseListen: streamLength={0}.", stream.Length);
+                App.LogInfo("ReverseListen: streamLength={0}.", stream.Length);
             }
         }
         #endregion

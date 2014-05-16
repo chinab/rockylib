@@ -200,12 +200,12 @@ namespace System.Agent
                     }
                     catch (Exception ex)
                     {
-                        Hub.LogError(ex, "administrativeMode");
+                        App.LogError(ex, "administrativeMode");
                     }
                 }
             }
 
-            var stream = Hub.GetResourceStream(string.Format("{0}.favicon.ico", typeof(ConsoleNotify).Namespace));
+            var stream = App.GetResourceStream(string.Format("{0}.favicon.ico", typeof(ConsoleNotify).Namespace));
             if (stream == null)
             {
                 throw new InvalidOperationException("未嵌入NotifyIcon源");
@@ -251,7 +251,7 @@ namespace System.Agent
                     Process.Start("Explorer.exe", "/select," + AgentHubConfig.AppConfigPath);
                     break;
                 case "L":
-                    Process.Start("Explorer.exe", Hub.CombinePath(@"logs\"));
+                    Process.Start("Explorer.exe", App.CombinePath(@"logs\"));
                     break;
                 case "D":
                     using (var pipeClient = new NamedPipeClientStream(SecurityPolicy.PipeName))
@@ -308,7 +308,7 @@ namespace System.Agent
         #endregion
 
         #region Methods
-        public void Run(IHubEntry entry, Form form = null)
+        public void Run(IAppEntry entry, Form form = null)
         {
             var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             var setter = config.AppSettings.Settings["ShowTip"];

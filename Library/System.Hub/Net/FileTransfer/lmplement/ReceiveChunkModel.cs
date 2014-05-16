@@ -71,7 +71,7 @@ namespace System.Net
                 {
                     _writer.Flush();
                     _bytesReceived += recv;
-                    Hub.LogDebug("[ReceiveChunk{0}] {1} {2}/{3}.", Thread.CurrentThread.ManagedThreadId,
+                    App.LogDebug("[ReceiveChunk{0}] {1} {2}/{3}.", Thread.CurrentThread.ManagedThreadId,
                         remoteIpe, _bytesReceived, _receiveLength);
                     return _sock.Connected;
                 });

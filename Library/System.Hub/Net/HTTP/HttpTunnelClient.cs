@@ -251,7 +251,7 @@ namespace System.Net
                 }
                 catch (SocketException ex)
                 {
-                    Hub.LogError(ex, "ReverseListen");
+                    App.LogError(ex, "ReverseListen");
                 }
             });
         }
@@ -271,7 +271,7 @@ namespace System.Net
             _output.WriteLine("{0} {1}", DateTime.Now.ToString("HH:mm:ss"), msg);
             if (ex != null)
             {
-                Hub.LogError(ex, "TunnelClient");
+                App.LogError(ex, "TunnelClient");
             }
         }
         private void OutWrite(string format, params object[] args)
@@ -367,7 +367,7 @@ namespace System.Net
                                 request.ParsePack(buffer);
                                 if (request.Command == Socks4Command.Bind)
                                 {
-                                    Hub.LogInfo("{0} {1}协议错误: Bind命令暂不支持", proxySock.LocalEndPoint, _runType);
+                                    App.LogInfo("{0} {1}协议错误: Bind命令暂不支持", proxySock.LocalEndPoint, _runType);
                                     goto default;
                                 }
                                 var resIpe = new IPEndPoint(request.RemoteIP, request.RemotePort);
@@ -412,7 +412,7 @@ namespace System.Net
                                 switch (request.Command)
                                 {
                                     case Socks5Command.TcpBind:
-                                        Hub.LogInfo("{0} {1}协议错误: Bind命令暂不支持", proxySock.LocalEndPoint, _runType);
+                                        App.LogInfo("{0} {1}协议错误: Bind命令暂不支持", proxySock.LocalEndPoint, _runType);
                                         goto default;
                                     case Socks5Command.UdpAssociate:
                                         //客户端预备开放的Udp端口
@@ -445,7 +445,7 @@ namespace System.Net
                 catch (Exception ex)
                 {
                     this.OutWrite("{0} {1}协议错误: {2}", proxySock.LocalEndPoint, _runType, ex.Message);
-                    Hub.LogError(ex, "代理协议错误");
+                    App.LogError(ex, "代理协议错误");
                     proxyClient.Close();
                     return;
                 }

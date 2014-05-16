@@ -6,8 +6,18 @@ using System.Data;
 namespace Rocky.UnitTesting
 {
     [TestClass]
-    public class HubTest
+    public class AppTest
     {
+        [TestMethod]
+        public void TestDependLoad()
+        {
+            App.DependLoad(DependLibrary.EmitMapper);
+            var a = new TFrom() { Val = "abc" };
+            var b = new TTo();
+            EntityMapper.Map<TFrom, TTo>(a, b);
+            Assert.AreEqual(b.Val, a.Val);
+        }
+
         [TestMethod]
         public void Test0x()
         {
@@ -27,14 +37,23 @@ namespace Rocky.UnitTesting
         [TestMethod]
         public void TestLambda()
         {
-            var method = typeof(HubTest).GetMethod("add");
-            var func = Hub.Lambda<Func<HubTest, int, int, int>>(method);
-            int result = func(new HubTest(), 1, 1);
+            var method = typeof(AppTest).GetMethod("add");
+            var func = App.Lambda<Func<AppTest, int, int, int>>(method);
+            int result = func(new AppTest(), 1, 1);
             Assert.AreEqual(2, result);
         }
         public int add(int a, int b)
         {
             return a + b;
         }
+    }
+
+    public class TFrom
+    {
+        public string Val { get; set; }
+    }
+    public class TTo
+    {
+        public string Val { get; set; }
     }
 }

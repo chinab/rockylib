@@ -60,13 +60,13 @@ namespace System.Agent.WinService
                         }
                         catch (Exception ex)
                         {
-                            Hub.LogError(ex, "WatchProcess");
+                            App.LogError(ex, "WatchProcess");
                         }
                     });
                 }
                 catch (Exception ex)
                 {
-                    Hub.LogError(ex, "ScanProcess");
+                    App.LogError(ex, "ScanProcess");
                 }
             }
         }

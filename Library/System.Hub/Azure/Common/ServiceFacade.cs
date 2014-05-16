@@ -24,11 +24,6 @@ namespace InfrastructureService.Client
             {
                 action(proxy);
             }
-            catch (TimeoutException)
-            {
-                proxy.Abort();
-                throw;
-            }
             catch (FaultException ex)
             {
                 proxy.Abort();
@@ -39,7 +34,7 @@ namespace InfrastructureService.Client
                     throw;
                 }
             }
-            catch (CommunicationException)
+            catch (SystemException)
             {
                 proxy.Abort();
                 throw;
@@ -52,11 +47,6 @@ namespace InfrastructureService.Client
             {
                 returnValue = func(proxy);
             }
-            catch (TimeoutException)
-            {
-                proxy.Abort();
-                throw;
-            }
             catch (FaultException ex)
             {
                 proxy.Abort();
@@ -67,7 +57,7 @@ namespace InfrastructureService.Client
                     throw;
                 }
             }
-            catch (CommunicationException)
+            catch (SystemException)
             {
                 proxy.Abort();
                 throw;

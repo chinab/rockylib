@@ -58,7 +58,7 @@ namespace System.Agent.Privacy
         {
             if (_Db == null)
             {
-                string path = Hub.CombinePath("Db.yap");
+                string path = App.CombinePath("Db.yap");
                 _Db = Db4oEmbedded.OpenFile(path);
             }
             return _Db.Ext().OpenSession();

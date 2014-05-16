@@ -140,7 +140,7 @@ namespace System.Agent
                 }
                 catch (Exception ex)
                 {
-                    Hub.LogError(ex, "PipeServer");
+                    App.LogError(ex, "PipeServer");
                 }
                 _pipeServer.WaitForPipeDrain();
                 if (_pipeServer.IsConnected)
@@ -262,7 +262,7 @@ namespace System.Agent
         void _trans_Completed(object sender, TransferEventArgs e)
         {
             string path = Path.Combine(_trans.DirectoryPath, e.Config.Checksum + Path.GetExtension(e.Config.FileName));
-            Hub.LogInfo(path);
+            App.LogInfo(path);
         }
         void button2_Click(object sender, EventArgs e)
         {
@@ -283,12 +283,12 @@ namespace System.Agent
 
         private void RunProxifier()
         {
-            string zipPath = Hub.CombinePath("Proxifier PE.7z"), exePath = Hub.CombinePath("Proxifier.exe");
-            if (Hub.CreateFileFromResource("System.Agent.Resource.Proxifier PE.7z", zipPath) || !File.Exists(exePath))
+            string zipPath = App.CombinePath("Proxifier PE.7z"), exePath = App.CombinePath("Proxifier.exe");
+            if (App.CreateFileFromResource("System.Agent.Resource.Proxifier PE.7z", zipPath) || !File.Exists(exePath))
             {
                 var archive = ArchiveFactory.Open(zipPath);
                 int i = 0, count = archive.Entries.Count();
-                string destPath = Hub.CombinePath(string.Empty);
+                string destPath = App.CombinePath(string.Empty);
                 this.ShowForm(true);
                 foreach (var entry in archive.Entries)
                 {
@@ -313,7 +313,7 @@ namespace System.Agent
             lock (_pipeServer)
             {
                 string destPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), @"Privacy Service\");
-                Hub.CreateDirectory(destPath);
+                App.CreateDirectory(destPath);
                 string zipPath = Path.Combine(destPath, "PrivacyService.7z");
 
                 var client = new HttpClient(new Uri("http://publish.xineworld.com/cloudagent/PrivacyService.7z"));
@@ -329,7 +329,7 @@ namespace System.Agent
                 }
                 catch (InvalidOperationException ex)
                 {
-                    Hub.LogError(ex, "SvcStop");
+                    App.LogError(ex, "SvcStop");
                 }
                 //先停止否则无法覆盖
                 var archive = ArchiveFactory.Open(zipPath);

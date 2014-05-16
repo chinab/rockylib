@@ -50,7 +50,7 @@ namespace System.Data
                     succeed = true;
                     break;
                 case "System.Data.SqlClient":
-                    providerName = DbProviderName.SQLServer;
+                    providerName = DbProviderName.SqlClient;
                     succeed = true;
                     break;
             }
@@ -131,7 +131,7 @@ namespace System.Data
             string providerInvariantName = null;
             switch (_providerName)
             {
-                case DbProviderName.SQLServer:
+                case DbProviderName.SqlClient:
                     _parameterNamePrefix = SqlClientParameterNamePrefix;
                     providerInvariantName = "System.Data.SqlClient";
                     break;

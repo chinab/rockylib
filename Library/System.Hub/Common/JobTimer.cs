@@ -38,7 +38,7 @@ namespace System
             }
             this.Period = period;
 
-            Hub.DisposeService.Register(this.GetType(), this);
+            App.DisposeService.Register(this.GetType(), this);
         }
         public JobTimer(Action<object> job, DateTime dueTime)
             : this(job, dueTime, TimeSpan.FromMilliseconds(Timeout.Infinite))
@@ -61,7 +61,7 @@ namespace System
                 }
                 catch (Exception ex)
                 {
-                    Hub.LogError(ex, "JobTimer");
+                    App.LogError(ex, "JobTimer");
                 }
                 finally
                 {
@@ -111,7 +111,7 @@ namespace System
                     _timer.Dispose();
                 }
 
-                Hub.DisposeService.Release(this.GetType(), this);
+                App.DisposeService.Release(this.GetType(), this);
             }
         }
         #endregion

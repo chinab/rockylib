@@ -5,7 +5,7 @@ using System.Text;
 
 namespace System
 {
-    public interface IHubEntry
+    public interface IAppEntry
     {
         void Main(object arg);
     }

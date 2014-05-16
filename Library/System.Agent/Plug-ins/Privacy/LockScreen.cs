@@ -77,7 +77,7 @@ namespace System.Agent.Privacy
                 }
                 catch (Exception ex)
                 {
-                    Hub.LogError(ex, "StartPrivacyService");
+                    App.LogError(ex, "StartPrivacyService");
                 }
 
                 var idle = GetIdleTime();
@@ -123,7 +123,7 @@ namespace System.Agent.Privacy
                 }
                 catch (Exception ex)
                 {
-                    Hub.LogError(ex, "LockScreen.Kill");
+                    App.LogError(ex, "LockScreen.Kill");
                 }
             }
 

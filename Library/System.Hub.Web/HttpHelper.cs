@@ -73,7 +73,7 @@ namespace System.Web
                         }
                         catch (Exception ex)
                         {
-                            Hub.LogError(ex, "CookieSafety");
+                            App.LogError(ex, "CookieSafety");
                             col = new SessionStateItemCollection();
                         }
                     }
@@ -126,7 +126,7 @@ namespace System.Web
             {
                 url += "[Referer=" + referer + "]";
             }
-            Hub.LogDebug("{0},{1}\t{2}\t{3}\t{4}", RemoteIP, context.Request.UserAgent,
+            App.LogDebug("{0},{1}\t{2}\t{3}\t{4}", RemoteIP, context.Request.UserAgent,
                 context.Request.HttpMethod, url, message);
         }
         public static void AppendLog(Exception ex)
@@ -140,7 +140,7 @@ namespace System.Web
             {
                 msg.AppendFormat("[Referer={0}]", referer);
             }
-            Hub.LogError(ex, msg.ToString());
+            App.LogError(ex, msg.ToString());
         }
 
         public static void ResponseNoCache()

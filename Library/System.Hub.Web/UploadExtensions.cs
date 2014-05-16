@@ -57,7 +57,7 @@ namespace System.Web
                 vrtualFilePath = GetFilePath(postedFile, ref mode, savePath);
                 HttpContext context = HttpContext.Current;
                 string physicalFilePath = context.Server.MapPath(vrtualFilePath);
-                Hub.CreateDirectory(physicalFilePath);
+                App.CreateDirectory(physicalFilePath);
                 File.WriteAllBytes(physicalFilePath, buffer);
             }
             return vrtualFilePath;
@@ -162,7 +162,7 @@ namespace System.Web
                     break;
             }
             HttpContext context = HttpContext.Current;
-            Hub.CreateDirectory(context.Server.MapPath(sb.ToString()));
+            App.CreateDirectory(context.Server.MapPath(sb.ToString()));
             return sb.Append(prefixName).Append(StringHelper.NowDateString).Append(Path.GetExtension(postedFile.FileName)).ToString();
         }
         #endregion

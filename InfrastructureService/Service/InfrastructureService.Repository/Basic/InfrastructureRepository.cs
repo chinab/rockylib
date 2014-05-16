@@ -7,6 +7,7 @@ using InfrastructureService.Common;
 using InfrastructureService.Model.Basic;
 using InfrastructureService.Repository.DataAccess;
 using System.Threading;
+using System.Data;
 
 namespace InfrastructureService.Repository.Basic
 {
@@ -105,7 +106,7 @@ namespace InfrastructureService.Repository.Basic
                 }
                 else if (e.Error != null)
                 {
-                    Hub.LogError(e.Error, "SendEmail");
+                    App.LogError(e.Error, "SendEmail");
                     msg.Status = (int)MessageStatusKind.Error;
                 }
                 else
@@ -269,7 +270,7 @@ namespace InfrastructureService.Repository.Basic
         #region File
         public static string RootPath
         {
-            get { return Hub.CombinePath(@"Storage\"); }
+            get { return App.CombinePath(@"Storage\"); }
         }
         public static System.Net.IPAddress LocalIP
         {

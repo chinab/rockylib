@@ -26,7 +26,7 @@ namespace System.Agent.Privacy
             }
             catch (Exception ex)
             {
-                Hub.LogError(ex, "LockExe");
+                App.LogError(ex, "LockExe");
             }
         }
 

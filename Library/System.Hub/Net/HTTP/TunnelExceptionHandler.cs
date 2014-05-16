@@ -15,10 +15,10 @@ namespace System.Net
             var stateMissingEx = ex as TunnelStateMissingException;
             if (stateMissingEx != null)
             {
-                Hub.LogInfo("{0} SockHandle={1} {2}", message, stateMissingEx.Client.Handle, stateMissingEx.Message);
+                App.LogInfo("{0} SockHandle={1} {2}", message, stateMissingEx.Client.Handle, stateMissingEx.Message);
                 return;
             }
-            Hub.LogError(ex, message);
+            App.LogError(ex, message);
         }
 
         public static bool Handle(WebException ex, string message, TextWriter output, out bool isServerRejected)
@@ -45,7 +45,7 @@ namespace System.Net
             }
             msg.AppendFormat("Status={0}\t", ex.Status);
             msg.Append(message);
-            Hub.LogError(ex, msg.ToString());
+            App.LogError(ex, msg.ToString());
             return false;
         }
 
@@ -62,11 +62,11 @@ namespace System.Net
                     case SocketError.ConnectionReset:
                     case SocketError.ConnectionAborted:
                         msg.Insert(0, "Exception disconnect ");
-                        Hub.LogInfo(msg.ToString());
+                        App.LogInfo(msg.ToString());
                         return;
                 }
             }
-            Hub.LogError(ex, message);
+            App.LogError(ex, message);
         }
 
         public static void Handle(SocketException ex, Socket client, string message)
@@ -81,10 +81,10 @@ namespace System.Net
                 //打洞错误
                 case SocketError.ConnectionAborted:
                     msg.Insert(0, "Exception disconnect ");
-                    Hub.LogInfo(msg.ToString());
+                    App.LogInfo(msg.ToString());
                     return;
             }
-            Hub.LogError(ex, msg.ToString());
+            App.LogError(ex, msg.ToString());
         }
     }
 }

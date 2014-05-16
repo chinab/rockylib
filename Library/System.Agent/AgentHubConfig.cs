@@ -36,10 +36,10 @@ namespace System.Agent
         static AgentHubConfig()
         {
             AppConfigPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal) + @"\JeansMan Studio\AgentHub.config";
-            Hub.CreateDirectory(AppConfigPath);
+            App.CreateDirectory(AppConfigPath);
             if (!File.Exists(AppConfigPath))
             {
-                Hub.CreateFileFromResource("System.Agent.AgentHub.config", AppConfigPath, Hub.CombinePath("Agent.exe"));
+                App.CreateFileFromResource("System.Agent.AgentHub.config", AppConfigPath, App.CombinePath("Agent.exe"));
             }
         }
 

@@ -123,7 +123,7 @@ namespace System.Net
                 else
                 {
                     identity.WaitHandle.Set();
-                    Hub.LogInfo("SignIn: 该设备已登录");
+                    App.LogInfo("SignIn: 该设备已登录");
                     Thread.Sleep(2000);
                 }
                 return identity.ID;
@@ -226,7 +226,7 @@ namespace System.Net
             device.ListenState.AgentSock = agentSock;
             device.ListenState.AgentDirect = agentDirect;
             device.WaitHandle.Set();
-            Hub.LogInfo("PushReverseListen {0} {1}", agentSock, agentDirect);
+            App.LogInfo("PushReverseListen {0} {1}", agentSock, agentDirect);
         }
 
         internal ReverseListenState PopReverseListen(Guid deviceID)
@@ -249,7 +249,7 @@ namespace System.Net
             {
                 if (isSet)
                 {
-                    Hub.LogInfo("PopReverseListen: {0} {1}", device.ListenState.AgentSock, device.ListenState.AgentDirect);
+                    App.LogInfo("PopReverseListen: {0} {1}", device.ListenState.AgentSock, device.ListenState.AgentDirect);
                     device.ListenState.AgentSock = Guid.Empty;
                 }
             }

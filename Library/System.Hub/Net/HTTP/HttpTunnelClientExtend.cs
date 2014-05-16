@@ -69,7 +69,7 @@ namespace System.Net
                         _remoteEndPoints.Add(remoteEndPoint);
                     }
                 }
-                Hub.LogInfo("Udp Record {0}.", remoteEndPoint);
+                App.LogInfo("Udp Record {0}.", remoteEndPoint);
             }
             public bool HasRemoteEndPoint(IPEndPoint remoteEndPoint)
             {
@@ -89,7 +89,7 @@ namespace System.Net
                         }
                     }
                     sb.AppendLine().AppendFormat("\tForbidden: {0}.", remoteEndPoint);
-                    Hub.LogInfo("Udp Check: {0}", sb);
+                    App.LogInfo("Udp Check: {0}", sb);
                 }
                 return result;
             }
@@ -230,13 +230,13 @@ namespace System.Net
                         if (data.IsNullOrEmpty() || !(data[0] == 0 && data[1] == 0 && data[2] == 0))
                         {
                             this.OutWrite("Udp Send Discard {0} {1}bytes.", localIpe, data == null ? -1 : data.Length);
-                            Hub.LogInfo("Udp Send Discard 非法数据包.");
+                            App.LogInfo("Udp Send Discard 非法数据包.");
                             continue;
                         }
                         else if (!currentState.LocalEndPoint.Equals(localIpe))
                         {
                             this.OutWrite("Udp Send Discard {0} {1}bytes.", localIpe, data == null ? -1 : data.Length);
-                            Hub.LogInfo("Udp Send Discard 非法本地端点.");
+                            App.LogInfo("Udp Send Discard 非法本地端点.");
                             continue;
                         }
 
@@ -347,7 +347,7 @@ namespace System.Net
                             if (!currentState.HasRemoteEndPoint(remoteIpe))
                             {
                                 this.OutWrite("Udp Receive Discard {0} {1}bytes.", remoteIpe, read);
-                                Hub.LogInfo("Udp Receive Discard 非法远程端点.");
+                                App.LogInfo("Udp Receive Discard 非法远程端点.");
                                 continue;
                             }
 

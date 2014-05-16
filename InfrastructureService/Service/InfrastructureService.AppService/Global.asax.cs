@@ -12,6 +12,7 @@ namespace InfrastructureService.AppService
     {
         protected void Application_Start(object sender, EventArgs e)
         {
+            App.DependLoad(DependLibrary.EmitMapper);
 #if !DEBUG
             InfrastructureService.DomainService.InfrastructureService.Create();
 #endif
@@ -25,7 +26,7 @@ namespace InfrastructureService.AppService
         protected void Application_Error(object sender, EventArgs e)
         {
             var ex = Server.GetLastError();
-            Hub.LogError(ex, "Global");
+            App.LogError(ex, "Global");
             Server.ClearError();
             var app = (HttpApplication)sender;
             app.Response.Clear();

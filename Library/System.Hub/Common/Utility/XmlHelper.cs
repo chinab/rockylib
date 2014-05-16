@@ -26,8 +26,8 @@ namespace System
                 {
                     configDirectory = @"Config\";
                 }
-                configDirectory = Hub.CombinePath(configDirectory);
-                Hub.CreateDirectory(configDirectory);
+                configDirectory = App.CombinePath(configDirectory);
+                App.CreateDirectory(configDirectory);
                 return configDirectory;
             }
         }

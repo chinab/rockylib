@@ -19,12 +19,6 @@ namespace System.Data
         #region Static
         internal const string ReturnParameterName = "@RETURN_VALUE";
         internal const string DataTableName = "T";
-        private static SQLConfig Config;
-
-        static Database()
-        {
-            Config = new SQLConfig();
-        }
         #endregion
 
         #region Fields
@@ -171,20 +165,6 @@ namespace System.Data
         #endregion
 
         #region Methods
-        /// <summary>
-        /// 使用调用方法最为映射方法来获取DataReader
-        /// </summary>
-        /// <param name="db"></param>
-        /// <param name="paramValues">按SQL语句中定义的Format顺序，对应传递参数值</param>
-        /// <returns>DataReader</returns>
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        public int MappedExecNonQuery(params object[] paramValues)
-        {
-            var stack = new StackTrace();
-            MethodBase method = stack.GetFrame(1).GetMethod();
-            string sql = Config.GetSQL(method);
-            return this.ExecuteNonQuery(sql, paramValues);
-        }
         public int ExecuteNonQuery(string formatSql, params object[] paramValues)
         {
             string text = DbUtility.GetFormat(formatSql, paramValues);
@@ -192,20 +172,6 @@ namespace System.Data
             return this.ExecuteNonQuery(cmd);
         }
 
-        /// <summary>
-        /// 使用调用方法最为映射方法来获取DataReader
-        /// </summary>
-        /// <param name="db"></param>
-        /// <param name="paramValues">按SQL语句中定义的Format顺序，对应传递参数值</param>
-        /// <returns>DataReader</returns>
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        public T ExecuteScalar<T>(params object[] paramValues)
-        {
-            var stack = new StackTrace();
-            MethodBase method = stack.GetFrame(1).GetMethod();
-            string sql = Config.GetSQL(method);
-            return this.ExecuteScalar<T>(sql, paramValues);
-        }
         public T ExecuteScalar<T>(string formatSql, params object[] paramValues)
         {
             string text = DbUtility.GetFormat(formatSql, paramValues);
@@ -213,20 +179,6 @@ namespace System.Data
             return (T)Convert.ChangeType(this.ExecuteScalar(cmd), typeof(T));
         }
 
-        /// <summary>
-        /// 使用调用方法最为映射方法来获取DataReader
-        /// </summary>
-        /// <param name="db"></param>
-        /// <param name="paramValues">按SQL语句中定义的Format顺序，对应传递参数值</param>
-        /// <returns>DataReader</returns>
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        public DbDataReader MappedExecReader(params object[] paramValues)
-        {
-            var stack = new StackTrace();
-            MethodBase method = stack.GetFrame(1).GetMethod();
-            string sql = Config.GetSQL(method);
-            return this.ExecuteReader(sql, paramValues);
-        }
         public DbDataReader ExecuteReader(string formatSql, params object[] paramValues)
         {
             string text = DbUtility.GetFormat(formatSql, paramValues);

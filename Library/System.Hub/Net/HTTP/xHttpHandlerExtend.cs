@@ -77,7 +77,7 @@ namespace System.Net
                 var reader = new BinaryReader(inStream);
                 proxyClient.Send(reader.ReadBytes(length), length, remoteIpe);
                 succeed = true;
-                Hub.LogInfo("UdpDirectSend to {0} {1}bytes.", remoteIpe, length);
+                App.LogInfo("UdpDirectSend to {0} {1}bytes.", remoteIpe, length);
             }
             catch (ObjectDisposedException ex)
             {
@@ -119,7 +119,7 @@ namespace System.Net
                     byte[] bData = bPack.ToArray();
                     Response.OutputStream.Write(bData, 0, bData.Length);
                     Response.Flush();
-                    Hub.LogInfo("UdpDirectReceive from {0} {1}bytes.", remoteIpe, data.Length);
+                    App.LogInfo("UdpDirectReceive from {0} {1}bytes.", remoteIpe, data.Length);
                 }
                 catch (ObjectDisposedException ex)
                 {

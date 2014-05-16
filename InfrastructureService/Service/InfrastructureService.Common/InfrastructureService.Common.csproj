@@ -50,7 +50,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DomainException.cs" />
-    <Compile Include="EntityMapper.cs" />
     <Compile Include="AppFaultDetail.cs" />
     <Compile Include="PinyinUtility.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

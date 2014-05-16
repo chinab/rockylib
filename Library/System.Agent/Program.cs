@@ -26,7 +26,7 @@ namespace System.Agent
                             LockEntry();
                             break;
                         default:
-                            Hub.LogDebug("Unknow Cmd: {0}.", cmd);
+                            App.LogDebug("Unknow Cmd: {0}.", cmd);
                             break;
                     }
                     return;
@@ -49,7 +49,7 @@ namespace System.Agent
             }
             catch (Exception ex)
             {
-                Hub.LogError(ex, Console.Title);
+                App.LogError(ex, Console.Title);
                 Console.Out.WriteError(ex.Message);
             }
         }

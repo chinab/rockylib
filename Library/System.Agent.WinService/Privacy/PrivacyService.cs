@@ -29,7 +29,7 @@ namespace System.Agent.Privacy
         protected override void OnStart(string[] args)
         {
             // TODO: Add code here to start your service.
-            Hub.LogInfo("Privacy service start... It's monitor on disk {0}.", PrivacyHelper.Config.Drive);
+            App.LogInfo("Privacy service start... It's monitor on disk {0}.", PrivacyHelper.Config.Drive);
 
             _listener = new TcpListener(PackModel.ServiceEndPoint);
             _listener.Start();
@@ -46,7 +46,7 @@ namespace System.Agent.Privacy
             _listener.BeginAcceptTcpClient(this.AcceptTcpClient, null);
 
             var client = _listener.EndAcceptTcpClient(ar);
-            Hub.LogDebug("Client: {0}", client.Client.RemoteEndPoint);
+            App.LogDebug("Client: {0}", client.Client.RemoteEndPoint);
             TaskHelper.Factory.StartNew(this.OnReceive, client);
         }
         private void OnReceive(object state)
@@ -92,7 +92,7 @@ namespace System.Agent.Privacy
                         }
                         catch (Exception ex)
                         {
-                            Hub.LogError(ex, "FormatDrive");
+                            App.LogError(ex, "FormatDrive");
                         }
                         break;
                 }
@@ -104,7 +104,7 @@ namespace System.Agent.Privacy
             // TODO: Add code here to perform any tear-down necessary to stop your service.
             _listener.Stop();
             _listener = null;
-            Hub.LogInfo("Privacy service stop...");
+            App.LogInfo("Privacy service stop...");
         }
 
         private void KeepLock()
@@ -127,14 +127,14 @@ namespace System.Agent.Privacy
                 {
                     try
                     {
-                        string path = File.ReadAllText(Hub.CombinePath(PackModel.LockExe));
+                        string path = File.ReadAllText(App.CombinePath(PackModel.LockExe));
                         var proc = new ProcessStarter(path, "1");
                         _proc = proc.Start();
-                        Hub.LogDebug("ProcessStarter={0}", _proc.Id);
+                        App.LogDebug("ProcessStarter={0}", _proc.Id);
                     }
                     catch (Exception ex)
                     {
-                        Hub.LogError(ex, "KeepLock");
+                        App.LogError(ex, "KeepLock");
                     }
                 }
             }, TimeSpan.FromSeconds(1)).Start();

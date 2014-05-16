@@ -81,7 +81,7 @@ namespace System.Net
                         sendLeft -= sent;
                     }
                     _bytesSent += read;
-                    Hub.LogDebug("[SendChunk{0}] {1} {2}/{3}.", Thread.CurrentThread.ManagedThreadId,
+                    App.LogDebug("[SendChunk{0}] {1} {2}/{3}.", Thread.CurrentThread.ManagedThreadId,
                         remoteIpe, _bytesSent, _bytesSent);
                 }
             }

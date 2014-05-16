@@ -61,7 +61,7 @@ namespace InfrastructureService.DomainService
                     client.Form["_SID"] = id.SessionID;
                     client.Form["Action"] = Convert.ToUInt32(isOut).ToString();
                     client.Form["Token"] = id.Token;
-                    Hub.Retry(() =>
+                    App.Retry(() =>
                     {
                         try
                         {
@@ -70,7 +70,7 @@ namespace InfrastructureService.DomainService
                         }
                         catch (System.Net.WebException ex)
                         {
-                            Hub.LogError(ex, "SSOServiceNotify");
+                            App.LogError(ex, "SSOServiceNotify");
                             return false;
                         }
                     }, 3);

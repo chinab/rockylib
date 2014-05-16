@@ -132,7 +132,7 @@ AND ct.SYS_CHANGE_VERSION <= {2}";
             Contract.Requires(modelTypes != null && modelTypes.Any());
             Contract.Requires(version >= -1L);
 
-            _factory = DbFactory.GetFactory(connectionString, DbProviderName.SQLServer);
+            _factory = DbFactory.GetFactory(connectionString, DbProviderName.SqlClient);
             var resolver = new SqlConnectionStringBuilder(connectionString);
             _databaseName = resolver.InitialCatalog;
             _model = modelTypes.Select(t => MetaTable.GetTable(t)).ToList();
@@ -189,7 +189,7 @@ AND ct.SYS_CHANGE_VERSION <= {2}";
                 {
                     string pkWhere = CreateSqlWhere(buffer, tableModel);
                     cmd.CommandText = string.Format(Sql_InsertTracking, tableModel.MappedName, pkWhere, _currentVersion, lastVersion);
-                    Hub.LogDebug("Sql_InsertTracking:{0}.", cmd.CommandText);
+                    App.LogDebug("Sql_InsertTracking:{0}.", cmd.CommandText);
                     var e = new SqlRowChangedEventArgs(tableModel, SqlRowChangedTypes.Inserted, cmd);
                     while (e.DataReader.Read())
                     {
@@ -212,7 +212,7 @@ AND ct.SYS_CHANGE_VERSION <= {2}";
                         }
                     }
                     cmd.CommandText = string.Format(Sql_UpdateTracking, tableModel.MappedName, pkWhere, _currentVersion, lastVersion, buffer.ToString());
-                    Hub.LogDebug("Sql_UpdateTracking:{0}.", cmd.CommandText);
+                    App.LogDebug("Sql_UpdateTracking:{0}.", cmd.CommandText);
                     var e = new SqlRowChangedEventArgs(tableModel, SqlRowChangedTypes.Updated, cmd);
                     while (e.DataReader.Read())
                     {
@@ -228,7 +228,7 @@ AND ct.SYS_CHANGE_VERSION <= {2}";
                     buffer.Length = 0;
                     buffer.AppendJoin(",", tableModel.PrimaryKey.Select(t => t.MappedName));
                     cmd.CommandText = string.Format(Sql_DeleteTracking, tableModel.MappedName, _currentVersion, lastVersion, buffer.ToString());
-                    Hub.LogDebug("Sql_DeleteTracking:{0}.", cmd.CommandText);
+                    App.LogDebug("Sql_DeleteTracking:{0}.", cmd.CommandText);
                     var e = new SqlRowChangedEventArgs(tableModel, SqlRowChangedTypes.Deleted, cmd);
                     while (e.DataReader.Read())
                     {

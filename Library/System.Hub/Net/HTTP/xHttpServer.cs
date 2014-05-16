@@ -43,9 +43,9 @@ namespace System.Net
         public static void Start(string applicationPath, out Uri serverUrl)
         {
             string resourceName = string.Format("System.Resource.{0}", ProcessName),
-                filePath = Hub.CombinePath(ProcessName);
-            Hub.CreateFileFromResource(resourceName, filePath);
-            Hub.CreateFileFromResource(resourceName + ".config", filePath + ".config");
+                filePath = App.CombinePath(ProcessName);
+            App.CreateFileFromResource(resourceName, filePath);
+            App.CreateFileFromResource(resourceName + ".config", filePath + ".config");
 
             string args = string.Format("/a:{0} /im:Any /pm:Specific /p:80 /t:0", applicationPath);
             var proc = Process.Start(new ProcessStartInfo(filePath, args)
@@ -74,7 +74,7 @@ namespace System.Net
                 }
             }
             serverUrl = new Uri(result.Substring(8));
-            Hub.DisposeService.Register(typeof(xHttpServer), proc);
+            App.DisposeService.Register(typeof(xHttpServer), proc);
         }
         #endregion
 

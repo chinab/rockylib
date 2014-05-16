@@ -22,7 +22,7 @@ namespace InfrastructureService.Repository
             {
                 methodArgs = ex.Message;
             }
-            Hub.LogDebug("PreProceed_{0}:{1}", args.Method.Name, methodArgs);
+            App.LogDebug("PreProceed_{0}:{1}", args.Method.Name, methodArgs);
             base.OnEntry(args);
         }
 
@@ -37,7 +37,7 @@ namespace InfrastructureService.Repository
             {
                 methodArgs = ex.Message;
             }
-            Hub.LogDebug("PostProceed_{0}:{1}", args.Method.Name, methodArgs);
+            App.LogDebug("PostProceed_{0}:{1}", args.Method.Name, methodArgs);
             base.OnExit(args);
         }
 
@@ -68,11 +68,11 @@ namespace InfrastructureService.Repository
                 }
                 Array.Resize(ref array, 4);
                 array[3] = msg;
-                Hub.LogError(args.Exception, "PerformError_{0}:{1}\t{2}\r\n{3}", array);
+                App.LogError(args.Exception, "PerformError_{0}:{1}\t{2}\r\n{3}", array);
             }
             else
             {
-                Hub.LogError(args.Exception, "PerformError_{0}:{1}\t{2}", array);
+                App.LogError(args.Exception, "PerformError_{0}:{1}\t{2}", array);
             }
             base.OnException(args);
         }

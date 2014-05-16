@@ -183,7 +183,7 @@ namespace InfrastructureService.DomainService
                 }
                 catch (Exception ex)
                 {
-                    Hub.LogError(ex, "GetFileUrl");
+                    App.LogError(ex, "GetFileUrl");
 #if DEBUG
                     throw;
 #endif

@@ -108,7 +108,7 @@ namespace System.Net
                 throw new ApplicationException("已启动监听");
             }
 
-            Hub.CreateDirectory(_savePath = savePath);
+            App.CreateDirectory(_savePath = savePath);
             var localIpe = new IPEndPoint(IPAddress.Any, port);
             //最多支持16线程
             _listener = SocketHelper.CreateListener(localIpe, 16);
@@ -123,7 +123,7 @@ namespace System.Net
             _listener.BeginAccept(this.AcceptCallback, null);
 
             Socket controlClient = _listener.EndAccept(ar);
-            Hub.LogInfo("TunnelTest 双工通讯: {0}.", controlClient.RemoteEndPoint);
+            App.LogInfo("TunnelTest 双工通讯: {0}.", controlClient.RemoteEndPoint);
 
             TransferConfig config;
             controlClient.Receive(out config);
@@ -173,7 +173,7 @@ namespace System.Net
                     fValue = BitConverter.ToInt64(bufferInfo, i * perPairCount);
                     tValue = BitConverter.ToInt64(bufferInfo, i * perPairCount + PerLongSize);
                     chunkGroup[i].Initialize(tempFilePath, i * avgSize, i == j ? avgSize + oddSize : avgSize, fValue, tValue);
-                    Hub.LogDebug("[ReceiveBreakpoint] {0} Read{1}:{2}/{3}.", remoteIpe, i, fValue, tValue);
+                    App.LogDebug("[ReceiveBreakpoint] {0} Read{1}:{2}/{3}.", remoteIpe, i, fValue, tValue);
                 }
                 controlClient.Send(bufferInfo);
             }
@@ -198,7 +198,7 @@ namespace System.Net
                     chunkGroup[i].ReportProgress(out fValue, out tValue);
                     Buffer.BlockCopy(BitConverter.GetBytes(fValue), 0, bufferInfo, i * perPairCount, 8);
                     Buffer.BlockCopy(BitConverter.GetBytes(tValue), 0, bufferInfo, i * perPairCount + PerLongSize, 8);
-                    Hub.LogDebug("[ReceiveBreakpoint] {0} Write{1}:{2}/{3}.", remoteIpe, i, fValue, tValue);
+                    App.LogDebug("[ReceiveBreakpoint] {0} Write{1}:{2}/{3}.", remoteIpe, i, fValue, tValue);
                 }
                 pointStream.Position = 0L;
                 pointStream.Write(bufferInfo, 0, count);
@@ -271,7 +271,7 @@ namespace System.Net
                     fValue = BitConverter.ToInt64(bufferInfo, i * perPairCount);
                     tValue = BitConverter.ToInt64(bufferInfo, i * perPairCount + PerLongSize);
                     chunkGroup[i].Initialize(config.FilePath, i * avgSize, i == j ? avgSize + oddSize : avgSize, fValue, tValue);
-                    Hub.LogDebug("[SendBreakpoint] {0} {1}:{2}/{3}.", remoteIpe, i, fValue, tValue);
+                    App.LogDebug("[SendBreakpoint] {0} {1}:{2}/{3}.", remoteIpe, i, fValue, tValue);
                 }
             }
             #endregion

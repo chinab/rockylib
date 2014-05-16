@@ -14,7 +14,7 @@ namespace InfrastructureService.DomainService
     {
         public bool HandleError(Exception error)
         {
-            Hub.LogError(error, "ServiceBase");
+            App.LogError(error, "ServiceBase");
             return false;
         }
 

@@ -20,7 +20,7 @@ namespace System
         static void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
         {
             e.SetObserved();
-            Hub.LogError(e.Exception, "UnobservedTaskException");
+            App.LogError(e.Exception, "UnobservedTaskException");
         }
 
         public static Task ObservedException(this Task task)
@@ -35,7 +35,7 @@ namespace System
                 var aggException = t.Exception.Flatten();
                 foreach (var ex in aggException.InnerExceptions)
                 {
-                    Hub.LogError(ex, "UnobservedTaskException");
+                    App.LogError(ex, "UnobservedTaskException");
                 }
             }, TaskContinuationOptions.OnlyOnFaulted);
         }

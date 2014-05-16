@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Diagnostics.Contracts;
-using System.Collections.Concurrent;
 using System.Reflection;
 using System.Linq.Expressions;
 using System.Diagnostics;
@@ -12,14 +11,13 @@ using System.IO;
 
 namespace System
 {
-    public sealed class Hub : IServiceProvider, IDisposeService
+    public sealed partial class App
     {
         #region Fields
         public const string DebugSymbal = "DEBUG";
         private static log4net.ILog DefaultLogger, ExceptionLogger;
         private static Action<Exception> _onLogError;
-        private static readonly ConcurrentDictionary<Guid, Assembly> _injectMapper;
-        private static Hub _host;
+        private static App _host;
         #endregion
 
         #region Properties
@@ -38,13 +36,12 @@ namespace System
         #endregion
 
         #region Constructor
-        static Hub()
+        static App()
         {
+            _host = new App();
             log4net.Config.XmlConfigurator.Configure();
             DefaultLogger = log4net.LogManager.GetLogger("DefaultLogger");
             ExceptionLogger = log4net.LogManager.GetLogger("ExceptionLogger");
-            _injectMapper = new ConcurrentDictionary<Guid, Assembly>();
-            _host = new Hub();
             AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
             {
                 LogError((Exception)e.ExceptionObject, "Unhandled:{0}", sender);
@@ -219,43 +216,6 @@ namespace System
             return lambdaExpression.Compile();
         }
 
-        public static Assembly Inject(Guid checksum, Stream rawStream = null, object arg = null)
-        {
-            Contract.Requires(checksum != Guid.Empty);
-
-            if (rawStream != null)
-            {
-                var raw = new MemoryStream();
-                rawStream.FixedCopyTo(raw);
-                raw.Position = 0L;
-                Guid checksumNew = CryptoManaged.MD5Hash(raw);
-                if (checksum != checksumNew)
-                {
-                    throw new InvalidOperationException("checksum");
-                }
-                return _injectMapper.GetOrAdd(checksum, k => AppDomain.CurrentDomain.Load(raw.ToArray()));
-            }
-            Assembly ass;
-            if (!_injectMapper.TryGetValue(checksum, out ass))
-            {
-                throw new InvalidOperationException("checksum");
-            }
-            Type entryType = ass.GetType(string.Format("{0}.Program", ass.FullName), true);
-            var entry = (IHubEntry)Activator.CreateInstance(entryType);
-            try
-            {
-                entry.Main(arg);
-            }
-            catch (Exception ex)
-            {
-                LogError(ex, "Inject");
-#if DEBUG
-                throw;
-#endif
-            }
-            return ass;
-        }
-
         /// <summary>
         /// 注册服务对象实例(单例)
         /// </summary>
@@ -322,86 +282,20 @@ namespace System
             }
             return true;
         }
-        #endregion
 
-        #region Instance
-        private ConcurrentDictionary<Type, object> _container;
-
-        private Hub()
+        public static void DependLoad(DependLibrary lib)
         {
-            _container = new ConcurrentDictionary<Type, object>();
-            _container.TryAdd(typeof(IDisposeService), this);
-        }
-
-        public void Register(Type serviceType, object serviceInstance)
-        {
-            if (!_container.TryAdd(serviceType, serviceInstance))
-            {
-                throw new ArgumentException("serviceType");
-            }
-        }
-
-        public object GetService(Type serviceType)
-        {
-            object serviceInstance;
-            if (!_container.TryGetValue(serviceType, out serviceInstance))
-            {
-                foreach (var svc in _container.Values)
-                {
-                    if (serviceType.IsInstanceOfType(svc))
-                    {
-                        serviceInstance = svc;
-                        break;
-                    }
-                }
-            }
-            return serviceInstance;
-        }
-
-        void IDisposeService.Register(Type owner, IDisposable instance)
-        {
-            var queue = _container.GetOrAdd(owner, k => new ConcurrentBag<IDisposable>()) as ConcurrentBag<IDisposable>;
-            if (queue == null)
-            {
-                throw new InvalidOperationException("owner");
-            }
-            queue.Add(instance);
-        }
-
-        void IDisposeService.Release(Type owner, IDisposable instance)
-        {
-            try
-            {
-                object boxed;
-                if (!_container.TryGetValue(owner, out boxed))
-                {
-                    return;
-                }
-                var queue = (ConcurrentBag<IDisposable>)boxed;
-                if (queue.TryTake(out instance))
-                {
-                    instance.Dispose();
-                }
-            }
-            catch (ObjectDisposedException ex)
-            {
-                LogError(ex, "IDisposeService.Free");
-            }
-        }
-
-        void IDisposeService.ReleaseAll(Type owner)
-        {
-            object boxed;
-            if (!_container.TryRemove(owner, out boxed))
-            {
-                return;
-            }
-            var queue = (ConcurrentBag<IDisposable>)boxed;
-            foreach (var instance in queue)
-            {
-                instance.Dispose();
-            }
+            string dllName = string.Format("{0}.dll", lib);
+            string binPath = CombinePath(@"bin\");
+            string filePath = Directory.Exists(binPath) ? Path.Combine(binPath, dllName) : dllName;
+            CreateFileFromResource(string.Format("System.Resource.{0}", dllName), filePath);
         }
         #endregion
+    }
+
+    [Flags]
+    public enum DependLibrary
+    {
+        EmitMapper = 1 >> 0
     }
 }

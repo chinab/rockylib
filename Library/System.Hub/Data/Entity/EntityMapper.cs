@@ -6,7 +6,7 @@ using System.Text;
 using EmitMapper;
 using EmitMapper.MappingConfiguration;
 
-namespace InfrastructureService.Common
+namespace System.Data
 {
     public static class EntityMapper
     {

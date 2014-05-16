@@ -40,11 +40,11 @@ namespace System.Agent.WinService
                 };
                 var process = Process.Start(processInfo);
                 var output = process.StandardOutput.ReadToEnd();
-                Hub.LogInfo(output);
+                App.LogInfo(output);
             }
             catch (Exception ex)
             {
-                Hub.LogError(ex, "设置服务允许与桌面交互");
+                App.LogError(ex, "设置服务允许与桌面交互");
             }
         }
 

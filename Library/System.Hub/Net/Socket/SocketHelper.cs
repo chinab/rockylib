@@ -50,7 +50,7 @@ namespace System.Net
                 }
                 catch (SocketException ex)
                 {
-                    Hub.LogError(ex, "解析{0}时遇到错误", hostNameOrAddress);
+                    App.LogError(ex, "解析{0}时遇到错误", hostNameOrAddress);
                     throw;
                 }
             }

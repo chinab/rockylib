@@ -7,9 +7,8 @@ namespace System.Data
 {
     public enum DbProviderName
     {
-        OleDb,
-        SQLServer,
         [Obsolete]
-        Db4o
+        OleDb,
+        SqlClient,
     }
 }

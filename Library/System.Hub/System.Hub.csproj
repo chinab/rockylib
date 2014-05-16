@@ -142,7 +142,14 @@
   <PropertyGroup>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EmitMapper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\EmitMapper.1.0.0\lib\EmitMapper.dll</HintPath>
+    </Reference>
     <Reference Include="log4net">
       <HintPath>..\..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
@@ -171,6 +178,7 @@
     <Reference Include="System.Configuration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App\Implement\ObjectHost.cs" />
     <Compile Include="Azure\Basic\TransferClient.cs" />
     <Compile Include="Azure\Basic\TransferHelper.cs" />
     <Compile Include="Azure\Common\ClientCallException.cs" />
@@ -183,6 +191,7 @@
     <Compile Include="Common\Buffer\Internal\BufferedMemoryStream.cs" />
     <Compile Include="Common\Buffer\BufferSizeof.cs" />
     <Compile Include="Common\Buffer\BufferSegment.cs" />
+    <Compile Include="App\Implement\Inject.cs" />
     <Compile Include="Common\Security\SplitFileMode.cs" />
     <Compile Include="Common\Serializer.cs" />
     <Compile Include="Common\Utility\GDI\ThumbnailMode.cs" />
@@ -196,7 +205,6 @@
     </Compile>
     <Compile Include="Data\DbProviderName.cs" />
     <Compile Include="Data\IRequiresFactory.cs" />
-    <Compile Include="Data\SQLConfig.cs" />
     <Compile Include="Data\Meta\IMapping.cs" />
     <Compile Include="Data\Meta\MetaColumn.cs" />
     <Compile Include="Data\Meta\EntityUtility.cs">
@@ -217,6 +225,8 @@
     <Compile Include="Data\Meta\PropertyConverter.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Data\Entity\EntityMapper.cs" />
+    <Compile Include="Data\Entity\ObjectChangeTracker.cs" />
     <Compile Include="Design\CodeTimer.cs" />
     <Compile Include="Design\Disposable.cs" />
     <Compile Include="Common\JobTimer.cs" />
@@ -237,7 +247,7 @@
     <Compile Include="Net\HTTP\PageLand\StringPatternGenerator.cs" />
     <Compile Include="Net\HTTP\TunnelStateMissingException.cs" />
     <Compile Include="Net\HTTP\Entity\TunnelCommand.cs" />
-    <Compile Include="Common\IHubEntry.cs" />
+    <Compile Include="App\IAppEntry.cs" />
     <Compile Include="Net\HTTP\HttpTunnelClientExtend.cs" />
     <Compile Include="Net\HTTP\TunnelExceptionHandler.cs" />
     <Compile Include="Net\HTTP\xHttpHandler.cs" />
@@ -296,7 +306,7 @@
     <Compile Include="Net\Utility\MailClient.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Common\IDisposeService.cs" />
+    <Compile Include="App\IDisposeService.cs" />
     <Compile Include="Common\Utility\GDI\GDIHelper.cs" />
     <Compile Include="Caching\LRUCache.cs" />
     <Compile Include="Caching\LockWrapper.cs" />
@@ -305,7 +315,7 @@
     <Compile Include="Common\Security\CryptoManaged.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Common\Hub.cs">
+    <Compile Include="App\App.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -386,6 +396,9 @@
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resource\EmitMapper.dll" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

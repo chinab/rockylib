@@ -404,7 +404,7 @@ namespace System.Net
             var client = (IHttpClient)this;
             string result = null;
             var waitDuration = client.RetryWaitDuration;
-            Hub.Retry(() =>
+            App.Retry(() =>
             {
                 this.SetRequest(requestUrl);
                 if (content != null)
@@ -422,7 +422,7 @@ namespace System.Net
             var client = (IHttpClient)this;
             Stream result = null;
             var waitDuration = client.RetryWaitDuration;
-            Hub.Retry(() =>
+            App.Retry(() =>
             {
                 this.SetRequest(requestUrl);
                 if (content != null)
@@ -449,7 +449,7 @@ namespace System.Net
             var waitDuration = client.RetryWaitDuration;
             try
             {
-                if (!Hub.Retry(() =>
+                if (!App.Retry(() =>
                 {
                     this.SetRequest(fileUrl);
                     this.DownloadFile(localPath);
