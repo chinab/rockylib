@@ -44,26 +44,25 @@ namespace System
 
         void IDisposeService.Register(Type owner, IDisposable instance)
         {
-            var queue = _container.GetOrAdd(owner, k => new ConcurrentBag<IDisposable>()) as ConcurrentBag<IDisposable>;
-            if (queue == null)
+            var set = _container.GetOrAdd(owner, k => new SynchronizedCollection<IDisposable>()) as SynchronizedCollection<IDisposable>;
+            if (set == null)
             {
                 throw new InvalidOperationException("owner");
             }
-            queue.Add(instance);
+            set.Add(instance);
         }
 
         void IDisposeService.Release(Type owner, IDisposable instance)
         {
+            instance.Dispose();
+
             object boxed;
             if (!_container.TryGetValue(owner, out boxed))
             {
                 return;
             }
-            var queue = (ConcurrentBag<IDisposable>)boxed;
-            if (queue.TryTake(out instance))
-            {
-                instance.Dispose();
-            }
+            var set = (SynchronizedCollection<IDisposable>)boxed;
+            set.Remove(instance);
         }
 
         void IDisposeService.ReleaseAll(Type owner)
@@ -73,8 +72,8 @@ namespace System
             {
                 return;
             }
-            var queue = (ConcurrentBag<IDisposable>)boxed;
-            foreach (var instance in queue)
+            var set = (SynchronizedCollection<IDisposable>)boxed;
+            foreach (var instance in set)
             {
                 instance.Dispose();
             }
