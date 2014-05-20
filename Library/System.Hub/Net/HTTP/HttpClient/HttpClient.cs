@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Data;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
@@ -24,7 +25,7 @@ namespace System.Net
         /// </summary>
         public static readonly string HttpScheme = Uri.UriSchemeHttp + Uri.SchemeDelimiter;
         internal static readonly Uri Default = new Uri("http://www.google.com/#Timothy.net");
-        internal const string DefaultUserAgent = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html#Timothy.net)";
+        internal const string UserAgent = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html#Timothy.net)";
         internal const string ValidateResponseFailure = "ValidateResponseFailure";
 
         static HttpClient()
@@ -173,7 +174,7 @@ namespace System.Net
             _request = (HttpWebRequest)WebRequest.Create(url);
             _request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
             _request.Accept = "*/*";
-            _request.UserAgent = DefaultUserAgent;
+            _request.UserAgent = UserAgent;
             _request.Referer = _referer;
             _request.CookieContainer = _cookieContainer;
             if (_proxyAddr != null)
@@ -257,14 +258,7 @@ namespace System.Net
             }
             _request.Method = method.Method;
             _request.AllowAutoRedirect = autoRedirect;
-            var headers = _content.Headers;
-            string referer = headers[HttpRequestHeader.Referer] ?? _referer;
-            if (!string.IsNullOrEmpty(referer))
-            {
-                _request.Referer = referer;
-                headers.Remove(HttpRequestHeader.Referer);
-            }
-            _content.AppendHeadersTo(_request.Headers);
+            CopyHeaders();
             if (method == HttpMethod.Post)
             {
                 if (_content.Files.Count > 0)
@@ -348,6 +342,24 @@ namespace System.Net
             }
             return response;
         }
+
+        private void CopyHeaders()
+        {
+            var type = _request.GetType();
+            Action<HttpRequestHeader> func = hName =>
+            {
+                string val = _content.Headers[hName];
+                if (!string.IsNullOrEmpty(val))
+                {
+                    var prop = type.GetProperty(hName.ToString(), PropertyAccess.PropertyBinding);
+                    prop.SetValue(_request, val);
+                    _content.Headers.Remove(hName);
+                }
+            };
+            func(HttpRequestHeader.Referer);
+            func(HttpRequestHeader.UserAgent);
+            _content.AppendHeadersTo(_request.Headers);
+        }
         #endregion
         #endregion
 
@@ -413,7 +425,7 @@ namespace System.Net
                 }
                 var res = this.GetResponse();
                 result = res.GetResponseText();
-            }, client.RetryCount.GetValueOrDefault(1), waitDuration.HasValue ? (int?)waitDuration.Value.TotalMilliseconds : null);
+            }, client.RetryCount.GetValueOrDefault(1), waitDuration.HasValue ? (int)waitDuration.Value.TotalMilliseconds : 0);
             return result;
         }
 
@@ -431,7 +443,7 @@ namespace System.Net
                 }
                 var res = this.GetResponse();
                 result = res.GetResponseStream();
-            }, client.RetryCount.GetValueOrDefault(1), waitDuration.HasValue ? (int?)waitDuration.Value.TotalMilliseconds : null);
+            }, client.RetryCount.GetValueOrDefault(1), waitDuration.HasValue ? (int)waitDuration.Value.TotalMilliseconds : 0);
             return result;
         }
 
@@ -455,7 +467,7 @@ namespace System.Net
                     this.DownloadFile(localPath);
                     var file = new FileInfo(localPath);
                     return file.Exists && file.Length > 0L;
-                }, client.RetryCount.GetValueOrDefault(1), waitDuration.HasValue ? (int?)waitDuration.Value.TotalMilliseconds : null))
+                }, client.RetryCount.GetValueOrDefault(1), waitDuration.HasValue ? (int)waitDuration.Value.TotalMilliseconds : 0))
                 {
                     throw new DownloadException(string.Empty)
                     {

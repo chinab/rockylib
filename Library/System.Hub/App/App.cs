@@ -132,12 +132,12 @@ namespace System
             }
         }
 
-        public static void Retry(Action func, ushort retryCount, int? retryWaitTimeout = null)
+        public static void Retry(Action func, ushort retryCount, int retryWaitTimeout = 0)
         {
             Contract.Requires(func != null);
 
-            int failTimes = 0;
-            while (failTimes < retryCount)
+            int failTimes = 1;
+            while (failTimes <= retryCount)
             {
                 try
                 {
@@ -146,14 +146,14 @@ namespace System
                 }
                 catch (Exception)
                 {
-                    if (failTimes >= retryCount)
+                    if (failTimes == retryCount)
                     {
                         throw;
                     }
                 }
-                if (retryWaitTimeout.HasValue)
+                if (retryWaitTimeout > 0)
                 {
-                    Thread.Sleep(Math.Max(1, retryWaitTimeout.Value));
+                    Thread.Sleep(retryWaitTimeout);
                     failTimes++;
                 }
                 else
@@ -162,12 +162,12 @@ namespace System
                 }
             }
         }
-        public static bool Retry(Func<bool> func, ushort retryCount, int? retryWaitTimeout = null)
+        public static bool Retry(Func<bool> func, ushort retryCount, int retryWaitTimeout = 0)
         {
             Contract.Requires(func != null);
 
-            int failTimes = 0;
-            while (failTimes < retryCount)
+            int failTimes = 1;
+            while (failTimes <= retryCount)
             {
                 try
                 {
@@ -178,14 +178,14 @@ namespace System
                 }
                 catch (Exception)
                 {
-                    if (failTimes >= retryCount)
+                    if (failTimes == retryCount)
                     {
                         throw;
                     }
                 }
-                if (retryWaitTimeout.HasValue)
+                if (retryWaitTimeout > 0)
                 {
-                    Thread.Sleep(Math.Max(1, retryWaitTimeout.Value));
+                    Thread.Sleep(retryWaitTimeout);
                     failTimes++;
                 }
                 else

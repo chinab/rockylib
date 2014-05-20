@@ -46,7 +46,7 @@ namespace System
 
         }
         public JobTimer(Action<object> job, TimeSpan period)
-            : this(job, DateTime.MinValue, period)
+            : this(job, DateTime.Now.AddSeconds(4d), period)
         {
 
         }
