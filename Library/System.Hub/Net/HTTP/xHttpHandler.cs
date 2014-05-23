@@ -231,7 +231,8 @@ namespace System.Net
                             raw = rawFile.InputStream;
                         }
                         object arg = Request.Form["arg"];
-                        App.Inject(checksum, arg, raw);
+                        var box = Sandboxer.Create(null);
+                        box.Inject(checksum, arg, raw);
                     }
                     break;
                 case TunnelCommand.KeepAlive:

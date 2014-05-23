@@ -8,6 +8,7 @@ using System.Net;
 
 namespace System.Net
 {
+    [Serializable]
     public sealed class HttpRequestContent
     {
         #region NestedTypes

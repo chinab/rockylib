@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 
 namespace System
 {
+    [ComVisible(true)]
     public abstract class Disposable : IDisposable
     {
         #region Fields

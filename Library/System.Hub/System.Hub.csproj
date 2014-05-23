@@ -178,6 +178,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App\Implement\ObjectHost.cs" />
+    <Compile Include="App\Implement\Sandboxer.cs" />
     <Compile Include="Azure\Basic\TransferClient.cs" />
     <Compile Include="Azure\Basic\TransferHelper.cs" />
     <Compile Include="Azure\Common\ClientCallException.cs" />
@@ -190,7 +191,6 @@
     <Compile Include="Common\Buffer\Internal\BufferedMemoryStream.cs" />
     <Compile Include="Common\Buffer\BufferSizeof.cs" />
     <Compile Include="Common\Buffer\BufferSegment.cs" />
-    <Compile Include="App\Implement\Inject.cs" />
     <Compile Include="Common\Security\SplitFileMode.cs" />
     <Compile Include="Common\Serializer.cs" />
     <Compile Include="Common\Utility\GDI\ThumbnailMode.cs" />

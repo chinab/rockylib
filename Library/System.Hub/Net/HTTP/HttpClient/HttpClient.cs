@@ -217,20 +217,21 @@ namespace System.Net
         #endregion
 
         #region Response
-        public string GetResponseLocation()
-        {
-            using (var response = this.GetResponse(null, false))
-            {
-                return response.Headers[HttpResponseHeader.Location];
-            }
-        }
-        public HttpWebResponse GetResponseHead()
+        public HttpWebResponse HeadResponse()
         {
             var response = GetResponse(HttpMethod.Head, true);
             Uri url = _request.RequestUri;
             NetworkCredential credential = (NetworkCredential)_request.Credentials;
             this.SetRequest(url, credential, false);
             return response;
+        }
+
+        public string GetResponseLocation()
+        {
+            using (var response = this.GetResponse(null, false))
+            {
+                return response.Headers[HttpResponseHeader.Location];
+            }
         }
 
         public HttpWebResponse GetResponse(Action<HttpWebResponse> serverPush = null)
@@ -393,7 +394,7 @@ namespace System.Net
 
         public string UploadFile(string filePath)
         {
-            long offset = this.GetResponseHead().ContentLength;
+            long offset = this.HeadResponse().ContentLength;
             _request.AddRange(offset);
             _request.AllowWriteStreamBuffering = false;
             _content.Files.Add(new HttpFileContent(string.Empty, filePath, offset));
