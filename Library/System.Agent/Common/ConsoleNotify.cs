@@ -336,7 +336,7 @@ namespace System.Agent
             _tokenSource = new CancellationTokenSource();
             TaskHelper.Factory.StartNew(() =>
             {
-                entry.Main(null);
+                entry.DoEntry(null);
                 this.Exit();
             }, _tokenSource.Token).ObservedException();
             if (form == null)

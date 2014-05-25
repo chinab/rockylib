@@ -155,7 +155,7 @@ namespace System
                 if (creator != null)
                 {
                     var entry = (IAppEntry)creator.Invoke(null);
-                    entry.Main(arg);
+                    entry.DoEntry(arg);
                 }
             }
             return assembly;
@@ -166,7 +166,7 @@ namespace System
             var assembly = _domain.Load(assemblyName);
             var type = assembly.GetType(entryType, true);
             var target = (IAppEntry)Activator.CreateInstance(type);
-            target.Main(arg);
+            target.DoEntry(arg);
         }
 
         public void ExecuteAssembly(string assemblyName, string[] args)

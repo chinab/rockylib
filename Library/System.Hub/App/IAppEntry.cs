@@ -7,6 +7,6 @@ namespace System
 {
     public interface IAppEntry
     {
-        void Main(object arg);
+        object DoEntry(object arg);
     }
 }

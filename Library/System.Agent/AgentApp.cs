@@ -19,7 +19,7 @@ namespace System.Agent
             Instance = this;
         }
 
-        public void Main(object arg)
+        public object DoEntry(object arg)
         {
             this.CatchExec(() => SecurityPolicy.App2Fw("Agent", App.CombinePath("Agent.exe")), "防火墙例外");
             if (!this.CatchExec(() => CryptoManaged.TrustCert(App.GetResourceStream("System.Agent.Resource.CA.crt")), "导入Http证书"))
@@ -72,6 +72,7 @@ namespace System.Agent
                 ConsoleNotify.Visible = false;
                 Console.ReadLine();
             }
+            return null;
         }
 
         public IEnumerable<Tuple<string, Guid>> GetDeviceIdentity()
