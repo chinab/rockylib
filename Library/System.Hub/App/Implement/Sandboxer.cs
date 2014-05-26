@@ -9,6 +9,7 @@ using System.Security;
 using System.Security.Permissions;
 using System.Security.Policy;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace System
@@ -16,16 +17,10 @@ namespace System
     /// <summary>
     /// http://stackoverflow.com/questions/7044971/createinstanceandunwrap-and-domain
     /// </summary>
-    public sealed class Sandboxer : MarshalByRefObject, IDisposable
+    public class Sandboxer : MarshalByRefObject
     {
         #region Static
         private static SynchronizedCollection<Sandboxer> _boxes;
-
-        static Sandboxer()
-        {
-            _boxes = new SynchronizedCollection<Sandboxer>();
-            _boxes.Add(new Sandboxer(AppDomain.CurrentDomain));
-        }
 
         private static AppDomain CreateDomain(string dName, bool isTrusted)
         {
@@ -51,9 +46,16 @@ namespace System
 
         public static Sandboxer Create(string name, bool isTrusted = false)
         {
-            if (name == null)
+            Contract.Requires(!string.IsNullOrEmpty(name));
+
+            if (_boxes == null)
             {
-                return _boxes[0];
+                Interlocked.CompareExchange(ref _boxes, new SynchronizedCollection<Sandboxer>(), null);
+            }
+            var current = AppDomain.CurrentDomain;
+            if (name == current.FriendlyName)
+            {
+                return new Sandboxer(current);
             }
 
             name = string.Format("Sandbox_{0}", name);
@@ -71,6 +73,29 @@ namespace System
                 _boxes.Add(box = (Sandboxer)handle.Unwrap());
             }
             return box;
+        }
+
+        public static void Unload(Sandboxer box)
+        {
+            if (_boxes != null)
+            {
+                _boxes.Remove(box);
+            }
+            try
+            {
+                var d = box._domain;
+                if (!d.IsDefaultAppDomain())
+                {
+                    AppDomain.Unload(d);
+                }
+            }
+            catch (Exception ex)
+            {
+                App.LogError(ex, "Sandboxer");
+#if DEBUG
+                throw;
+#endif
+            }
         }
         #endregion
 
@@ -103,22 +128,6 @@ namespace System
             Contract.Requires(domain != null);
 
             _domain = domain;
-        }
-
-        void IDisposable.Dispose()
-        {
-            try
-            {
-                _boxes.Remove(this);
-                AppDomain.Unload(_domain);
-            }
-            catch (Exception ex)
-            {
-                App.LogError(ex, "Sandboxer");
-#if DEBUG
-                throw;
-#endif
-            }
         }
         #endregion
 
@@ -161,12 +170,20 @@ namespace System
             return assembly;
         }
 
-        public void Execute(string assemblyName, string entryType, object arg)
+        public object Execute(string assemblyName, string entryType, object arg)
         {
-            var assembly = _domain.Load(assemblyName);
-            var type = assembly.GetType(entryType, true);
-            var target = (IAppEntry)Activator.CreateInstance(type);
-            target.DoEntry(arg);
+            try
+            {
+                var target = (IAppEntry)_domain.CreateInstanceAndUnwrap(assemblyName, entryType);
+                return target.DoEntry(arg);
+            }
+            catch (Exception ex)
+            {
+                (new PermissionSet(PermissionState.Unrestricted)).Assert();
+                App.LogError(ex, "ExecuteEntry");
+                CodeAccessPermission.RevertAssert();
+                return null;
+            }
         }
 
         public void ExecuteAssembly(string assemblyName, string[] args)
@@ -176,6 +193,7 @@ namespace System
             {
                 throw new InvalidOperationException("EntryPoint");
             }
+
             try
             {
                 assembly.EntryPoint.Invoke(null, args);
@@ -185,7 +203,7 @@ namespace System
                 //When we print informations from a SecurityException extra information can be printed 
                 //if we are calling it with a full-trust stack.
                 (new PermissionSet(PermissionState.Unrestricted)).Assert();
-                App.LogError(ex, "ExecuteCode");
+                App.LogError(ex, "ExecuteAssembly");
                 CodeAccessPermission.RevertAssert();
             }
         }

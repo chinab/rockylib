@@ -231,7 +231,7 @@ namespace System.Net
                             raw = rawFile.InputStream;
                         }
                         object arg = Request.Form["arg"];
-                        var box = Sandboxer.Create(null);
+                        var box = Sandboxer.Create(AppDomain.CurrentDomain.FriendlyName);
                         box.Inject(checksum, arg, raw);
                     }
                     break;
