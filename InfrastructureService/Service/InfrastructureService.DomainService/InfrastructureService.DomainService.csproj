@@ -60,7 +60,6 @@
   <ItemGroup>
     <Compile Include="Basic\SearchService.cs" />
     <Compile Include="Basic\InfrastructureService.cs" />
-    <Compile Include="Common\ServiceBase.cs" />
     <Compile Include="Common\ServiceValidator.cs" />
     <Compile Include="Common\WordSegment\PreProcessUtility.cs" />
     <Compile Include="Common\WordSegment\WordSegmentApp.cs" />
@@ -88,10 +87,6 @@
     <ProjectReference Include="..\..\Solution\SharpICTCLAS\SharpICTCLAS\SharpICTCLAS.csproj">
       <Project>{e27db382-5785-40f9-b671-197fd5b77569}</Project>
       <Name>SharpICTCLAS</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\InfrastructureService.Common\InfrastructureService.Common.csproj">
-      <Project>{50947fdc-d95a-43c6-aeca-558d01ed8595}</Project>
-      <Name>InfrastructureService.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\InfrastructureService.Repository\InfrastructureService.Repository.csproj">
       <Project>{a7000947-afc7-4d2a-96ac-0e43c0a3c871}</Project>

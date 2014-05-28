@@ -10,6 +10,7 @@ using System.Net;
 using InfrastructureService.Contract;
 using InfrastructureService.Model.User;
 using InfrastructureService.Repository.User;
+using System.Net.WCF;
 
 namespace InfrastructureService.DomainService
 {

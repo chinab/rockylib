@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Data;
-using InfrastructureService.Common;
 using InfrastructureService.Model.Basic;
 
 namespace InfrastructureService.Repository.Basic
@@ -51,8 +50,8 @@ namespace InfrastructureService.Repository.Basic
                         select t;
                 foreach (var item in q)
                 {
-                    item.Pinyin = PinyinUtility.ConvertToPinyin(item.Keyword);
-                    item.PinyinCaps = PinyinUtility.ConvertToPinyinCaps(item.Keyword);
+                    item.Pinyin = PinyinHelper.ConvertToPinyin(item.Keyword);
+                    item.PinyinCaps = PinyinHelper.ConvertToPinyinCaps(item.Keyword);
                 }
                 context.SaveChanges();
             }

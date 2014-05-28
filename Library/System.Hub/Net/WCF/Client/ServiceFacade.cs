@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.ServiceModel;
 
-namespace System.Client
+namespace System.Net.WCF
 {
     public static class ServiceFacade
     {
@@ -82,13 +82,25 @@ namespace System.Client
 
     public class InvokeFaultEventArgs : EventArgs
     {
-        public FaultException UnknownFault { get; private set; }
         public bool Throw { get; set; }
+        public FaultException UnknownFault { get; private set; }
 
         public InvokeFaultEventArgs(FaultException unknownFault)
         {
             this.Throw = true;
             this.UnknownFault = unknownFault;
+        }
+
+        public bool TryGetDetail(out InvokeFaultDetail detail)
+        {
+            detail = null;
+            var messageFault = this.UnknownFault.CreateMessageFault();
+            if (!messageFault.HasDetail)
+            {
+                return false;
+            }
+            detail = messageFault.GetDetail<InvokeFaultDetail>();
+            return true;
         }
     }
 }

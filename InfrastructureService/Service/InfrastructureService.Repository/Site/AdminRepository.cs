@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using EntityFramework.Extensions;
-using InfrastructureService.Common;
 using InfrastructureService.Model;
 using InfrastructureService.Model.Site;
 using InfrastructureService.Repository.DataAccess;
 using System.Data.Entity.Core.Objects;
+using System.Net.WCF;
 
 namespace InfrastructureService.Repository.Site
 {
@@ -88,7 +88,7 @@ namespace InfrastructureService.Repository.Site
                 var entrty = context.UserInfoes.Where(m => m.UserName == param.UserName && m.Password == param.OldPassword).FirstOrDefault();
                 if (entrty == null)
                 {
-                    throw new DomainException("原始密码错误");
+                    throw new InvalidInvokeException("原始密码错误");
                 }
 
                 entrty.Password = param.NewPassword;

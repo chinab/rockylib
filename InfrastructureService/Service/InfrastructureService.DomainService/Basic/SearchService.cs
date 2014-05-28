@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using InfrastructureService.Common;
 using InfrastructureService.Contract;
 using InfrastructureService.Model.Basic;
 using InfrastructureService.Repository.Basic;
+using System.Net.WCF;
 
 namespace InfrastructureService.DomainService
 {
@@ -19,12 +19,12 @@ namespace InfrastructureService.DomainService
             var result = new SegmentWordResult();
             if (param.Keyword == null)
             {
-                throw new DomainException("参数为空");
+                throw new InvalidInvokeException("参数为空");
             }
             param.Keyword = param.Keyword.Replace("'", string.Empty);
             if (param.Keyword.Length == 0 || param.Keyword.Length > 50)
             {
-                throw new DomainException("参数错误");
+                throw new InvalidInvokeException("参数错误");
             }
             var sample = new WordSegmentApp(DictPath, 2);
             char c = ' ';

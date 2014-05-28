@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading;
 using System.Data;
 using EntityFramework.Extensions;
-using InfrastructureService.Common;
 using InfrastructureService.Model.User;
 using InfrastructureService.Repository.DataAccess;
+using System.Net.WCF;
 
 namespace InfrastructureService.Repository.User
 {
@@ -49,7 +49,7 @@ namespace InfrastructureService.Repository.User
                     UserName = param.UserName
                 }))
                 {
-                    throw new DomainException(SignUpErrorCode.AccountExist.ToDescription());
+                    throw new InvalidInvokeException(SignUpErrorCode.AccountExist.ToDescription());
                 }
 
                 var dataObj = new Account();
@@ -220,7 +220,7 @@ namespace InfrastructureService.Repository.User
                     var args = q2.SingleOrDefault();
                     if (args == null)
                     {
-                        throw new DomainException("用户不存在");
+                        throw new InvalidInvokeException("用户不存在");
                     }
                     param.UserName = args[0];
                     param.Password = args[1];
@@ -252,7 +252,7 @@ namespace InfrastructureService.Repository.User
                     userID = q2.SingleOrDefault();
                     if (userID == Guid.Empty)
                     {
-                        throw new DomainException("帐号或密码错误");
+                        throw new InvalidInvokeException("帐号或密码错误");
                     }
 
                     var q3 = from t in context.OpenOAuths
@@ -260,7 +260,7 @@ namespace InfrastructureService.Repository.User
                              select t;
                     if (q3.Any())
                     {
-                        throw new DomainException("已经绑定过其它账户");
+                        throw new InvalidInvokeException("已经绑定过其它账户");
                     }
                 }
             signIn:
@@ -273,7 +273,7 @@ namespace InfrastructureService.Repository.User
                     }
                     if (userID == Guid.Empty)
                     {
-                        throw new DomainException("UserID's null");
+                        throw new InvalidInvokeException("UserID's null");
                     }
                     entity = new OpenOAuth();
                     EntityMapper.Map<OAuthParameter, OpenOAuth>(param, entity);
@@ -304,7 +304,7 @@ namespace InfrastructureService.Repository.User
             {
                 if (param.Kind != AuthEmailKind.ChangeEmail && !context.Accounts.Any(t => t.AppID == param.AppID && t.Email == param.Email))
                 {
-                    throw new DomainException("Email不存在");
+                    throw new InvalidInvokeException("Email不存在");
                 }
 
                 string userName = context.Accounts.Where(t => t.AppID == param.AppID && t.RowID == param.UserID).Select(t => t.UserName).Single();
@@ -359,18 +359,18 @@ namespace InfrastructureService.Repository.User
             var entity = context.EmailAuths.SingleOrDefault(t => t.AuthKey == authCode.ToString());
             if (entity == null)
             {
-                throw new DomainException("当前记录不存在")
+                throw new InvalidInvokeException("当前记录不存在")
                 {
-                    ExceptionLevel = DomainExceptionLevel.SystemUnusual
+                    FaultLevel = InvokeFaultLevel.SystemUnusual
                 };
             }
             if ((ActivationStatus)entity.Status == ActivationStatus.Activated)
             {
-                throw new DomainException("已经通过验证");
+                throw new InvalidInvokeException("已经通过验证");
             }
             if (!(entity.CreateDate.AddHours(-24) <= DateTime.Now && DateTime.Now <= entity.CreateDate.AddHours(24)))
             {
-                throw new DomainException("Email验证已过期");
+                throw new InvalidInvokeException("Email验证已过期");
             }
             return entity;
         }
@@ -387,7 +387,7 @@ namespace InfrastructureService.Repository.User
             {
                 if (context.MobileAuths.Where(t => t.Mobile == param.Mobile && t.CreateDate.Date == DateTime.Now.Date).Count() > 2)
                 {
-                    throw new DomainException("1天内已经发送超过3次，不再发送");
+                    throw new InvalidInvokeException("1天内已经发送超过3次，不再发送");
                 }
                 var q = from t in context.MobileAuths
                         where t.UserName == param.UserName && t.Mobile == param.Mobile
@@ -399,7 +399,7 @@ namespace InfrastructureService.Repository.User
                     TimeSpan ts = DateTime.Now - first;
                     if (ts.TotalSeconds <= 60)
                     {
-                        throw new DomainException("1分钟内仅发送1次");
+                        throw new InvalidInvokeException("1分钟内仅发送1次");
                     }
                 }
 
@@ -454,15 +454,15 @@ namespace InfrastructureService.Repository.User
             var entity = context.MobileAuths.Where(t => t.Mobile == mobile && t.SmsCode == authCode.ToString()).FirstOrDefault();
             if (entity == null)
             {
-                throw new DomainException("手机验证码不存在");
+                throw new InvalidInvokeException("手机验证码不存在");
             }
             if ((ActivationStatus)entity.Status == ActivationStatus.Activated)
             {
-                throw new DomainException("已经通过验证");
+                throw new InvalidInvokeException("已经通过验证");
             }
             if (!(entity.CreateDate.AddHours(-1) <= DateTime.Now && DateTime.Now <= entity.CreateDate.AddHours(1)))
             {
-                throw new DomainException("手机验证码已过期");
+                throw new InvalidInvokeException("手机验证码已过期");
             }
             return entity;
         }
@@ -481,14 +481,14 @@ namespace InfrastructureService.Repository.User
                 var user = q.SingleOrDefault();
                 if (user == null)
                 {
-                    throw new DomainException("Email或手机未注册");
+                    throw new InvalidInvokeException("Email或手机未注册");
                 }
                 if (isMobile)
                 {
                     var flags = (UserFlags)user.Flags;
                     if ((flags & UserFlags.AuthenticMobile) != UserFlags.AuthenticMobile)
                     {
-                        throw new DomainException("手机未验证");
+                        throw new InvalidInvokeException("手机未验证");
                     }
                     this.SendAuthMobile(new SendAuthMobileParameter()
                     {
@@ -529,7 +529,7 @@ namespace InfrastructureService.Repository.User
                         string[] mobileAuthCode = param.AuthCode.Split(',');
                         if (mobileAuthCode.Length != 2)
                         {
-                            throw new DomainException("参数错误");
+                            throw new InvalidInvokeException("参数错误");
                         }
                         mobileAuth = this.CheckUserMobileAuth(context, mobileAuthCode[0], int.Parse(mobileAuthCode[1]));
                         param.UserName = mobileAuth.UserName;
@@ -544,7 +544,7 @@ namespace InfrastructureService.Repository.User
                 });
                 if (!id.IsAuthenticated)
                 {
-                    throw new DomainException("账户不存在或密码错误");
+                    throw new InvalidInvokeException("账户不存在或密码错误");
                 }
 
                 using (var scope = DbScope.Create())

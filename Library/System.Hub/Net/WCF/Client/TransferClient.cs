@@ -6,7 +6,7 @@ using System.Text;
 using System.Net;
 using System.InfrastructureService;
 
-namespace System.Client
+namespace System.Net.WCF
 {
     public sealed class TransferClient
     {

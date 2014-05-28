@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace InfrastructureService.Common
+namespace System
 {
-    public static class PinyinUtility
+    public static class PinyinHelper
     {
         #region Fields
         private static string[] pinyinKey;
@@ -13,7 +13,7 @@ namespace InfrastructureService.Common
         #endregion
 
         #region Constructors
-        static PinyinUtility()
+        static PinyinHelper()
         {
             pinyinKey = new string[]{"a","ai","an","ang","ao","ba","bai","ban","bang","bao","bei","ben","beng","bi","bian","biao",
 　　"bie","bin","bing","bo","bu","ca","cai","can","cang","cao","ce","ceng","cha","chai","chan","chang","chao","che","chen",

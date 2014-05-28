@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using InfrastructureService.Common;
 using InfrastructureService.Model;
 using InfrastructureService.Repository.DataAccess;
+using System.Net.WCF;
 
 namespace InfrastructureService.Repository
 {
@@ -42,7 +42,7 @@ namespace InfrastructureService.Repository
                 int status = EnumToValue(StatusKind.Blocked);
                 if (!context.AppInfoes.Any(t => t.AppID == header.AppID && t.Status != status))
                 {
-                    throw new DomainException("The App was blocked.");
+                    throw new InvalidInvokeException("The App was blocked.");
                 }
             }
         }

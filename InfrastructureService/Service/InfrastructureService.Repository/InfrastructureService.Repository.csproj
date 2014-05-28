@@ -71,6 +71,7 @@
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -212,10 +213,6 @@
     <ProjectReference Include="..\..\Contract\InfrastructureService.Model\InfrastructureService.Model.csproj">
       <Project>{b0e28dc0-8937-4274-9a6b-b3f8506276d3}</Project>
       <Name>InfrastructureService.Model</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\InfrastructureService.Common\InfrastructureService.Common.csproj">
-      <Project>{50947fdc-d95a-43c6-aeca-558d01ed8595}</Project>
-      <Name>InfrastructureService.Common</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -179,10 +179,11 @@
   <ItemGroup>
     <Compile Include="App\Implement\ObjectHost.cs" />
     <Compile Include="App\Implement\Sandboxer.cs" />
-    <Compile Include="Client\TransferClient.cs" />
-    <Compile Include="Client\TransferHelper.cs" />
-    <Compile Include="Client\ClientCallException.cs" />
-    <Compile Include="Client\ServiceFacade.cs" />
+    <Compile Include="Net\WCF\InvokeFaultDetail.cs" />
+    <Compile Include="Net\WCF\Server\InvalidInvokeException.cs" />
+    <Compile Include="Net\WCF\Client\TransferClient.cs" />
+    <Compile Include="Net\WCF\Client\TransferHelper.cs" />
+    <Compile Include="Net\WCF\Client\ServiceFacade.cs" />
     <Compile Include="Caching\CacheChangeMonitor.cs" />
     <Compile Include="Caching\DistributedCache.cs" />
     <Compile Include="Caching\DistributedException.cs" />
@@ -194,6 +195,7 @@
     <Compile Include="Common\Security\SplitFileMode.cs" />
     <Compile Include="Common\Serializer.cs" />
     <Compile Include="Common\Utility\GDI\ThumbnailMode.cs" />
+    <Compile Include="Common\Utility\PinyinHelper.cs" />
     <Compile Include="Common\Utility\XmlHelper.cs" />
     <Compile Include="DataStructure\BloomFilter\BitVector.cs" />
     <Compile Include="DataStructure\BloomFilter\BloomFilter.cs" />
@@ -275,6 +277,7 @@
     <Compile Include="Net\HTTP\HttpClient\HttpClient.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Net\WCF\Server\ServiceBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Common\Utility\TaskHelper.cs" />
     <Compile Include="Service References\InfrastructureService\Reference.cs">

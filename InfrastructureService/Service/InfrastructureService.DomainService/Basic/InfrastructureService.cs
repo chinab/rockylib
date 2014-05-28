@@ -9,6 +9,7 @@ using InfrastructureService.Contract;
 using InfrastructureService.Model.Basic;
 using InfrastructureService.Repository.Basic;
 using Newtonsoft.Json;
+using System.Net.WCF;
 
 namespace InfrastructureService.DomainService
 {

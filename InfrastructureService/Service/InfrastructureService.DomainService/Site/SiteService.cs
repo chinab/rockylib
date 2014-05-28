@@ -8,6 +8,7 @@ using InfrastructureService.Contract;
 using InfrastructureService.Model;
 using InfrastructureService.Model.Site;
 using InfrastructureService.Repository.Site;
+using System.Net.WCF;
 
 namespace InfrastructureService.DomainService
 {

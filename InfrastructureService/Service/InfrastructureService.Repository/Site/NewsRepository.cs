@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using EntityFramework.Extensions;
-using InfrastructureService.Common;
 using InfrastructureService.Model;
 using InfrastructureService.Model.Site;
 using InfrastructureService.Repository.DataAccess;
+using System.Net.WCF;
 
 namespace InfrastructureService.Repository.Site
 {
@@ -75,7 +75,7 @@ namespace InfrastructureService.Repository.Site
                 scope.BeginTransaction();
                 if (param.ParentID > 0 && context.News.Any(t => t.CategoryID == param.ParentID))
                 {
-                    throw new DomainException("不能更新有新闻的父分类");
+                    throw new InvalidInvokeException("不能更新有新闻的父分类");
                 }
 
                 NewsCategory pObj;
@@ -155,7 +155,7 @@ namespace InfrastructureService.Repository.Site
                 {
                     if (context.News.Any(t => t.CategoryID == item.RowID))
                     {
-                        throw new DomainException("不能删除有新闻的分类");
+                        throw new InvalidInvokeException("不能删除有新闻的分类");
                     }
 
                     //更新子类的父类为被删除类别的父类。

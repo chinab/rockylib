@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace System.Client
+namespace System.Net.WCF
 {
     public static class TransferHelper
     {
@@ -20,7 +20,7 @@ namespace System.Client
             return stream;
         }
 
-        public static MemoryStream DrawImage(Stream imgStream, Image waterMarkImage, System.Drawing.ContentAlignment alignment, int margin)
+        public static MemoryStream DrawImage(Stream imgStream, Image waterMarkImage, ContentAlignment alignment, int margin)
         {
             var stream = new MemoryStream();
             using (var img = Image.FromStream(imgStream))

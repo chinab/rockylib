@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Net;
-using InfrastructureService.Common;
 using InfrastructureService.Model.Basic;
 using InfrastructureService.Repository.DataAccess;
 using System.Threading;
 using System.Data;
+using System.Net.WCF;
 
 namespace InfrastructureService.Repository.Basic
 {
@@ -185,7 +185,7 @@ namespace InfrastructureService.Repository.Basic
                 int count = q.Count();
                 if (count > maxSentPreDay)
                 {
-                    throw new DomainException("SendSMS");
+                    throw new InvalidInvokeException("SendSMS");
                 }
 
                 var pObj = new SMSMessage();

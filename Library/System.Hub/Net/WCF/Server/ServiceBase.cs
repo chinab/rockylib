@@ -6,9 +6,8 @@ using System.ServiceModel.Channels;
 using System.ServiceModel.Description;
 using System.ServiceModel.Dispatcher;
 using System.Text;
-using InfrastructureService.Common;
 
-namespace InfrastructureService.DomainService
+namespace System.Net.WCF
 {
     public abstract class ServiceBase : IErrorHandler, IServiceBehavior
     {
@@ -20,18 +19,17 @@ namespace InfrastructureService.DomainService
 
         public void ProvideFault(Exception error, MessageVersion version, ref Message fault)
         {
-            var appFault = new AppFaultDetail()
+            var invokeFault = new InvokeFaultDetail()
             {
-                ErrorCode = -1,
+                FaultLevel = InvokeFaultLevel.SystemUnusual,
                 Exception = new ExceptionDetail(error)
             };
-            var domainEx = error as DomainException;
-            if (domainEx != null)
+            var ex = error as InvalidInvokeException;
+            if (ex != null)
             {
-                appFault.ErrorCode = domainEx.ErrorCode;
-                appFault.ThrowFault = domainEx.ExceptionLevel == DomainExceptionLevel.OperationException;
+                invokeFault.FaultLevel = ex.FaultLevel;
             }
-            var faultException = new FaultException<AppFaultDetail>(appFault, error.Message);
+            var faultException = new FaultException<InvokeFaultDetail>(invokeFault, error.Message);
             var messageFault = faultException.CreateMessageFault();
             fault = Message.CreateMessage(version, messageFault, faultException.Action);
         }

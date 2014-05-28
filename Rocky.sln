@@ -54,8 +54,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InfrastructureService.Contr
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "03 Service", "03 Service", "{2075C9AF-93B6-4C27-8533-A51C80E2ECCB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InfrastructureService.Common", "InfrastructureService\Service\InfrastructureService.Common\InfrastructureService.Common.csproj", "{50947FDC-D95A-43C6-AECA-558D01ED8595}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InfrastructureService.Repository", "InfrastructureService\Service\InfrastructureService.Repository\InfrastructureService.Repository.csproj", "{A7000947-AFC7-4D2A-96AC-0E43C0A3C871}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InfrastructureService.DomainService", "InfrastructureService\Service\InfrastructureService.DomainService\InfrastructureService.DomainService.csproj", "{15B3E0D2-6217-493A-A690-158C497F5318}"
@@ -163,16 +161,6 @@ Global
 		{57952C92-2EDE-43BF-BF4B-1980734CBC11}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{57952C92-2EDE-43BF-BF4B-1980734CBC11}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{57952C92-2EDE-43BF-BF4B-1980734CBC11}.Release|x86.ActiveCfg = Release|Any CPU
-		{50947FDC-D95A-43C6-AECA-558D01ED8595}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{50947FDC-D95A-43C6-AECA-558D01ED8595}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{50947FDC-D95A-43C6-AECA-558D01ED8595}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{50947FDC-D95A-43C6-AECA-558D01ED8595}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{50947FDC-D95A-43C6-AECA-558D01ED8595}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{50947FDC-D95A-43C6-AECA-558D01ED8595}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{50947FDC-D95A-43C6-AECA-558D01ED8595}.Release|Any CPU.Build.0 = Release|Any CPU
-		{50947FDC-D95A-43C6-AECA-558D01ED8595}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{50947FDC-D95A-43C6-AECA-558D01ED8595}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{50947FDC-D95A-43C6-AECA-558D01ED8595}.Release|x86.ActiveCfg = Release|Any CPU
 		{A7000947-AFC7-4D2A-96AC-0E43C0A3C871}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A7000947-AFC7-4D2A-96AC-0E43C0A3C871}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A7000947-AFC7-4D2A-96AC-0E43C0A3C871}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -233,14 +221,13 @@ Global
 		{E27DB382-5785-40F9-B671-197FD5B77569} = {78100B0A-3907-4185-9445-6A0F657D9BB9}
 		{B0E28DC0-8937-4274-9A6B-B3F8506276D3} = {291BF078-952B-4EB9-8914-4262398A3766}
 		{57952C92-2EDE-43BF-BF4B-1980734CBC11} = {291BF078-952B-4EB9-8914-4262398A3766}
-		{50947FDC-D95A-43C6-AECA-558D01ED8595} = {2075C9AF-93B6-4C27-8533-A51C80E2ECCB}
 		{A7000947-AFC7-4D2A-96AC-0E43C0A3C871} = {2075C9AF-93B6-4C27-8533-A51C80E2ECCB}
 		{15B3E0D2-6217-493A-A690-158C497F5318} = {2075C9AF-93B6-4C27-8533-A51C80E2ECCB}
 		{B8A3FF75-C48C-4349-9210-41EB5D2283B3} = {2075C9AF-93B6-4C27-8533-A51C80E2ECCB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35;packages\Unity.Interception.2.1.505.2\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Validation.5.0.505.0\lib\NET35
 		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.Common.6.0.1304.0\lib\NET45;packages\EnterpriseLibrary.Validation.6.0.1304.0\lib\NET45
+		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35;packages\Unity.Interception.2.1.505.2\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Validation.5.0.505.0\lib\NET35
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = Library\System.MacAgent\System.MacAgent.csproj
