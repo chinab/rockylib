@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.ServiceModel;
 
-namespace InfrastructureService.Client
+namespace System.Client
 {
     public static class ServiceFacade
     {

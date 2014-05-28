@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace InfrastructureService.Client
+namespace System.Client
 {
     [Serializable]
     public class ClientCallException : Exception

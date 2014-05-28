@@ -6,7 +6,7 @@ using System.Text;
 using System.Net;
 using System.InfrastructureService;
 
-namespace InfrastructureService.Client
+namespace System.Client
 {
     public sealed class TransferClient
     {

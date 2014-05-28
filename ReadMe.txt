@@ -4,13 +4,13 @@
 
 2.WCF证书验证:
 服务端：
-	makecert -n "CN=azure.xineworld.com" -pe -sr localmachine -ss My -a sha1 -r -sky exchange -sp "Microsoft RSA SChannel Cryptographic Provider" -sy 12
+	makecert -n "CN=azure.xineapp.com" -pe -sr localmachine -ss My -a sha1 -r -sky exchange -sp "Microsoft RSA SChannel Cryptographic Provider" -sy 12
 	C:\Documents and Settings\All Users\Application Data\Microsoft\Crypto\RSA\MachineKeys
 	C:\ProgramData\Microsoft\Crypto\RSA\MachineKeys
 	http://msdn.microsoft.com/zh-cn/library/bfsktky3.aspx
 	http://support.microsoft.com/kb/901183/zh-cn
 客户端：
-	certmgr -add -r localmachine -s My -c -n azure.xineworld.com -s TrustedPeople
+	certmgr -add -r localmachine -s My -c -n azure.xineapp.com -s TrustedPeople
 	CertMgr.msc
 
 3.

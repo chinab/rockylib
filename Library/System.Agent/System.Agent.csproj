@@ -30,12 +30,12 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <InstallUrl>http://publish.xineworld.com/cloudagent/</InstallUrl>
+    <InstallUrl>http://publish.xineapp.com/cloudagent/</InstallUrl>
     <ProductName>飞檐走壁</ProductName>
     <PublisherName>JeansMan Studio</PublisherName>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
-    <ApplicationRevision>125</ApplicationRevision>
+    <ApplicationRevision>127</ApplicationRevision>
     <ApplicationVersion>1.0.1.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -187,10 +187,10 @@
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resource\xine.pfx" />
     <EmbeddedResource Include="Resource\Proxifier PE.7z" />
     <EmbeddedResource Include="Resource\CA.crt" />
     <None Include="packages.config" />
+    <EmbeddedResource Include="Resource\XineV2.pfx" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{3259AA49-8AA1-44D3-9025-A0B520596A8C}" />

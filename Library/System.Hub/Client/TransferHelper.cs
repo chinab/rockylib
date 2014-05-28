@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace InfrastructureService.Client
+namespace System.Client
 {
     public static class TransferHelper
     {

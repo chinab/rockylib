@@ -179,10 +179,10 @@
   <ItemGroup>
     <Compile Include="App\Implement\ObjectHost.cs" />
     <Compile Include="App\Implement\Sandboxer.cs" />
-    <Compile Include="Azure\Basic\TransferClient.cs" />
-    <Compile Include="Azure\Basic\TransferHelper.cs" />
-    <Compile Include="Azure\Common\ClientCallException.cs" />
-    <Compile Include="Azure\Common\ServiceFacade.cs" />
+    <Compile Include="Client\TransferClient.cs" />
+    <Compile Include="Client\TransferHelper.cs" />
+    <Compile Include="Client\ClientCallException.cs" />
+    <Compile Include="Client\ServiceFacade.cs" />
     <Compile Include="Caching\CacheChangeMonitor.cs" />
     <Compile Include="Caching\DistributedCache.cs" />
     <Compile Include="Caching\DistributedException.cs" />

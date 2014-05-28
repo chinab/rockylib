@@ -48,16 +48,16 @@ namespace System
         {
             Contract.Requires(!string.IsNullOrEmpty(name));
 
-            if (_boxes == null)
-            {
-                Interlocked.CompareExchange(ref _boxes, new SynchronizedCollection<Sandboxer>(), null);
-            }
             var current = AppDomain.CurrentDomain;
             if (name == current.FriendlyName)
             {
                 return new Sandboxer(current);
             }
 
+            if (_boxes == null)
+            {
+                Interlocked.CompareExchange(ref _boxes, new SynchronizedCollection<Sandboxer>(), null);
+            }
             name = string.Format("Sandbox_{0}", name);
             var q = from t in _boxes
                     where t.Name == name
@@ -65,10 +65,10 @@ namespace System
             var box = q.SingleOrDefault();
             if (box == null)
             {
-                var domain = CreateDomain(name, isTrusted);
+                var _Domain = CreateDomain(name, isTrusted);
                 //Use CreateInstanceFrom to load an instance of the Sandboxer class into the AppDomain. 
-                var handle = Activator.CreateInstanceFrom(domain, typeof(Sandboxer).Assembly.ManifestModule.FullyQualifiedName, typeof(Sandboxer).FullName,
-                    true, BindingFlags.CreateInstance, null, new object[] { domain }, null, null);
+                var handle = Activator.CreateInstanceFrom(_Domain, typeof(Sandboxer).Assembly.ManifestModule.FullyQualifiedName, typeof(Sandboxer).FullName,
+                    true, BindingFlags.CreateInstance, null, new object[] { _Domain }, null, null);
                 //Unwrap the new domain instance into a reference in this domain and use it to execute the code.
                 _boxes.Add(box = (Sandboxer)handle.Unwrap());
             }
@@ -77,37 +77,51 @@ namespace System
 
         public static void Unload(Sandboxer box)
         {
+            if (box._Domain.IsDefaultAppDomain())
+            {
+                return;
+            }
+
             if (_boxes != null)
             {
                 _boxes.Remove(box);
             }
-            try
+            //AppDomain不能在IDisposable中卸载？
+            //延迟20秒卸载确保AppDomain内的执行完毕否则会引发AppDomainUnloadedException
+            new JobTimer(state =>
             {
-                var d = box._domain;
-                if (!d.IsDefaultAppDomain())
+                var b = (Sandboxer)state;
+                try
                 {
-                    AppDomain.Unload(d);
-                }
-            }
-            catch (Exception ex)
-            {
-                App.LogError(ex, "Sandboxer");
+                    //if (b._Domain.IsFinalizingForUnload())
+                    //{
+                    //    return;
+                    //}
 #if DEBUG
-                throw;
+                    App.LogInfo("{0} unload", b._Domain.FriendlyName);
 #endif
-            }
+                    AppDomain.Unload(b._Domain);
+                }
+                catch (Exception ex)
+                {
+                    App.LogError(ex, "Sandboxer Unload");
+#if DEBUG
+                    throw;
+#endif
+                }
+            }, DateTime.Now.AddSeconds(20d)).Start(box);
         }
         #endregion
 
         #region Fields
-        private AppDomain _domain;
+        public readonly AppDomain _Domain;
         private ConcurrentDictionary<Guid, Assembly> _mapper;
         #endregion
 
         #region Properties
         public string Name
         {
-            get { return _domain.FriendlyName; }
+            get { return _Domain.FriendlyName; }
         }
         private ConcurrentDictionary<Guid, Assembly> Mapper
         {
@@ -127,7 +141,7 @@ namespace System
         {
             Contract.Requires(domain != null);
 
-            _domain = domain;
+            _Domain = domain;
         }
         #endregion
 
@@ -146,7 +160,7 @@ namespace System
                 {
                     throw new InvalidOperationException("checksum");
                 }
-                return this.Mapper.GetOrAdd(checksum, k => _domain.Load(raw.ToArray()));
+                return this.Mapper.GetOrAdd(checksum, k => _Domain.Load(raw.ToArray()));
             }
             Assembly assembly;
             if (!this.Mapper.TryGetValue(checksum, out assembly))
@@ -174,7 +188,7 @@ namespace System
         {
             try
             {
-                var target = (IAppEntry)_domain.CreateInstanceAndUnwrap(assemblyName, entryType);
+                var target = (IAppEntry)_Domain.CreateInstanceAndUnwrap(assemblyName, entryType);
                 return target.DoEntry(arg);
             }
             catch (Exception ex)

@@ -124,14 +124,14 @@ namespace System.Agent
                 if (config.EnableSsl)
                 {
                     //默认服务端
-                    if (!this.CatchExec(() => CryptoManaged.TrustCert(App.GetResourceStream("System.Agent.Resource.xine.pfx"), "xine"), "导入证书"))
+                    if (!this.CatchExec(() => CryptoManaged.TrustCert(App.GetResourceStream("System.Agent.Resource.XineV2.pfx"), "xineapp"), "导入证书"))
                     {
                         config.EnableSsl = false;
                         Console.Out.WriteWarning("导入证书失败，将不启用加密通讯。");
                     }
                 }
                 //服务端分配域名
-                string domain = "azure.xineworld.com";
+                string domain = "azure.xineapp.com";
                 //domain = "localhost:3463";
                 var client = new HttpClient(new Uri(string.Format("http://{0}/Let.ashx", domain)));
                 var res = client.GetResponse();
