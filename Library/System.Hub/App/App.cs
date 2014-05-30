@@ -58,10 +58,10 @@ namespace System
             messageOrFormat += Environment.NewLine + Environment.StackTrace;
             if (!formatArgs.IsNullOrEmpty())
             {
-                DefaultLogger.DebugFormat(messageOrFormat, formatArgs);
+                DefaultLogger.InfoFormat(messageOrFormat, formatArgs);
                 return;
             }
-            DefaultLogger.Debug(messageOrFormat);
+            DefaultLogger.Info(messageOrFormat);
         }
 
         [DebuggerStepThrough]
