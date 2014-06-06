@@ -176,7 +176,6 @@ namespace System.Net
             _request.Accept = "*/*";
             _request.UserAgent = UserAgent;
             _request.Referer = _referer;
-            _request.CookieContainer = _cookieContainer;
             if (_proxyAddr != null)
             {
                 _request.Proxy = _proxyAddr;
@@ -255,7 +254,7 @@ namespace System.Net
             _initRequest = false;
             if (method == null)
             {
-                method = _content.HasValue ? HttpMethod.Post : HttpMethod.Get;
+                method = _content.HasBody ? HttpMethod.Post : HttpMethod.Get;
             }
             _request.Method = method.Method;
             _request.AllowAutoRedirect = autoRedirect;
@@ -360,6 +359,13 @@ namespace System.Net
             func(HttpRequestHeader.Referer);
             func(HttpRequestHeader.UserAgent);
             _content.AppendHeadersTo(_request.Headers);
+
+            if (_content.HasCookie)
+            {
+                this.UseCookies = true;
+                _cookieContainer.Add(_request.RequestUri, _content.Cookies);
+            }
+            _request.CookieContainer = _cookieContainer;
         }
         #endregion
         #endregion

@@ -58,6 +58,11 @@ namespace System.Net
                 return _cookies;
             }
         }
+        public bool HasCookie
+        {
+            get { return !_cookies.IsNullOrEmpty(); }
+        }
+
         public NameValueCollection Form
         {
             get
@@ -81,12 +86,9 @@ namespace System.Net
                 return _files;
             }
         }
-        public bool HasValue
+        public bool HasBody
         {
-            get
-            {
-                return !_form.IsNullOrEmpty() || !_files.IsNullOrEmpty();
-            }
+            get { return !_form.IsNullOrEmpty() || !_files.IsNullOrEmpty(); }
         }
         #endregion
 
