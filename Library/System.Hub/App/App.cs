@@ -132,7 +132,7 @@ namespace System
             }
         }
 
-        public static void Retry(Action func, ushort retryCount, int retryWaitTimeout = 0)
+        public static void Retry(Action func, ushort retryCount = 4, int retryWaitTimeout = 0)
         {
             Contract.Requires(func != null);
 
@@ -162,7 +162,7 @@ namespace System
                 }
             }
         }
-        public static bool Retry(Func<bool> func, ushort retryCount, int retryWaitTimeout = 0)
+        public static bool Retry(Func<bool> func, ushort retryCount = 4, int retryWaitTimeout = 0)
         {
             Contract.Requires(func != null);
 

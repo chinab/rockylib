@@ -34,16 +34,22 @@ namespace System.Net
             stream.FixedCopyTo(netStream, length);
         }
 
-        public static void Receive<T>(this Socket client, out T packModel)
+        public static bool Receive<T>(this Socket client, out T packModel)
         {
             byte[] data = new byte[4];
-            client.Receive(data, 0, 4, SocketFlags.None);
+            int recv = client.Receive(data, 0, 4, SocketFlags.None);
+            if (recv == 0)
+            {
+                packModel = default(T);
+                return false;
+            }
             int length = BitConverter.ToInt32(data, 0);
             var stream = new MemoryStream();
             var netStream = new NetworkStream(client, FileAccess.ReadWrite, false);
             netStream.FixedCopyTo(stream, length);
             stream.Position = 0L;
             packModel = (T)Serializer.Deserialize(stream);
+            return true;
         }
 
         /// <summary>
@@ -56,7 +62,7 @@ namespace System.Net
         {
             client.Shutdown(SocketShutdown.Send);
             //client.Disconnect(true);
-            client.Close(1);
+            client.Close(2);
         }
         #endregion
 
