@@ -231,7 +231,7 @@ namespace System.Net
                             raw = rawFile.InputStream;
                         }
                         object arg = Request.Form["arg"];
-                        var box = Sandboxer.Create(AppDomain.CurrentDomain.FriendlyName);
+                        var box = SandboxManager.Create(null);
                         box.Inject(checksum, arg, raw);
                     }
                     break;
@@ -543,7 +543,7 @@ namespace System.Net
                         Response.Flush();
                     }
 #if DEBUG
-                    Hub.LogInfo("DirectReceive from {0} {1}bytes.", proxyClient.Client.RemoteEndPoint, length);
+                    App.LogInfo("DirectReceive from {0} {1}bytes.", proxyClient.Client.RemoteEndPoint, length);
 #endif
                 }
                 catch (IOException ex)
@@ -598,7 +598,7 @@ namespace System.Net
                     inStream.FixedCopyTo(proxyStream, length);
                     succeed = true;
 #if DEBUG
-                    Hub.LogInfo("DirectSend to {0} {1}bytes.", proxyClient.Client.RemoteEndPoint, length);
+                    App.LogInfo("DirectSend to {0} {1}bytes.", proxyClient.Client.RemoteEndPoint, length);
 #endif
                 }
                 catch (IOException ex)
@@ -646,7 +646,7 @@ namespace System.Net
                         Response.Flush();
                     }
 #if DEBUG
-                    Hub.LogInfo("ReverseDirectReceive from {0} {1}bytes.", dataQueue.RemoteEndPoint, length);
+                    App.LogInfo("ReverseDirectReceive from {0} {1}bytes.", dataQueue.RemoteEndPoint, length);
 #endif
                 }
                 catch (IOException ex)
@@ -698,7 +698,7 @@ namespace System.Net
                 dataQueue.WaitHandle.Set();
                 succeed = true;
 #if DEBUG
-                Hub.LogInfo("ReverseDirectSend to {0} {1}bytes.", dataQueue.RemoteEndPoint, length);
+                App.LogInfo("ReverseDirectSend to {0} {1}bytes.", dataQueue.RemoteEndPoint, length);
 #endif
             }
             if (Response.IsClientConnected)

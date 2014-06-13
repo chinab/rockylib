@@ -181,6 +181,7 @@
   <ItemGroup>
     <Compile Include="App\Implement\ObjectHost.cs" />
     <Compile Include="App\Implement\Sandboxer.cs" />
+    <Compile Include="App\Implement\SandboxManager.cs" />
     <Compile Include="Net\WCF\InvokeFaultDetail.cs" />
     <Compile Include="Net\WCF\Server\InvalidInvokeException.cs" />
     <Compile Include="Net\WCF\Client\TransferClient.cs" />

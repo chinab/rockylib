@@ -63,10 +63,10 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>9846D020CF558C4986B699DB35DD87DBFDE16855</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>935339872C6240059FAED8B012B3F49D8A21131C</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>Resource\xine.pfx</ManifestKeyFile>
+    <ManifestKeyFile>Resource\XineV2.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>

@@ -665,7 +665,7 @@ namespace System.Net
                             if (sockEx.SocketErrorCode == SocketError.Interrupted)
                             {
 #if DEBUG
-                                Hub.LogInfo(string.Format("Predictable interrupted exception: {0}", sockEx.Message));
+                                App.LogInfo(string.Format("Predictable interrupted exception: {0}", sockEx.Message));
 #endif
                                 return;
                             }

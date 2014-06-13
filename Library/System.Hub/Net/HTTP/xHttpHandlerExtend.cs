@@ -82,7 +82,7 @@ namespace System.Net
             catch (ObjectDisposedException ex)
             {
 #if DEBUG
-                Hub.LogInfo(string.Format("Predictable objectDisposed exception: {0}", ex.StackTrace));
+                App.LogInfo(string.Format("Predictable objectDisposed exception: {0}", ex.StackTrace));
 #endif
             }
             catch (SocketException ex)
@@ -124,7 +124,7 @@ namespace System.Net
                 catch (ObjectDisposedException ex)
                 {
 #if DEBUG
-                    Hub.LogInfo(string.Format("Predictable objectDisposed exception: {0}", ex.StackTrace));
+                    App.LogInfo(string.Format("Predictable objectDisposed exception: {0}", ex.StackTrace));
 #endif
                 }
                 catch (IOException ex)
@@ -136,7 +136,7 @@ namespace System.Net
                     if (ex.SocketErrorCode == SocketError.Interrupted)
                     {
 #if DEBUG
-                        Hub.LogInfo(string.Format("Predictable interrupted exception: {0}", ex.Message));
+                        App.LogInfo(string.Format("Predictable interrupted exception: {0}", ex.Message));
 #endif
                         return;
                     }
