@@ -131,8 +131,7 @@ namespace System.Agent
                     }
                 }
                 //服务端分配域名
-                string domain = "azure.xineapp.com";
-                //domain = "localhost:3463";
+                string domain = Configuration.ConfigurationManager.AppSettings["Agent-Server"] ?? "azure.xineapp.com";
                 var client = new HttpClient(new Uri(string.Format("http://{0}/Let.ashx", domain)));
                 var res = client.GetResponse();
                 var q = from t in res.GetResponseText().Split('#')

@@ -71,6 +71,7 @@ namespace System.Net
             {
                 throw new ArgumentException(string.Format("'{0}' is invalid.", endPoint));
             }
+            //App.LogInfo("ParseEndPoint={0}", endPoint);
             var addr = GetHostAddresses(arr[0]).First();
             return new IPEndPoint(addr, int.Parse(arr[1]));
         }

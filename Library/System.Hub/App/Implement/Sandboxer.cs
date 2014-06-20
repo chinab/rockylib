@@ -5,6 +5,7 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Remoting.Lifetime;
 using System.Security;
 using System.Security.Permissions;
 using System.Security.Policy;
@@ -50,10 +51,17 @@ namespace System
             this.Name = _Domain.FriendlyName;
         }
 
+        //[SecurityPermission(SecurityAction.Demand, Flags = SecurityPermissionFlag.Infrastructure)]
         public override object InitializeLifetimeService()
         {
-            //return base.InitializeLifetimeService();
-            return null;
+            ILease lease = (ILease)base.InitializeLifetimeService();
+            if (lease.CurrentState == LeaseState.Initial)
+            {
+                lease.InitialLeaseTime = TimeSpan.FromMinutes(8d);
+                lease.SponsorshipTimeout = TimeSpan.FromMinutes(2d);
+                lease.RenewOnCallTime = TimeSpan.FromMinutes(2d);
+            }
+            return lease;
         }
         #endregion
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace System
 {
@@ -13,6 +14,7 @@ namespace System
         #region Fields
         [DllImport("Psapi.dll")]
         internal static extern bool EmptyWorkingSet(IntPtr hProcess);
+        private static int MemLocker;
 
         private volatile bool _disposed;
         #endregion
@@ -73,16 +75,31 @@ namespace System
 
         protected void ReleaseMemory()
         {
-            //long m = 100 * 1024;
-            //GC.AddMemoryPressure(m);
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-            GC.Collect();
-            //GC.WaitForFullGCComplete();
-            //GC.Collect();
-            //GC.RemoveMemoryPressure(m);
-            var proc = Process.GetCurrentProcess();
-            EmptyWorkingSet(proc.Handle);
+            if (Interlocked.Exchange(ref MemLocker, 1) == 0)
+            {
+                try
+                {
+                    //long m = 100 * 1024;
+                    //GC.AddMemoryPressure(m);
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                    GC.Collect();
+                    //GC.WaitForFullGCComplete();
+                    //GC.Collect();
+                    //GC.RemoveMemoryPressure(m);
+                    var proc = Process.GetCurrentProcess();
+                    EmptyWorkingSet(proc.Handle);
+                    App.LogInfo("ReleaseMemory...");
+                }
+                finally
+                {
+                    Interlocked.Exchange(ref MemLocker, 0);
+                }
+            }
+            else
+            {
+                Thread.Sleep(20 * 1000);
+            }
         }
         #endregion
     }
