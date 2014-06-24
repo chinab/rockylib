@@ -182,6 +182,7 @@
     <Compile Include="App\Implement\ObjectHost.cs" />
     <Compile Include="App\Implement\Sandboxer.cs" />
     <Compile Include="App\Implement\SandboxManager.cs" />
+    <Compile Include="DataStructure\Concurrent.cs" />
     <Compile Include="Net\WCF\InvokeFaultDetail.cs" />
     <Compile Include="Net\WCF\Server\InvalidInvokeException.cs" />
     <Compile Include="Net\WCF\Client\TransferClient.cs" />
@@ -290,13 +291,13 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataStructure\NodeList.cs">
+    <Compile Include="DataStructure\Common\NodeList.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DataStructure\BinaryTrees\BinarySearchTree.cs" />
     <Compile Include="DataStructure\BinaryTrees\BinaryTreeNode.cs" />
     <Compile Include="DataStructure\BinaryTrees\TraversalMethods.cs" />
-    <Compile Include="DataStructure\Node.cs" />
+    <Compile Include="DataStructure\Common\Node.cs" />
     <Compile Include="Data\DbScope.cs" />
     <Compile Include="Data\Database.cs" />
     <Compile Include="Data\DbFactory.cs">
