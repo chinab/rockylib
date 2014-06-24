@@ -19,6 +19,7 @@ namespace System.Net
     /// You can get every Nth number or letter:
     /// http://www.numericals.com/file[1-100:10].txt  http://www.letters.com/file[a-z:2].txt 
     /// </summary>
+    [Serializable]
     public class StringPatternGenerator : IEnumerable<string>
     {
         #region Readonly & Static Fields
