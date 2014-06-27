@@ -16,14 +16,6 @@ namespace System.Net
     {
         #region Fields
         private const string DnsPrefix = "DNS_";
-        private static readonly ObjectCache Cache;
-        #endregion
-
-        #region Constructors
-        static SocketHelper()
-        {
-            Cache = MemoryCache.Default;
-        }
         #endregion
 
         #region Methods
@@ -40,6 +32,7 @@ namespace System.Net
             }
 
             string key = DnsPrefix + hostNameOrAddress;
+            ObjectCache Cache = MemoryCache.Default;
             var addrs = Cache[key] as IPAddress[];
             if (addrs == null)
             {
@@ -50,7 +43,7 @@ namespace System.Net
                 }
                 catch (SocketException ex)
                 {
-                    App.LogError(ex, "解析{0}时遇到错误", hostNameOrAddress);
+                    App.LogError(ex, "解析{0}失败", hostNameOrAddress);
                     throw;
                 }
             }
@@ -69,7 +62,7 @@ namespace System.Net
             var arr = endPoint.Split(':');
             if (arr.Length != 2)
             {
-                throw new ArgumentException(string.Format("'{0}' is invalid.", endPoint));
+                throw new ArgumentException(string.Format("'{0}' is invalid", endPoint));
             }
             //App.LogInfo("ParseEndPoint={0}", endPoint);
             var addr = GetHostAddresses(arr[0]).First();
@@ -86,15 +79,14 @@ namespace System.Net
             return new SocketPool(endpoint);
         }
 
-        public static Socket CreateListener(EndPoint boundEndPoint, ushort maxClient = 100)
+        public static void CreateListener(out Socket server, EndPoint boundEP, ushort maxClient = 128)
         {
-            var server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            server.Bind(boundEndPoint);
+            server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            server.ReuseAddress(boundEP);
             server.Listen(maxClient);
-            return server;
         }
 
-        public static void DisposeListener(ref Socket server)
+        public static void CloseListener(ref Socket server)
         {
             //关闭连接，否则客户端会认为是强制关闭 
             if (server.Poll(-1, SelectMode.SelectRead))
@@ -102,6 +94,7 @@ namespace System.Net
                 server.Shutdown(SocketShutdown.Both);
             }
             server.Close();
+            server = null;
         }
         #endregion
     }

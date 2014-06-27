@@ -58,7 +58,7 @@ namespace System.Net
             {
                 if (_listener != null)
                 {
-                    SocketHelper.DisposeListener(ref _listener);
+                    SocketHelper.CloseListener(ref _listener);
                 }
             }
             _listener = null;
@@ -111,7 +111,7 @@ namespace System.Net
             App.CreateDirectory(_savePath = savePath);
             var localIpe = new IPEndPoint(IPAddress.Any, port);
             //最多支持16线程
-            _listener = SocketHelper.CreateListener(localIpe, 16);
+            SocketHelper.CreateListener(out _listener, localIpe, 16);
             _listener.BeginAccept(this.AcceptCallback, null);
         }
         private void AcceptCallback(IAsyncResult ar)

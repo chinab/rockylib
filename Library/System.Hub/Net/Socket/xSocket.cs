@@ -11,9 +11,9 @@ using System.Text;
 
 namespace System.Net
 {
-    public static partial class Extensions
+    public static partial class xSocket
     {
-        #region Socks
+        #region Tcp
         /// <summary>
         /// 同步连接
         /// </summary>
@@ -68,6 +68,22 @@ namespace System.Net
 
         #region Options
         /// <summary>
+        /// 端口劫持
+        /// </summary>
+        /// <param name="instance"></param>
+        public static void ReuseAddress(this Socket instance, EndPoint localEP = null)
+        {
+            Contract.Requires(instance != null);
+
+            instance.ExclusiveAddressUse = false;
+            instance.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+            if (localEP != null)
+            {
+                instance.Bind(localEP);
+            }
+        }
+
+        /// <summary>
         /// 设置心跳包捕获ConnectionReset 10054异常
         /// </summary>
         /// <param name="instance"></param>
@@ -100,22 +116,6 @@ namespace System.Net
                 keep_alive[i1 * bytes_per_long + 0] = (byte)(input_params[i1] >> ((bytes_per_long - 4) * bits_per_byte) & 0xff);
             }
             instance.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, keep_alive);
-        }
-
-        /// <summary>
-        /// 端口劫持
-        /// </summary>
-        /// <param name="instance"></param>
-        public static void ReuseAddress(this Socket instance, IPEndPoint ipe = null)
-        {
-            Contract.Requires(instance != null);
-
-            instance.ExclusiveAddressUse = false;
-            instance.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-            if (ipe != null)
-            {
-                instance.Bind(ipe);
-            }
         }
         #endregion
     }

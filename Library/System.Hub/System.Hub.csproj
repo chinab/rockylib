@@ -269,7 +269,7 @@
     <Compile Include="Net\Proxy\Entity\SocksProxyType.cs" />
     <Compile Include="Net\Proxy\ProxyUtility.cs" />
     <Compile Include="Net\Socket\Entity\DistributedEndPoint.cs" />
-    <Compile Include="Net\Socket\Extensions.cs" />
+    <Compile Include="Net\Socket\xSocket.cs" />
     <Compile Include="Net\Socket\ISocketPool.cs" />
     <Compile Include="Net\Socket\lmplement\SocketPool.cs" />
     <Compile Include="Net\Socket\TransferProgress.cs" />
