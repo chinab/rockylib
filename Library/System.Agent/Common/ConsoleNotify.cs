@@ -324,12 +324,14 @@ namespace System.Agent
             SetConsoleCtrlHandler(_handler = new HandlerRoutine(eventType =>
             {
                 Visible = false;
+                _notify.Visible = false;
                 Closing = true;
                 if (form != null)
                 {
                     form.Close();
                 }
                 _notify.Dispose();
+                Environment.Exit(0);
                 return false;
             }), true);
 
@@ -337,7 +339,7 @@ namespace System.Agent
             TaskHelper.Factory.StartNew(() =>
             {
                 entry.DoEntry(null);
-                this.Exit();
+                _handler(CtrlTypes.CTRL_CLOSE_EVENT);
             }, _tokenSource.Token).ObservedException();
             if (form == null)
             {
@@ -354,8 +356,6 @@ namespace System.Agent
         {
             _tokenSource.Cancel(true);
             _handler(CtrlTypes.CTRL_C_EVENT);
-            Application.Exit();
-            Environment.Exit(0);
         }
 
         private void CreateMenuItem(string txt, string name, bool doSeparator = false)
