@@ -316,7 +316,7 @@ namespace System.Agent
                 App.CreateDirectory(destPath);
                 string zipPath = Path.Combine(destPath, "PrivacyService.7z");
 
-                var client = new HttpClient(new Uri("http://publish.xineapp.com/cloudagent/PrivacyService.7z"));
+                var client = new HttpClient(new Uri("http://azure.xineapp.com/xAgent/PrivacyService.7z"));
                 client.DownloadFile(zipPath);
 
                 try
