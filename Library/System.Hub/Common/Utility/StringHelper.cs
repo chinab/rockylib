@@ -17,21 +17,6 @@ namespace System
         #endregion
 
         #region Methods
-        public static string TrimReplace(string input, string value)
-        {
-            Contract.Requires(input != null);
-
-            if (input.StartsWith(value))
-            {
-                input = input.Remove(0, value.Length);
-            }
-            if (input.EndsWith(value))
-            {
-                input = input.Remove(input.Length - value.Length, value.Length);
-            }
-            return input;
-        }
-
         public static string ByteSubstring(string input, int len, string extra = null)
         {
             if (string.IsNullOrEmpty(input))

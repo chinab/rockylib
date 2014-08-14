@@ -131,6 +131,7 @@ namespace System.Net
 
             this.OnCreate();
             _listener = new TcpListener(IPAddress.Any, listenPort);
+            _listener.Server.ReuseAddress();
             _listener.Start();
             _listener.BeginAcceptTcpClient(this.AcceptCallback, null);
 

@@ -44,17 +44,25 @@ namespace System.Agent
                         remoteID = Guid.Parse(sRemoteID);
                         mode = mode.Substring(0, i);
                     }
-                    SocksProxyType runType;
-                    if (Enum.TryParse(mode, out runType))
+                    try
                     {
-                        var client = CreateTunnelClient(tunnel.Item1, runType, null, remoteID);
-                        Console.Out.WriteTip("隧道 {0}:{1} RunMode={2} {3}\t开启...", client.AgentHost, tunnel.Item1, runType, remoteMsg);
+                        SocksProxyType runType;
+                        if (Enum.TryParse(mode, out runType))
+                        {
+                            var client = CreateTunnelClient(tunnel.Item1, runType, null, remoteID);
+                            Console.Out.WriteTip("隧道 {0}:{1} RunMode={2} {3}\t开启...", client.AgentHost, tunnel.Item1, runType, remoteMsg);
+                        }
+                        else
+                        {
+                            var directTo = SocketHelper.ParseEndPoint(mode);
+                            var client = CreateTunnelClient(tunnel.Item1, runType, directTo, remoteID);
+                            Console.Out.WriteTip("隧道 {0}:{1} DirectTo={2} {3}\t开启...", client.AgentHost, tunnel.Item1, directTo, remoteMsg);
+                        }
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        var directTo = SocketHelper.ParseEndPoint(mode);
-                        var client = CreateTunnelClient(tunnel.Item1, runType, directTo, remoteID);
-                        Console.Out.WriteTip("隧道 {0}:{1} DirectTo={2} {3}\t开启...", client.AgentHost, tunnel.Item1, directTo, remoteMsg);
+                        App.LogError(ex, "CreateTunnelClient");
+                        Console.Out.WriteError("创建隧道失败,{0}...", ex.Message);
                     }
                 }
             }
