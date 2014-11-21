@@ -125,19 +125,19 @@ namespace System.Net
                 }
             }
         }
-
-        public WebHeaderCollection Headers
-        {
-            get { return _content.Headers; }
-        }
-        public CookieCollection Cookies
+        public CookieContainer CookieContainer
         {
             get
             {
                 Contract.Requires(this.UseCookies);
 
-                return _cookieContainer.GetCookies(_request.RequestUri);
+                return _cookieContainer;
             }
+        }
+
+        public WebHeaderCollection Headers
+        {
+            get { return _content.Headers; }
         }
         public NameValueCollection Form
         {
@@ -164,7 +164,7 @@ namespace System.Net
         {
             if (queryString.Count > 0)
             {
-                url += _content.GetFormString(queryString, url.Contains(HttpRequestContent.Symbol_AndFirst));
+                url += _content.GetFormString(queryString, !url.Contains(HttpRequestContent.Symbol_AndFirst));
             }
             return new Uri(url);
         }
@@ -412,10 +412,6 @@ namespace System.Net
         #region IHttpClient
         ushort? IHttpClient.RetryCount { get; set; }
         TimeSpan? IHttpClient.RetryWaitDuration { get; set; }
-        CookieContainer IHttpClient.CookieContainer
-        {
-            get { return _cookieContainer; }
-        }
         string IHttpClient.SaveFileDirectory { get; set; }
 
         string IHttpClient.GetHtml(Uri requestUrl, HttpRequestContent content)

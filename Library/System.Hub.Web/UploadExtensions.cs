@@ -145,7 +145,7 @@ namespace System.Web
             string prefixName = Path.GetFileNameWithoutExtension(vitualPath);
             if (prefixName.Length > 0)
             {
-                vitualPath = StringHelper.TrimReplace(vitualPath, prefixName);
+                vitualPath = vitualPath.Trim(prefixName.ToCharArray());
             }
             StringBuilder sb = new StringBuilder(vitualPath);
             DateTime now = DateTime.Now;
