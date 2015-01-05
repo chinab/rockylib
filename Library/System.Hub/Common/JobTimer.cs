@@ -16,6 +16,7 @@ namespace System
         #endregion
 
         #region Properties
+        public bool AutoDispose { get; set; }
         public TimeSpan DueTime { get; private set; }
         public TimeSpan Period { get; private set; }
         public DateTime PreviousExecuteTime { get; private set; }
@@ -38,15 +39,16 @@ namespace System
             }
             this.Period = period;
 
+            AutoDispose = true;
             App.DisposeService.Register(this.GetType(), this);
         }
         public JobTimer(Action<object> job, DateTime dueTime)
-            : this(job, dueTime, TimeSpan.FromMilliseconds(Timeout.Infinite))
+            : this(job, dueTime, Timeout.InfiniteTimeSpan)
         {
 
         }
         public JobTimer(Action<object> job, TimeSpan period)
-            : this(job, DateTime.Now.AddSeconds(4d), period)
+            : this(job, DateTime.Now.AddSeconds(2d), period)
         {
 
         }
@@ -66,10 +68,13 @@ namespace System
                 finally
                 {
                     this.PreviousExecuteTime = DateTime.Now;
-                    if (this.Period.Milliseconds == Timeout.Infinite)
+                    if (this.Period == Timeout.InfiniteTimeSpan)
                     {
                         this.NextExecuteTime = DateTime.MinValue;  //下次执行时间不存在 
-                        this.Dispose();
+                        if (AutoDispose)
+                        {
+                            this.Dispose();
+                        }
                     }
                     else
                     {
@@ -95,10 +100,11 @@ namespace System
 
         public void Stop()
         {
-            if (_timer != null)
+            if (_timer == null)
             {
-                _timer.Change(Timeout.Infinite, Timeout.Infinite);
+                return;
             }
+            _timer.Change(Timeout.Infinite, Timeout.Infinite);
         }
 
         public void Dispose()
@@ -109,6 +115,7 @@ namespace System
                 if (_timer != null)
                 {
                     _timer.Dispose();
+                    _timer = null;
                 }
 
                 App.DisposeService.Release(this.GetType(), this);

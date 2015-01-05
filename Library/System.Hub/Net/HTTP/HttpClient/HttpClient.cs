@@ -349,7 +349,7 @@ namespace System.Net
             Action<HttpRequestHeader> func = hName =>
             {
                 string val = _content.Headers[hName];
-                if (!string.IsNullOrEmpty(val))
+                if (val != null)
                 {
                     var prop = type.GetProperty(hName.ToString(), PropertyAccess.PropertyBinding);
                     prop.SetValue(_request, val);
