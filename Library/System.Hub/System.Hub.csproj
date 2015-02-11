@@ -172,6 +172,7 @@
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -183,6 +184,28 @@
     <Compile Include="App\Implement\Sandboxer.cs" />
     <Compile Include="App\Implement\SandboxManager.cs" />
     <Compile Include="DataStructure\Concurrent.cs" />
+    <Compile Include="Net\HtmlClient\Backgroud\NativeMethods.cs" />
+    <Compile Include="Net\HtmlClient\Backgroud\NonDialogWebBrowser.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Net\HtmlClient\Backgroud\PageClient.cs" />
+    <Compile Include="Net\HtmlClient\Client\AjaxBlockEntity.cs" />
+    <Compile Include="Net\HtmlClient\Client\ClientForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Net\HtmlClient\Client\ClientForm.Designer.cs">
+      <DependentUpon>ClientForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Net\HtmlClient\Client\PClientWrapper.cs" />
+    <Compile Include="Net\HtmlClient\Client\IPageClient.cs" />
+    <Compile Include="Net\HtmlClient\Client\ListenerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Net\HtmlClient\Client\ListenerForm.Designer.cs">
+      <DependentUpon>ListenerForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Net\HtmlClient\Client\MessageLoopApartment.cs" />
+    <Compile Include="Net\HtmlClient\Client\ScriptingContext.cs" />
     <Compile Include="Net\WCF\InvokeFaultDetail.cs" />
     <Compile Include="Net\WCF\Server\InvalidInvokeException.cs" />
     <Compile Include="Net\WCF\Client\TransferClient.cs" />
@@ -344,6 +367,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <EmbeddedResource Include="Net\HtmlClient\Client\ClientForm.resx">
+      <DependentUpon>ClientForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Net\HtmlClient\Client\ListenerForm.resx">
+      <DependentUpon>ListenerForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resource\CassiniDev4-console.exe.config" />
     <None Include="packages.config" />
     <None Include="rocky.snk" />
@@ -406,7 +435,17 @@
   <ItemGroup>
     <EmbeddedResource Include="Resource\EmitMapper.dll" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <COMReference Include="IWshRuntimeLibrary">
+      <Guid>{F935DC20-1CF0-11D0-ADB9-00C04FD58A0B}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
