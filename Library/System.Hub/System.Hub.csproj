@@ -147,6 +147,9 @@
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>sk.pfx</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="EmitMapper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -168,6 +171,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Runtime.Remoting" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Transactions" />
@@ -206,6 +210,20 @@
     </Compile>
     <Compile Include="Net\HtmlClient\Client\MessageLoopApartment.cs" />
     <Compile Include="Net\HtmlClient\Client\ScriptingContext.cs" />
+    <Compile Include="Net\Remote\MonitorProxy.cs" />
+    <Compile Include="Net\Remote\MonitorChannel.cs" />
+    <Compile Include="Net\Remote\MonitorClient.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Net\Remote\MonitorClient.Designer.cs">
+      <DependentUpon>MonitorClient.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Net\Remote\MonitorUserControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Net\Remote\MonitorUserControl.Designer.cs">
+      <DependentUpon>MonitorUserControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Net\WCF\InvokeFaultDetail.cs" />
     <Compile Include="Net\WCF\Server\InvalidInvokeException.cs" />
     <Compile Include="Net\WCF\Client\TransferClient.cs" />
@@ -373,9 +391,14 @@
     <EmbeddedResource Include="Net\HtmlClient\Client\ListenerForm.resx">
       <DependentUpon>ListenerForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Net\Remote\MonitorClient.resx">
+      <DependentUpon>MonitorClient.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Net\Remote\MonitorUserControl.resx">
+      <DependentUpon>MonitorUserControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resource\CassiniDev4-console.exe.config" />
     <None Include="packages.config" />
-    <None Include="rocky.snk" />
     <None Include="Service References\InfrastructureService\InfrastructureService.wsdl" />
     <None Include="Service References\InfrastructureService\InfrastructureService.xsd">
       <SubType>Designer</SubType>
@@ -407,6 +430,7 @@
     <None Include="Service References\InfrastructureService\System.InfrastructureService.StorageConfig.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </None>
+    <None Include="sk.pfx" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resource\CassiniDev4-console.exe" />
