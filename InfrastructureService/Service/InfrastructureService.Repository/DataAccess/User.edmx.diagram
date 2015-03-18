@@ -4,13 +4,13 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="d379f0c1a2fe456ca158516cfb8cf242" Name="关系图1">
-        <EntityTypeShape EntityType="InfrastructureService.UserModel.Account" Width="1.5" PointX="1.7365620013962324" PointY="20.700230310065781" />
-        <EntityTypeShape EntityType="InfrastructureService.UserModel.EmailAuth" Width="1.5" PointX="2.0454089874613142" PointY="12.593618443512181" />
-        <EntityTypeShape EntityType="InfrastructureService.UserModel.MobileAuth" Width="1.5" PointX="6.3006435419901479" PointY="31.37283191055657" />
-        <EntityTypeShape EntityType="InfrastructureService.UserModel.OpenOAuth" Width="1.5" PointX="7.6133662721204409" PointY="13.258094585155181" />
-        <EntityTypeShape EntityType="InfrastructureService.UserModel.PersistentSession" Width="1.5" PointX="1.0506758825158122" PointY="1.6634120203849916" />
-        <EntityTypeShape EntityType="InfrastructureService.UserModel.SignInLog" Width="1.5" PointX="5.5252726997832173" PointY="4.6311163774836421" />
+      <Diagram DiagramId="d379f0c1a2fe456ca158516cfb8cf242" Name="关系图1" ZoomLevel="86">
+        <EntityTypeShape EntityType="InfrastructureService.UserModel.Account" Width="1.5" PointX="3.875" PointY="14.125" />
+        <EntityTypeShape EntityType="InfrastructureService.UserModel.EmailAuth" Width="1.5" PointX="5.75" PointY="14.125" />
+        <EntityTypeShape EntityType="InfrastructureService.UserModel.MobileAuth" Width="1.5" PointX="7.5" PointY="14.125" />
+        <EntityTypeShape EntityType="InfrastructureService.UserModel.OpenOAuth" Width="1.5" PointX="2" PointY="14.125" />
+        <EntityTypeShape EntityType="InfrastructureService.UserModel.PersistentSession" Width="1.5" PointX="3.875" PointY="11.375" />
+        <EntityTypeShape EntityType="InfrastructureService.UserModel.SignInLog" Width="1.5" PointX="5.75" PointY="11.375" />
         <AssociationConnector Association="InfrastructureService.UserModel.FK_EmailAuth_Account" />
         <AssociationConnector Association="InfrastructureService.UserModel.FK_OpenOAuth_Account" />
         <AssociationConnector Association="InfrastructureService.UserModel.FK_PersistentSession_Account" />
